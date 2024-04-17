@@ -1,5 +1,5 @@
 <template>
-  <home />
+  dashboard
 </template>
 
 <script lang="ts" setup>

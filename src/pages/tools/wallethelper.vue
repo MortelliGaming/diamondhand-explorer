@@ -1,5 +1,5 @@
 <template>
-  <home />
+  wallethelper
 </template>
 
 <script lang="ts" setup>

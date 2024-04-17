@@ -1,5 +1,5 @@
 <template>
-  <home />
+  collectables
 </template>
 
 <script lang="ts" setup>

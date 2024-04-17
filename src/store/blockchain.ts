@@ -1,22 +1,27 @@
-import { defineStore } from 'pinia';
+import { defineStore, storeToRefs } from 'pinia';
 import { type Ref, computed, ref } from 'vue';
 
-import * as evmChains from '@/lib/chains/evm'
-import { Chain, PublicClient, createPublicClient, http } from 'viem';
+import { useAppStore } from './app';
 
-export const useEVMBlockchainStore = defineStore('evm-blockchain', () => {
+import { blockchainConfigs } from '@/lib/chains'
+
+import { PublicClient, createPublicClient, http } from 'viem';
+import { ExplorerChainInfo } from '@/types';
+
+export const useBlockchainStore = defineStore('blockchain', () => {
 
     const selectedChainName = ref('')
     // viem public client without signer
-    const publicClient: Ref<null|PublicClient> = ref(null);
+    const publicEVMClient: Ref<null|PublicClient> = ref(null);
 
     const availableChains = computed(() => {
-        return Object.keys(evmChains)
+        const { isTestnet } = storeToRefs(useAppStore());
+        return ( isTestnet ? blockchainConfigs.testnet : blockchainConfigs.mainnet)
     })
 
-    const selectedChain: Ref<null|Chain> = computed(() => {
-        return Object.keys(evmChains).includes(selectedChainName.value)
-            ? (evmChains as any)[selectedChainName.value] as Chain
+    const selectedChain: Ref<null|ExplorerChainInfo> = computed(() => {
+        return Object.keys(availableChains.value).includes(selectedChainName.value)
+            ? availableChains.value[selectedChainName.value]
             : null
     })
 
@@ -28,17 +33,23 @@ export const useEVMBlockchainStore = defineStore('evm-blockchain', () => {
     }
 
     function connectClient() {
-        if(selectedChain.value != null) {
-            publicClient.value = createPublicClient({
-                chain: selectedChain.value,
+        if(selectedChain.value?.evm) {
+            if(publicEVMClient.value !== null) {
+                publicEVMClient.value = null;
+            }
+            publicEVMClient.value = createPublicClient({
+                chain: selectedChain.value.evm,
                 transport: http()
             })
+        } else {
+            publicEVMClient.value = null
         }
     }
 
     return { 
         availableChains,
         selectedChain,
+        selectedChainName,
         selectChain
     }
 })

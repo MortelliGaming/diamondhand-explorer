@@ -1,5 +1,5 @@
 <template>
-  <home />
+  staking
 </template>
 
 <script lang="ts" setup>

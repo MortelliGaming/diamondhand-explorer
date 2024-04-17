@@ -8,6 +8,7 @@
     "lint": "eslint . --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@keplr-wallet/provider": "^0.12.80",
     "@mdi/font": "7.0.96",
     "core-js": "^3.34.0",
     "diamondhand-widget": "file:../dh-widget",

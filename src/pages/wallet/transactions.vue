@@ -1,5 +1,5 @@
 <template>
-  <home />
+  transactions
 </template>
 
 <script lang="ts" setup>

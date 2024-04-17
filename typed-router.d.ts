@@ -40,6 +40,18 @@ import type {
 declare module 'vue-router/auto/routes' {
   export interface RouteNamedMap {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
+    '/[...all]': RouteRecordInfo<'/[...all]', '/:all(.*)', { all: ParamValue<true> }, { all: ParamValue<false> }>,
+    '/[...chainId]/[...all]': RouteRecordInfo<'/[...chainId]/[...all]', '/:chainId(.*)/:all(.*)', { chainId: ParamValue<true>, all: ParamValue<true> }, { chainId: ParamValue<false>, all: ParamValue<false> }>,
+    '/[...chainId]/dashboard': RouteRecordInfo<'/[...chainId]/dashboard', '/:chainId(.*)/dashboard', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,
+    '/[...chainId]/governance': RouteRecordInfo<'/[...chainId]/governance', '/:chainId(.*)/governance', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,
+    '/[...chainId]/staking': RouteRecordInfo<'/[...chainId]/staking', '/:chainId(.*)/staking', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,
+    '/tools/[...all]': RouteRecordInfo<'/tools/[...all]', '/tools/:all(.*)', { all: ParamValue<true> }, { all: ParamValue<false> }>,
+    '/tools/wallethelper': RouteRecordInfo<'/tools/wallethelper', '/tools/wallethelper', Record<never, never>, Record<never, never>>,
+    '/wallet/[...all]': RouteRecordInfo<'/wallet/[...all]', '/wallet/:all(.*)', { all: ParamValue<true> }, { all: ParamValue<false> }>,
+    '/wallet/collectables': RouteRecordInfo<'/wallet/collectables', '/wallet/collectables', Record<never, never>, Record<never, never>>,
+    '/wallet/dashboard': RouteRecordInfo<'/wallet/dashboard', '/wallet/dashboard', Record<never, never>, Record<never, never>>,
+    '/wallet/staking': RouteRecordInfo<'/wallet/staking', '/wallet/staking', Record<never, never>, Record<never, never>>,
+    '/wallet/transactions': RouteRecordInfo<'/wallet/transactions', '/wallet/transactions', Record<never, never>, Record<never, never>>,
   }
 }
 

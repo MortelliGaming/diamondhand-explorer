@@ -1,5 +1,5 @@
 <template>
-  <home />
+  governance
 </template>
 
 <script lang="ts" setup>
