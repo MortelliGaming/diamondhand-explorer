@@ -131,13 +131,13 @@
             :prepend-icon="'mdi-link'"
           ></v-list-item>
         </template>
-        <v-list-item style="padding-left: 25px !important; font-size: small;" prepend-icon="mdi-earth">
-          <a href="https://diamondhand.capital">
+        <v-list-item class="link-item" role="button" style="padding-left: 25px !important; font-size: small;" prepend-icon="mdi-earth">
+          <a href="https://diamondhand.capital" target="_blank">
             {{ $t('module.website')}}
           </a>
         </v-list-item>
-        <v-list-item style="padding-left: 25px !important; font-size: small;" prepend-icon="mdi-bird">
-          <a href="https://x.com/diamondhandHQ">
+        <v-list-item class="link-item" role="button" style="padding-left: 25px !important; font-size: small;" prepend-icon="mdi-bird">
+          <a href="https://x.com/diamondhandHQ" target="_blank">
             {{ $t('module.twitter')}}
           </a>
         </v-list-item>
@@ -162,6 +162,10 @@ const open = ref(['wallet'])
 </script>
 <style lang="scss" scoped>
 .routerlink {
+  text-decoration: none;
+  color: unset;
+}
+a {
   text-decoration: none;
   color: unset;
 }
