@@ -6,9 +6,14 @@
 </template>
 
 <script lang="ts" setup>
+// External
 import { storeToRefs } from 'pinia'
-import ChainContent from '@/components/ChainContent.vue'
+
+// Store
 import { useAppStore } from '@/store/app'
+
+// Components
+import ChainContent from '@/components/ChainContent.vue'
 
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 

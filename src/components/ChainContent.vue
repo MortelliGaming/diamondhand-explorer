@@ -10,11 +10,13 @@
 <script lang="ts" setup>
 // External
 import { storeToRefs } from 'pinia';
-// Components
-import NotFound from '@/components/404.vue'
+
 // Store
 import { useAppStore } from '@/store/app'
 import { useBlockchainStore } from '@/store/blockchain';
+
+// Components
+import NotFound from '@/components/404.vue'
 
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 const { availableChains } = storeToRefs(useBlockchainStore())
