@@ -1,18 +1,15 @@
 <template>
-  <div v-if="chainId">
-  {{ chainId }}
-  governance
-  </div>
-  <not-found v-else />
+  <chain-content>
+    {{ chainIdFromRoute }}
+    governance
+  </chain-content>
 </template>
 
 <script lang="ts" setup>
-import { Ref, computed } from 'vue';
-import { useRoute } from 'vue-router';
-import NotFound from '@/components/404.vue'
+import { storeToRefs } from 'pinia'
+import ChainContent from '@/components/ChainContent.vue'
+import { useAppStore } from '@/store/app'
 
-const route = useRoute()
-const chainId: Ref<string> = computed(() => {
-  return (route.params as { chainId: string }).chainId || '' as string;
-})
+const { chainIdFromRoute } = storeToRefs(useAppStore())
+
 </script>
