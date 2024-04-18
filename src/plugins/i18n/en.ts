@@ -3,6 +3,7 @@ export const en = {
         title: 'Diamondhand'
     },
     module: {
+        blocks: 'Blocks',
         dashboard: 'Dashboard',
         transactions: 'Transactions',
         staking: 'Staking',

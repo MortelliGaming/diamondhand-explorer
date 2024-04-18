@@ -1,7 +1,7 @@
 <!-- Helper Component To Read the ChainId From URL Param -->
 <!-- Shows 404 if invalid chainId -->
 <template>
-  <div v-if="chainIdFromRoute && Object.keys(availableChains).includes(chainIdFromRoute)">
+  <div v-if="chainIdFromRoute && availableChains.map(c => c.name).includes(chainIdFromRoute)">
     <slot></slot>
   </div>
   <not-found v-else />

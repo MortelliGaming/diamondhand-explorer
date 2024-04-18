@@ -44,13 +44,13 @@
         </v-list-item>
       </v-list-group>
       <v-divider />
-      <v-list-group :value="chainName" v-for="chainName in Object.keys(availableChains)" :key="chainName">
+      <v-list-group :value="chainName" v-for="chainName in availableChainNames" :key="chainName">
         <template v-slot:activator="{ props }">
           <v-list-item
             style="padding-left: 8px;"
             v-bind="props"
             :title="chainName"
-            :prepend-avatar="availableChains[chainName].keplr?.chainSymbolImageUrl"
+            :prepend-avatar="availableChains.find(x => x.name == chainName)?.keplr?.chainSymbolImageUrl"
           ></v-list-item>
         </template>
 
@@ -156,7 +156,7 @@ import { ref } from 'vue';
 const router = useRouter();
 
 const { isNavigationDrawerOpen } = storeToRefs(useAppStore())
-const { availableChains } = storeToRefs(useBlockchainStore())
+const { availableChains, availableChainNames } = storeToRefs(useBlockchainStore())
 
 const open = ref(['wallet'])
 </script>

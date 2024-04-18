@@ -1,10 +1,16 @@
 import type { ExplorerChainInfo } from '@/types'
 import * as testnet from './testnet'
+import * as mainnet from './mainnet'
+
+
+export type Testnets = keyof typeof testnet
+export type Mainnets = keyof typeof mainnet
 
 export const blockchainConfigs = {
-    testnet,
-    mainnet: {}
+    networks: {
+        ...testnet,
+        ...mainnet
+    }
 } as {
-    testnet: {[id: string]: ExplorerChainInfo},
-    mainnet: {[id: string]: ExplorerChainInfo}
+    networks: { [id in (Testnets|Mainnets)]: ExplorerChainInfo }
 }
