@@ -2,8 +2,8 @@
 import type { ChainInfo } from '@keplr-wallet/types'
 
 export const keplr: ChainInfo = {
-  "rpc": "https://tendermint-rpc.testnet.ms/",
-  "rest": "https://cosmos-api.testnet.ms/",
+  "rpc": "https://crossfitestnetrpc.diamondhand.capital/",
+  "rest": "https://crossfitestnetapi.diamondhand.capital/",
   "chainId": "crossfi-evm-testnet-1",
   "chainName": "CrossFi Testnet",
   "chainSymbolImageUrl": "https://media.licdn.com/dms/image/D4E0BAQEs0PUwKhAw9g/company-logo_200_200/0/1699597847512/crossfichain_logo?e=2147483647&v=beta&t=36793GMlIOqcltdR6gIdZhOpT8OpANC52XwQ4gewqmg",

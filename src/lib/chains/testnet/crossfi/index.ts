@@ -4,7 +4,6 @@ import { keplr } from './keplr'
 
 export const crossfi: ExplorerChainInfo = {
   name: 'crossfi',
-  isTestnet: true,
   evm,
   keplr
 }

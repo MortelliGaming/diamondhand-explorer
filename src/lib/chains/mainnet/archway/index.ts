@@ -4,7 +4,6 @@ import type { ExplorerChainInfo } from '@/types'
 
 export const archway: ExplorerChainInfo = {
     name: 'archway',
-    isTestnet: false,
     evm: null,
     keplr: null
 }
