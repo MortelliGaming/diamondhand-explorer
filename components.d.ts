@@ -12,5 +12,6 @@ declare module 'vue' {
     Home: typeof import('./src/components/Home.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    ValidatorStakingCommissionChart: typeof import('./src/components/charts/ValidatorStakingCommissionChart.vue')['default']
   }
 }

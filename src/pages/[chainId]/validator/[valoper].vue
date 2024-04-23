@@ -52,7 +52,9 @@
                         <v-row class="d-flex">
                             <v-col>
                                 <div class="text-h6 text-center">Commission</div>
-                                <apexchart width="200" type="donut" :options="chartOptions" :series="_series"></apexchart>
+                                <validator-staking-commission-chart 
+                                    :valoperAddress="valoper"
+                                    :chainId="cosmosChainId || ''" />
                             </v-col>
                         </v-row>
                     </v-sheet>
@@ -160,11 +162,11 @@
 
 <script lang="ts" setup>
 import NotFound from '@/components/404.vue'
-import { Ref, computed, onMounted, ref, watch } from 'vue';
+import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import moment from 'moment'
-import { type ApexOptions } from 'apexcharts'
-import Apexchart from 'vue3-apexcharts';
+
+import ValidatorStakingCommissionChart from '@/components/charts/ValidatorStakingCommissionChart.vue';
 
 import { useBlockchainStore } from '@/store/blockchain';
 import { useAppStore } from '@/store/app';
@@ -178,92 +180,9 @@ const { chainIdFromRoute } = storeToRefs(useAppStore())
 const valoper = computed(() => (route.params as {valoper: string}).valoper)
 const validator = computed(() => getValidatorInfo(availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.chainId || '')?.find(v => v?.operatorAddress === valoper.value))
 
-const _series = computed(() => {
-    // [min, step, current, step, max]
-    console.log(validator.value?.commission.commissionRates.rate.toString())
-    return [    
-        (parseInt(validator.value?.commission.commissionRates.rate.toString() || '0') - parseInt(validator.value?.commission.commissionRates.maxChangeRate.toString() || '0') ) / Math.pow(10,18) * 100,
-        parseInt(validator.value?.commission.commissionRates.maxChangeRate.toString() || '0') / Math.pow(10,18) * 100,
-        1,
-        parseInt(validator.value?.commission.commissionRates.maxChangeRate.toString() || '0') / Math.pow(10,18) * 100,
-        (parseInt(validator.value?.commission.commissionRates.maxRate.toString() || '0')) / Math.pow(10,18) * 100,
-    ] as number[]
+const cosmosChainId = computed(() => {
+    return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.chainId
 })
-
-const chartOptions: ApexOptions = {
-    colors: ['#868686', '#5ab580', '#0d8d42','#5ab580','#868686'],
-    series: _series.value || [],
-    labels: ['Min', 'Daily Change', 'Current', 'Daily Change', 'Max'],
-    chart: {
-      type: 'donut',
-      selection: {
-        enabled: false,
-      },
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    legend: {
-        show: false,
-    },
-    plotOptions: {
-        pie: {
-            startAngle: -90,
-            endAngle: 90,
-            donut: {
-                labels: {
-                    show: true,
-                    name: {
-                        show: true,
-                        formatter: (w) => w
-                    },
-                    value: {
-                        show: true,
-                        formatter: (w) => (w == _series.value[_series.value.length-1].toString()
-                            ? _series.value[_series.value.length - 1] + '%'
-                            : w == _series.value[0].toString() ? '0%': (w == _series.value[1].toString() || w == _series.value[3].toString()) ? _series.value[3] + '%' : '')
-                    },
-                    total: {
-                        fontSize: '12px',
-                        show: true,
-                        color: '#0d8d42',
-                        label: 'Current',
-                        formatter: function () {
-                            return (parseInt((validator?.value?.commission.commissionRates.rate.toString() || '0')) / Math.pow(10,18) * 100).toFixed(2) + '%'
-                        }
-                    }
-                }
-            }
-        },
-    },
-    states: {
-        normal: {
-            filter: {
-                type: 'none',
-                value: 0,
-            }
-        },
-        hover: {
-            filter: {
-                type: 'none',
-                value: 0
-            }
-        },
-        active: {
-            allowMultipleDataPointsSelection: false,
-            filter: {
-                type: 'none',
-                value: 0,
-            }
-        },
-    },
-    tooltip: {
-        enabled: false,
-    },
-    stroke: {
-        colors: ['#868686', '#5ab580', '#0d8d42','#5ab580','#868686']
-    },
-}
 
 </script>
 <style>
