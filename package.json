@@ -16,6 +16,7 @@
     "@evmos/proto": "^0.2.1",
     "@keplr-wallet/provider": "^0.12.80",
     "@mdi/font": "7.0.96",
+    "apexcharts": "^3.49.0",
     "axios": "^1.6.8",
     "core-js": "^3.34.0",
     "diamondhand-widget": "file:../dh-widget",
