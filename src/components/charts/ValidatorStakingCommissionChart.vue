@@ -1,5 +1,5 @@
 <template>
-    <apexchart v-if="series.length > 0" width="200" type="donut" :options="chartOptions" :series="series"></apexchart>
+    <apexchart class="d-flex justify-center" v-if="series.length > 0" width="200" type="donut" :options="chartOptions" :series="series"></apexchart>
 </template>
 
 <script lang="ts" setup>
@@ -8,8 +8,11 @@ import { type ApexOptions } from 'apexcharts'
 import Apexchart from 'vue3-apexcharts';
 
 import { useBlockchainStore } from '@/store/blockchain';
+import { storeToRefs } from 'pinia';
 
 const { getValidatorInfo } = useBlockchainStore()
+const { cosmosChaindata } = storeToRefs(useBlockchainStore())
+
 
 const props = defineProps({
     chainId: {
@@ -23,7 +26,11 @@ const props = defineProps({
 })
 
 const valoper = computed(() => props.valoperAddress)
-const validator = computed(() => getValidatorInfo(props.chainId)?.find(v => v?.operatorAddress === valoper.value))
+const basicValidator = computed(() => {
+    return cosmosChaindata.value[props.chainId]?.validators?.validators.find(v => v.operatorAddress === valoper.value);
+})
+
+const validator = computed(() => { return (basicValidator.value != undefined ? getValidatorInfo(props.chainId, basicValidator.value) : null)})
 
 const series = computed(() => {
     // [min, step, current, step, max]

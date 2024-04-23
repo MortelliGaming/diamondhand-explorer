@@ -8,6 +8,7 @@ import { ExplorerChainInfo } from '@/types';
 import { useAppStore } from './app';
 import { CosmosHelper, CosmosNewBlockheaderEvent, EVMHelper, EVMHelperHelperPublic, EvmTxEvent, type CosmosHelperPublic } from '@/lib/http';
 import { type BlockchainResponse} from '@cosmjs/tendermint-rpc';
+import type { Validator } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
 
 import { type QueryValidatorsResponse, QueryParamsResponse as QueryStakingParamsResponse } from 'cosmjs-types/cosmos/staking/v1beta1/query';
 import { QueryParamsResponse as QuerySlashingParamsResponse } from 'cosmjs-types/cosmos/slashing/v1beta1/query';
@@ -17,12 +18,28 @@ import { decodePubkey } from '@cosmjs/proto-signing';
 import { sha256 } from '@cosmjs/crypto';
 import { fetchAvatar } from '@/lib/http/keybase';
 import { BondStatus } from "cosmjs-types/cosmos/staking/v1beta1/staking";
+import { Pubkey } from '@cosmjs/amino';
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
 };
 
+// Define your custom interface for extending the Validator type
+interface ValidatorExtension {
+    bondStatus: string; 
+    operatorAddress: string;
+    operatorWallet: string;
+    consensusPublicKey: Pubkey;
+    consensusAddress: string;
+    consensusHexAddress: string;
+}
+
+// Combine Validator and ValidatorExtension using interface merging
+export interface ExtendedValidator extends Validator, ValidatorExtension {}
+
+
 export const useBlockchainStore = defineStore('blockchain', () => {
+    const isLoading: Ref<string[]> = ref([])
     const selectedChainName: Ref<Mainnets|Testnets|null> = ref(null)
     // viem public client without signer
     const publicEVMClient: Ref<null|PublicClient> = ref(null);
@@ -140,23 +157,21 @@ export const useBlockchainStore = defineStore('blockchain', () => {
         }
     }
 
-    function getValidatorInfo(chainId: string) {
-        const blockChainConfig = availableChains.value.find(c => c.keplr?.chainId === chainId)
-        return cosmosChaindata.value[chainId]?.validators?.validators.map((v) => {
-            if(!v.consensusPubkey) {
-                return null
-            }
+    function getValidatorInfo(chainId: string, v: Validator): ExtendedValidator {
+        if(!v?.consensusPubkey) {
+            return v as ExtendedValidator
+        } else {
+            const blockChainConfig = availableChains.value.find(c => c.keplr?.chainId === chainId)
             const consensusPubkey = decodePubkey(v.consensusPubkey)
-            return {
-                ...v,
-                status: BondStatus[v.status],
+            return Object.assign(v,{
+                bondStatus: BondStatus[v.status],
                 operatorAddress: v.operatorAddress,
                 operatorWallet: toBech32(blockChainConfig?.keplr?.bech32Config.bech32PrefixAccAddr || 'cosmos',fromBech32(v.operatorAddress).data),
                 consensusPublicKey: consensusPubkey,
                 consensusAddress: toBech32(blockChainConfig?.keplr?.bech32Config.bech32PrefixConsAddr || 'cosmosvalcons', sha256(fromBase64(consensusPubkey.value)).slice(0,20)),
                 consensusHexAddress: '0x' + toHex(sha256(fromBase64(consensusPubkey.value)).slice(0,20)).toUpperCase(),
-            }
-        }).filter(v => v)
+            })  as ExtendedValidator
+        }
     }
 
     async function loadBlockchaindata() {
@@ -166,6 +181,7 @@ export const useBlockchainStore = defineStore('blockchain', () => {
         }
         for(const chain of availableChains.value) {
             if(chain.keplr) {
+                isLoading.value.push(chain.name)
                 if(!cosmosChaindata.value[chain.keplr.chainId]) {
                     cosmosChaindata.value[chain.keplr.chainId] = {}
                 }
@@ -189,11 +205,15 @@ export const useBlockchainStore = defineStore('blockchain', () => {
                 localStorage.setItem('validator-avatars', JSON.stringify(keybaseAvatars.value))
                 cosmosChaindata.value[chain.keplr.chainId].stakingParams = await cosmosHelper.value.GetStakingParams(chain.keplr.chainId)
                 cosmosChaindata.value[chain.keplr.chainId].slashingParams = await cosmosHelper.value.GetSlashingParams(chain.keplr.chainId)
+
+                const index = isLoading.value.indexOf(chain.name)
+                isLoading.value.splice(index, 1)
             }
         }
     }
 
     return { 
+        isLoading,
         keybaseAvatars,
         availableCosmosChainIds,
         availableChains,

@@ -7,11 +7,15 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    '[valoper]': typeof import('./src/components/[valoper].vue')['default']
     404: typeof import('./src/components/404.vue')['default']
     ChainContent: typeof import('./src/components/ChainContent.vue')['default']
+    copy: typeof import('./src/components/404 copy.vue')['default']
     Home: typeof import('./src/components/Home.vue')['default']
+    Loading: typeof import('./src/components/Loading.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    ValidatorInfoSheet: typeof import('./src/components/ValidatorInfoSheet.vue')['default']
     ValidatorStakingCommissionChart: typeof import('./src/components/charts/ValidatorStakingCommissionChart.vue')['default']
   }
 }

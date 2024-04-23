@@ -1,7 +1,7 @@
 <!-- Helper Component To Read the ChainId From URL Param -->
 <!-- Shows 404 if invalid chainId -->
 <template>
-  <div v-if="chainIdFromRoute && availableChains.map(c => c.name).includes(chainIdFromRoute)" class="fill-height">
+  <div v-if="isChainValid" class="fill-height">
     <slot></slot>
   </div>
   <not-found v-else />
@@ -17,7 +17,15 @@ import { useBlockchainStore } from '@/store/blockchain';
 
 // Components
 import NotFound from '@/components/404.vue'
+import { computed } from 'vue';
 
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 const { availableChains } = storeToRefs(useBlockchainStore())
+
+const availabeChainNames = computed(() => {
+  return availableChains.value.map(c => c.name)
+})
+const isChainValid = computed(() => {
+  return chainIdFromRoute.value && availabeChainNames.value.includes(chainIdFromRoute.value)
+})
 </script>

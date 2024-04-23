@@ -1,6 +1,6 @@
 <template>
   <v-layout class="fill-height" >
-    <v-container>
+    <v-container v-show="!isCurrentChainLoading">
       <v-row class="pt-3 pl-5 pr-5" v-if="$vuetify.display.mdAndUp">
         <v-col class="text-center">
           <v-alert
@@ -110,11 +110,9 @@
         </div>
       </chain-content>
     </v-container>
+    <loading v-show="isCurrentChainLoading" />
   </v-layout>
   <div>
-  <dh-tx-dialog
-    ref="txDialog"
-    :blockchain-config="bConfig" />
   </div>
 </template>
 
@@ -124,21 +122,20 @@ import moment from 'moment'
 
 import { storeToRefs } from 'pinia'
 import ChainContent from '@/components/ChainContent.vue'
+import Loading from '@/components/Loading.vue'
 import { useAppStore } from '@/store/app'
 import { useBlockchainStore } from '@/store/blockchain'
 import { Ref, computed, onMounted, onUnmounted, ref } from 'vue';
 import { VLayout, VRow } from 'vuetify/components';
 import { BondStatus } from "cosmjs-types/cosmos/staking/v1beta1/staking";
 
-import { DhTxDialog } from 'dh-widget';
 import { QueryParamsResponse as QuerySlashingParamsResponse } from 'cosmjs-types/cosmos/slashing/v1beta1/query';
 
 const { chainIdFromRoute } = storeToRefs(useAppStore())
-const { availableChains, keybaseAvatars, cosmosChaindata } = storeToRefs(useBlockchainStore())
+const { availableChains, keybaseAvatars, cosmosChaindata, isLoading } = storeToRefs(useBlockchainStore())
 const { getValidatorInfo } = useBlockchainStore()
 
 const tableContainer: Ref<typeof ChainContent|undefined> = ref()
-const txDialog: Ref<InstanceType<typeof DhTxDialog>|undefined> = ref()
 
 const activeTab = ref('BOND_STATUS_BONDED')
 
@@ -162,9 +159,6 @@ const chainData = computed(() => {
   return cosmosChaindata.value[cosmosChainId.value || '']
 })
 
-const validators = computed(() => {
-  return getValidatorInfo(cosmosChainId.value || '')
-})
 
 const slashingParams = computed(() => {
   const parsed = QuerySlashingParamsResponse.toJSON(chainData.value?.slashingParams || {} as any) as {
@@ -195,79 +189,38 @@ const slashingParams = computed(() => {
 
 const tableValidators = computed(() => {
   return validatorsToShow.value?.toSorted((a,b) => (parseInt(b?.tokens || '0') - parseInt(a?.tokens || '0')))
+    .map(v => getValidatorInfo(cosmosChainId.value || '',v))
     .map((v, i) => {
     return {
         rank: i + 1,
         description: [v?.description.identity, v?.description?.moniker, v?.description?.website, v?.operatorAddress],
         votingPower: numeral(((parseInt(v?.tokens || '0')) / Math.pow(10, 18))).format("0,0"),
         comission: numeral((parseInt(v?.commission.commissionRates.rate || '0')) / Math.pow(10, 18) * 100).format("0,0") + '%',
-        action: [() => { console.log(v?.operatorAddress); showDelegateDialog(v?.operatorAddress || '')}, (v?.jailed)]
+        action: [() => { console.log(v?.operatorAddress); /* showDelegateDialog(v?.operatorAddress || '') */}, (v?.jailed)]
     }
   })
 })
 
-const validatorsToShow = computed(() => {
-  return validators.value?.filter(v => (v?.status || '' ) === activeTab.value)
+const validators = computed(() => {
+  return cosmosChaindata.value[cosmosChainId?.value || '']?.validators?.validators
 })
 
+const validatorsToShow = computed(() => {
+  return validators.value?.filter(v => (BondStatus[v?.status]) === activeTab.value)
+})
+
+const isCurrentChainLoading = computed(() => {
+  return isLoading.value.includes(chainIdFromRoute.value)
+})
 // make sure table isnt too big when data is there before mount
 const isTableVisible = ref(false)
 
 onMounted(() => {
   isTableVisible.value = true;
 })
+
 onUnmounted(() => {
   isTableVisible.value = false;
 })
-
-const bConfig: Ref<any> = ref({
-  "chain_name": "crossfi testnet",
-  "coingecko": "crossfi",
-  "chainId": "crossfi-evm-testnet-1",
-  "api": ["https://crossfi-testnet-api.itrocket.net:443", "https://crossfitestnetapi.diamondhand.capital"],
-  "rpc": ["https://crossfi-testnet-rpc.itrocket.net:443", "https://crossfitestnetrpc.diamondhand.capital"],
-  "jsonRpc": [],
-  "snapshot_provider": "",
-  "sdk_version": "0.46.1",
-  "coin_type": "60",
-  "min_tx_fee": "800",
-  "addr_prefix": "mx",
-  "logo": "/logos/crossfi.jpeg",
-  "theme_color": "#812cd6",
-  "keplr_features": ["eth-address-gen", "eth-key-sign", "ibc-transfer", "ibc-go"],
-  "has_evm_features": true,
-  "assets": [{
-      "base": "xfi",
-      "symbol": "XFI",
-      "exponent": "18",
-      "coingecko_id": "xfi", 
-      "logo": "/logos/xfi.jpeg",
-      "isFeeAsset": true,
-      "isStakingAsset": false,
-  },{
-      "base": "mpx",
-      "symbol": "MPX",
-      "exponent": "18",
-      "coingecko_id": "xfi_mpx", 
-      "logo": "/logos/xfi.jpeg",
-      "isFeeAsset": true,
-      "isStakingAsset": true,
-  },{
-      "base": "xft",
-      "symbol": "XFT",
-      "exponent": "18",
-      "coingecko_id": "xft", 
-      "logo": "/logos/xfi.jpeg",
-      "isFeeAsset": false,
-      "isStakingAsset": false,
-  }]
-})
-
-function showDelegateDialog(validatorAddress: string) {
-  txDialog.value?.show('delegate', {
-    validator: validatorAddress,
-  } as any)
-}
-
 
 </script>
