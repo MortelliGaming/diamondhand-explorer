@@ -5,8 +5,8 @@
  */
 
 import { createPinia } from 'pinia'
-import { DiamondhandWidgetPlugin } from 'diamondhand-widget'
-import 'diamondhand-widget/dist/style.css'
+import { DiamondhandWidgetPlugin } from 'dh-widget'
+import 'dh-widget/dist/style.css'
 // Plugins
 import vuetify from './vuetify'
 import router from '../router'

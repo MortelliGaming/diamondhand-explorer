@@ -129,7 +129,7 @@ import { Ref, computed, ref } from 'vue';
 import { VLayout, VRow } from 'vuetify/components';
 import { BondStatus } from '@evmos/proto/dist/proto/cosmos/staking/staking';
 
-import { DhTxDialog } from 'diamondhand-widget';
+import { DhTxDialog } from 'dh-widget';
 import { QueryParamsResponse as QuerySlashingParamsResponse } from 'cosmjs-types/cosmos/slashing/v1beta1/query';
 
 const { chainIdFromRoute } = storeToRefs(useAppStore())
