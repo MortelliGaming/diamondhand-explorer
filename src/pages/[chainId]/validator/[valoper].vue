@@ -52,7 +52,7 @@
                         <v-row class="d-flex">
                             <v-col>
                                 <div class="text-h6 text-center">Commission</div>
-                                <div id="validatorCommissionChart"></div>
+                                <apexchart width="200" type="donut" :options="chartOptions" :series="_series"></apexchart>
                             </v-col>
                         </v-row>
                     </v-sheet>
@@ -160,11 +160,11 @@
 
 <script lang="ts" setup>
 import NotFound from '@/components/404.vue'
-import { computed, onMounted, watch } from 'vue';
+import { Ref, computed, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import moment from 'moment'
 import { type ApexOptions } from 'apexcharts'
-import ApexCharts from 'apexcharts'
+import Apexchart from 'vue3-apexcharts';
 
 import { useBlockchainStore } from '@/store/blockchain';
 import { useAppStore } from '@/store/app';
@@ -264,23 +264,6 @@ const chartOptions: ApexOptions = {
         colors: ['#868686', '#5ab580', '#0d8d42','#5ab580','#868686']
     },
 }
-
-let apecxChart: ApexCharts|undefined = undefined
-
-onMounted(() => {
-    apecxChart = new ApexCharts(document.querySelector("#validatorCommissionChart"), chartOptions);
-
-    watch(validator, () => {
-        chartOptions.series = _series.value;
-        if(apecxChart) {
-            try {
-                apecxChart?.destroy()
-            } catch { /* */ }
-        }
-        apecxChart = new ApexCharts(document.querySelector("#validatorCommissionChart"), chartOptions);
-        apecxChart.render()
-    })
-})
 
 </script>
 <style>

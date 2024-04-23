@@ -22,7 +22,6 @@ import { fetchAvatar } from '@/lib/http/keybase';
 };
 
 export const useBlockchainStore = defineStore('blockchain', () => {
-
     const selectedChainName: Ref<Mainnets|Testnets|null> = ref(null)
     // viem public client without signer
     const publicEVMClient: Ref<null|PublicClient> = ref(null);

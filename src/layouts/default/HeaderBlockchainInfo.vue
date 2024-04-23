@@ -5,7 +5,7 @@
     </v-avatar>
     <div>
       <div class="pl-2 text-caption d-flex direction-row">
-        <div>{{ selectedChain?.name}}</div>
+        <div>{{ selectedChain?.keplr?.chainId}}</div>
         <b class="pl-2">#{{ chainData?.blockchain?.lastHeight }}</b>
       </div>
       <div class="text-caption pl-2">
