@@ -6,7 +6,7 @@ import { blockchainConfigs, type Mainnets, type Testnets } from '@/lib/chains'
 import { PublicClient, createPublicClient, http } from 'viem';
 import { ExplorerChainInfo } from '@/types';
 import { useAppStore } from './app';
-import { CosmosHelper, EVMHelper, EVMHelperHelperPublic, EvmTxEvent, type CosmosHelperPublic } from '@/lib/http';
+import { CosmosHelper, CosmosNewBlockheaderEvent, EVMHelper, EVMHelperHelperPublic, EvmTxEvent, type CosmosHelperPublic } from '@/lib/http';
 import { type BlockchainResponse} from '@cosmjs/tendermint-rpc';
 
 import { type QueryValidatorsResponse, QueryParamsResponse as QueryStakingParamsResponse } from 'cosmjs-types/cosmos/staking/v1beta1/query';
@@ -84,6 +84,20 @@ export const useBlockchainStore = defineStore('blockchain', () => {
             evmHelper.value.GetTransaction(evmTxEvent.evmChainId, evmTxEvent.txHash as `0x${string}`).then((evmTx) => {
                 // console.log(evmTx)
             })
+        })
+        // update latest blockheight
+        cosmosHelper.value.addEventListener('cosmosNewBlock', (event) => {
+            const newBlockEvent = event as CosmosNewBlockheaderEvent
+            if(!cosmosChaindata.value[newBlockEvent.chainId]) {
+                cosmosChaindata.value[newBlockEvent.chainId] = {}
+            }
+            if(!cosmosChaindata.value[newBlockEvent.chainId]?.blockchain) {
+                cosmosChaindata.value[newBlockEvent.chainId].blockchain = {
+                    lastHeight: newBlockEvent.blockHeight,
+                    blockMetas: []
+                }
+            }
+            (cosmosChaindata.value[newBlockEvent.chainId]!.blockchain! as any).lastHeight = newBlockEvent.blockHeight
         })
         setTimeout(loadBlockchaindata, 2000)
     }

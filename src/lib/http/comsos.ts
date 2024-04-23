@@ -43,10 +43,19 @@ export class EvmTxEvent extends Event {
         this.evmChainId = evmChainId;
         this.txHash = txHash;
     }
-
     chainId: string;
     evmChainId: string;
     txHash: string;
+}
+
+export class CosmosNewBlockheaderEvent extends Event {
+    constructor(chainId: string, blockHeight: number) {
+        super('cosmosNewBlock');
+        this.chainId = chainId;
+        this.blockHeight = blockHeight;
+    }
+    chainId: string;
+    blockHeight: number;
 }
 
 export class CosmosHelper extends EventTarget {
@@ -117,6 +126,8 @@ export class CosmosHelper extends EventTarget {
     }
 
     private NewBlockHeaderEventHandler(chainId: string, blockInfo: NewBlockHeaderEvent) {
+        const eventForStore = new CosmosNewBlockheaderEvent(chainId, blockInfo.height)
+        this.dispatchEvent(eventForStore)
         // console.log('new Block header received ' + chainId + ': ' + blockInfo.height)
         this.GetBlock(chainId, blockInfo.height).then((newBlockInfo) => {
             for(const tx of newBlockInfo?.txs || []) {
