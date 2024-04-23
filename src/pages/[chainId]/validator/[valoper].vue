@@ -160,7 +160,7 @@
 
 <script lang="ts" setup>
 import NotFound from '@/components/404.vue'
-import { Ref, computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import moment from 'moment'
 import { type ApexOptions } from 'apexcharts'
@@ -228,7 +228,7 @@ const chartOptions: ApexOptions = {
                         show: true,
                         color: '#0d8d42',
                         label: 'Current',
-                        formatter: function (w) {
+                        formatter: function () {
                             return (parseInt((validator?.value?.commission.commissionRates.rate.toString() || '0')) / Math.pow(10,18) * 100).toString() + '%'
                         }
                     }
@@ -270,9 +270,7 @@ let apecxChart: ApexCharts|undefined = undefined
 onMounted(() => {
     apecxChart = new ApexCharts(document.querySelector("#validatorCommissionChart"), chartOptions);
 
-    watch(validator, (newVal, oldVal) => {
-        console.log('validator chanegd ')
-        console.log(_series.value)
+    watch(validator, () => {
         chartOptions.series = _series.value;
         if(apecxChart) {
             try {
