@@ -52,7 +52,7 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
       '@buf/evmos_evmos.bufbuild_es':  fileURLToPath(new URL('./utils', import.meta.url)) + '/evmos_evmos.bufbuild_es',
-      '@evmos/proto':  fileURLToPath(new URL('./utils', import.meta.url)) + '/evmos/poto'
+      '@evmos/proto':  fileURLToPath(new URL('./utils', import.meta.url)) + '/@evmos/proto'
     },
     extensions: [
       '.js',
