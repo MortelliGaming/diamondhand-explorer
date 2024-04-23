@@ -229,7 +229,7 @@ const chartOptions: ApexOptions = {
                         color: '#0d8d42',
                         label: 'Current',
                         formatter: function () {
-                            return (parseInt((validator?.value?.commission.commissionRates.rate.toString() || '0')) / Math.pow(10,18) * 100).toString() + '%'
+                            return (parseInt((validator?.value?.commission.commissionRates.rate.toString() || '0')) / Math.pow(10,18) * 100).toFixed(2) + '%'
                         }
                     }
                 }
