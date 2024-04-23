@@ -3,8 +3,8 @@
  *
  * Automatically included in `./src/main.ts`
  */
-
 import { createPinia } from 'pinia'
+import VueApexCharts from "vue3-apexcharts";
 import { DiamondhandWidgetPlugin } from 'dh-widget'
 import 'dh-widget/dist/style.css'
 // Plugins
@@ -19,6 +19,7 @@ const pinia = createPinia();
 
 export function registerPlugins (app: App) {
   app
+    .use(VueApexCharts)
     .use(vuetify)
     .use(router)
     .use(pinia)

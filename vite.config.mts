@@ -9,7 +9,6 @@ import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 // Utilities
 import { defineConfig } from 'vite'
 import { fileURLToPath, URL } from 'node:url'
-import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -51,8 +50,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
-      '@buf/evmos_evmos.bufbuild_es':  fileURLToPath(new URL('./utils', import.meta.url)) + '/evmos_evmos.bufbuild_es',
-      '@evmos/proto':  fileURLToPath(new URL('./utils', import.meta.url)) + '/@evmos/proto'
     },
     extensions: [
       '.js',
@@ -67,4 +64,15 @@ export default defineConfig({
   server: {
     port: 5173,
   },
+  build: {
+    rollupOptions: {
+        output:{
+            manualChunks(id) {
+                if (id.includes('node_modules')) {
+                    return id.toString().split('node_modules/')[1].split('/')[0].toString();
+                }
+            }
+        }
+    }
+  }
 })

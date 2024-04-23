@@ -1,7 +1,7 @@
 
 import type { Subscription } from "xstream";
 
-import { type Block, StargateClient, defaultRegistryTypes, setupStakingExtension, setupAuthExtension, setupAuthzExtension, setupBankExtension, setupDistributionExtension, setupFeegrantExtension, setupGovExtension, setupIbcExtension, setupMintExtension, setupSlashingExtension, setupTxExtension, QueryClient, StakingExtension, AuthExtension, BankExtension, DistributionExtension, GovExtension, IbcExtension, MintExtension, TxExtension } from '@cosmjs/stargate';
+import { type Block, StargateClient, defaultRegistryTypes, setupStakingExtension, setupAuthExtension, setupAuthzExtension, setupBankExtension, setupDistributionExtension, setupFeegrantExtension, setupGovExtension, setupIbcExtension, setupMintExtension, setupSlashingExtension, setupTxExtension, QueryClient, StakingExtension, AuthExtension, BankExtension, DistributionExtension, GovExtension, IbcExtension, MintExtension, TxExtension, } from '@cosmjs/stargate';
 import { type AuthzExtension } from '@cosmjs/stargate/build/modules/authz/queries'
 import { type SlashingExtension } from '@cosmjs/stargate/build/modules/slashing/queries'
 import { type FeegrantExtension } from '@cosmjs/stargate/build/modules/feegrant/queries'
@@ -13,16 +13,14 @@ import { decodeTxRaw, Registry } from '@cosmjs/proto-signing';
 
 import type { ChainInfo } from '@keplr-wallet/types';
 
-import { bytesToMsgEthereumTx } from '@evmos/proto'
-import { DynamicFeeTx } from '@evmos/proto/dist/proto/ethermint/evm/tx';
+import { BondStatusString } from "@cosmjs/stargate/build/modules/staking/queries";
 
 // Map message type strings to decoder functions
-const protoRegistry = new  Registry()
+export const protoRegistry = new  Registry()
 
 for(const defaultMsgType of defaultRegistryTypes) {
     protoRegistry.register(defaultMsgType[0], defaultMsgType[1])
 }
-
 export type CosmosHelperPublic = {
     ConnectClients: (keplrConfigs: ChainInfo[]) => void
     GetBlock: (chainId: string, height?: number) => Promise<Block|undefined>
@@ -139,17 +137,7 @@ export class CosmosHelper extends EventTarget {
                         // console.log(protoRegistry.decode(msg))
                     } catch { 
                         if(msg.typeUrl === '/ethermint.evm.v1.MsgEthereumTx') {
-                            // console.log(bytesToMsgEthereumTx(msg.value))
-                            const ethTx = bytesToMsgEthereumTx(msg.value)
-                            // console.log('eth Tx: ' + ethTx.hash)
-                            // add hash to lastet eth tx hashes
-                            this.addLatestEthTxHashForChain(chainId, ethTx.hash)
-                            // console.log(this.latestEthTxHashes)
-                            if(ethTx.data?.typeUrl == '/ethermint.evm.v1.DynamicFeeTx') {
-                                const ethDefTx = DynamicFeeTx.fromBinary(ethTx.data.value)
-                                const evmTxEvent = new EvmTxEvent(chainId, ethDefTx.chainId, ethTx.hash);
-                                this.dispatchEvent(evmTxEvent);
-                            }
+                           // 
                         }
                     }
                     // console.log(decodeMsg)
@@ -226,10 +214,10 @@ export class CosmosHelper extends EventTarget {
         if(this.queryClients[chainId]) {
             for(const bondStatus of ['BOND_STATUS_BONDED','BOND_STATUS_UNBONDED', 'BOND_STATUS_UNBONDING']) {
                 try {
-                    const validators = await this.queryClients[chainId].extensions.staking.staking.validators(bondStatus as any)
+                    const validators = await this.queryClients[chainId].extensions.staking.staking.validators(bondStatus as BondStatusString)
                     while (validators.pagination && validators.pagination.nextKey.length > 0) {
                         try {
-                            const nextResult = await this.queryClients[chainId].extensions.staking.staking.validators(bondStatus as any, validators.pagination.nextKey)
+                            const nextResult = await this.queryClients[chainId].extensions.staking.staking.validators(bondStatus as BondStatusString, validators.pagination.nextKey)
                             validators.validators.push(...nextResult.validators)
                             validators.pagination = nextResult.pagination
                         } catch {

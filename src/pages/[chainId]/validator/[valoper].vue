@@ -119,6 +119,11 @@
                                 <div class="text-caption text-center pb-3">{{ 'validator.operatorWallet' }}</div>
                                 <div class="text-caption text-center pb-3">{{ validator?.operatorWallet }}</div>
                             </v-col>
+                            <v-col size="6">
+                                <div class="text-caption text-center pb-3">{{ 'validator.consensusPublicKey' }}</div>
+                                <div class="text-caption text-center pb-3">{{ JSON.stringify(validator?.consensusPublicKey, null, 2) }}</div>
+                            </v-col>
+                            
                         </v-row>
                     </v-sheet>
                 </v-col>

@@ -11,11 +11,12 @@ import { type BlockchainResponse} from '@cosmjs/tendermint-rpc';
 
 import { type QueryValidatorsResponse, QueryParamsResponse as QueryStakingParamsResponse } from 'cosmjs-types/cosmos/staking/v1beta1/query';
 import { QueryParamsResponse as QuerySlashingParamsResponse } from 'cosmjs-types/cosmos/slashing/v1beta1/query';
-import { PubKey } from '@evmos/proto/dist/proto/ethermint/crypto/keys';
 import { toBech32, fromBase64, toHex, fromBech32 } from '@cosmjs/encoding';
+
+import { decodePubkey } from '@cosmjs/proto-signing';
 import { sha256 } from '@cosmjs/crypto';
-import { BondStatus } from '@evmos/proto/dist/proto/cosmos/staking/staking';
 import { fetchAvatar } from '@/lib/http/keybase';
+import { BondStatus } from "cosmjs-types/cosmos/staking/v1beta1/staking";
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
@@ -145,17 +146,15 @@ export const useBlockchainStore = defineStore('blockchain', () => {
             if(!v.consensusPubkey) {
                 return null
             }
+            const consensusPubkey = decodePubkey(v.consensusPubkey)
             return {
                 ...v,
                 status: BondStatus[v.status],
                 operatorAddress: v.operatorAddress,
                 operatorWallet: toBech32(blockChainConfig?.keplr?.bech32Config.bech32PrefixAccAddr || 'cosmos',fromBech32(v.operatorAddress).data),
-                consensusPublicKey: {
-                    ['@type']: v.consensusPubkey.typeUrl,
-                    key: JSON.parse(JSON.stringify(PubKey.fromBinary(v.consensusPubkey.value))).key 
-                },
-                consensusAddress: toBech32(blockChainConfig?.keplr?.bech32Config.bech32PrefixConsAddr || 'cosmosvalcons', sha256(fromBase64(JSON.parse(PubKey.fromBinary(v.consensusPubkey.value).toJsonString()).key)).slice(0,20)),
-                consensusHexAddress: '0x' + toHex(sha256(fromBase64(JSON.parse(PubKey.fromBinary(v.consensusPubkey.value).toJsonString()).key)).slice(0,20)).toUpperCase(),
+                consensusPublicKey: consensusPubkey,
+                consensusAddress: toBech32(blockChainConfig?.keplr?.bech32Config.bech32PrefixConsAddr || 'cosmosvalcons', sha256(fromBase64(consensusPubkey.value)).slice(0,20)),
+                consensusHexAddress: '0x' + toHex(sha256(fromBase64(consensusPubkey.value)).slice(0,20)).toUpperCase(),
             }
         }).filter(v => v)
     }

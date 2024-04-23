@@ -35,18 +35,18 @@
           <div class="d-flex">
             <div class="pa-3 text-caption">
               <v-btn size="x-small"
-                @click="() => {activeTab = BondStatus[BondStatus.BONDED]}"
-                :active="activeTab == BondStatus[BondStatus.BONDED]">active</v-btn>
+                @click="() => {activeTab = BondStatus[BondStatus.BOND_STATUS_BONDED]}"
+                :active="activeTab == BondStatus[BondStatus.BOND_STATUS_BONDED]">active</v-btn>
             </div>
             <div class="pa-3 text-caption">
               <v-btn size="x-small"
-                @click="() => {activeTab = BondStatus[BondStatus.UNBONDED]}"
-                :active="activeTab == BondStatus[BondStatus.UNBONDED]">inactive</v-btn>
+                @click="() => {activeTab = BondStatus[BondStatus.BOND_STATUS_UNBONDED]}"
+                :active="activeTab == BondStatus[BondStatus.BOND_STATUS_UNBONDED]">inactive</v-btn>
             </div>
             <div class="pa-3 text-caption">
               <v-btn size="x-small"
-                @click="() => {activeTab = BondStatus[BondStatus.UNBONDING]}"
-                :active="activeTab == BondStatus[BondStatus.UNBONDING]">unbonding</v-btn>
+                @click="() => {activeTab = BondStatus[BondStatus.BOND_STATUS_UNBONDING]}"
+                :active="activeTab == BondStatus[BondStatus.BOND_STATUS_UNBONDING]">unbonding</v-btn>
             </div>
             <div class="flex-grow-1"></div>
           </div>
@@ -128,7 +128,7 @@ import { useAppStore } from '@/store/app'
 import { useBlockchainStore } from '@/store/blockchain'
 import { Ref, computed, onMounted, onUnmounted, ref } from 'vue';
 import { VLayout, VRow } from 'vuetify/components';
-import { BondStatus } from '@evmos/proto/dist/proto/cosmos/staking/staking';
+import { BondStatus } from "cosmjs-types/cosmos/staking/v1beta1/staking";
 
 import { DhTxDialog } from 'dh-widget';
 import { QueryParamsResponse as QuerySlashingParamsResponse } from 'cosmjs-types/cosmos/slashing/v1beta1/query';
@@ -140,7 +140,7 @@ const { getValidatorInfo } = useBlockchainStore()
 const tableContainer: Ref<typeof ChainContent|undefined> = ref()
 const txDialog: Ref<InstanceType<typeof DhTxDialog>|undefined> = ref()
 
-const activeTab = ref('BONDED')
+const activeTab = ref('BOND_STATUS_BONDED')
 
 const tableContainerHeight = computed(() => {
   return (tableContainer.value?.$el.offsetHeight)
