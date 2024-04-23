@@ -55,6 +55,7 @@
     <chain-content class="pl-5 pr-5 fill-height" ref="tableContainer">
         <div>
           <v-data-table 
+            v-if="isTableVisible"
             :items-per-page="tableValidators?.length"
             :no-filter="true"
             :items="tableValidators"
@@ -125,7 +126,7 @@ import { storeToRefs } from 'pinia'
 import ChainContent from '@/components/ChainContent.vue'
 import { useAppStore } from '@/store/app'
 import { useBlockchainStore } from '@/store/blockchain'
-import { Ref, computed, ref } from 'vue';
+import { Ref, computed, onMounted, onUnmounted, ref } from 'vue';
 import { VLayout, VRow } from 'vuetify/components';
 import { BondStatus } from '@evmos/proto/dist/proto/cosmos/staking/staking';
 
@@ -209,7 +210,15 @@ const validatorsToShow = computed(() => {
   return validators.value?.filter(v => (v?.status || '' ) === activeTab.value)
 })
 
+// make sure table isnt too big when data is there before mount
+const isTableVisible = ref(false)
 
+onMounted(() => {
+  isTableVisible.value = true;
+})
+onUnmounted(() => {
+  isTableVisible.value = false;
+})
 
 const bConfig: Ref<any> = ref({
   "chain_name": "crossfi testnet",
