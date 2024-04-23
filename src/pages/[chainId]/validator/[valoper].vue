@@ -1,7 +1,7 @@
 <template>
     <not-found v-if="!valoper"/>
     <div v-else>
-        <v-container class="pt-6">
+        <v-container class="mt-3">
             <v-row>
                 <v-col cols="12" sm="6" md="4">
                     <v-sheet width="100%"  style="height: calc(100% + 24px);" class="text-caption">
@@ -48,8 +48,8 @@
                     </v-sheet>
                 </v-col>
                 <v-col cols="12" sm="6" md="4">
-                    <v-sheet width="100%" style="height: calc(100% + 24px);" class="text-caption">
-                        <v-row class="d-flex pl-4 pr-4">
+                    <v-sheet width="100%" class="text-caption">
+                        <v-row class="d-flex">
                             <v-col>
                                 <div class="text-h6 text-center">Commission</div>
                                 <div id="validatorCommissionChart"></div>
@@ -57,7 +57,7 @@
                         </v-row>
                     </v-sheet>
                 </v-col>
-                <v-col cols="12" sm="6" md="4">
+                <v-col cols="12" sm="6" md="4" :gutters="3">
                     <v-sheet width="100%" style="height: calc(100% + 24px);" class="text-caption">
                         <v-row class="d-flex pl-4 pr-4" style="height: 100%;">
                             <v-col>
@@ -92,8 +92,8 @@
                     </v-sheet>
                 </v-col>
             </v-row>
-            <v-row>
-                <v-col class="pt-5">
+            <v-row class="mt-5">
+                <v-col>
                     <v-sheet width="100%">
                         <v-row>
                             <v-col>
@@ -121,8 +121,8 @@
                     </v-sheet>
                 </v-col>
             </v-row>
-            <v-row>
-                <v-col class="pt-5">
+            <v-row class="mt-5">
+                <v-col>
                     <v-sheet width="100%">
                         <v-row>
                             <v-col>
@@ -132,8 +132,8 @@
                     </v-sheet>
                 </v-col>
             </v-row>
-            <v-row>
-                <v-col class="pt-5">
+            <v-row class="mt-5">
+                <v-col>
                     <v-sheet width="100%">
                         <v-row>
                             <v-col>
@@ -143,8 +143,8 @@
                     </v-sheet>
                 </v-col>
             </v-row>
-            <v-row>
-                <v-col class="pt-5">
+            <v-row  class="mt-5">
+                <v-col>
                     <v-sheet width="100%">
                         <v-row>
                             <v-col>
