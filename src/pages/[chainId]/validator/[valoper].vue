@@ -160,7 +160,7 @@
 
 <script lang="ts" setup>
 import NotFound from '@/components/404.vue'
-import { computed, onMounted, ref } from 'vue';
+import { Ref, computed, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import moment from 'moment'
 import { type ApexOptions } from 'apexcharts'
@@ -178,11 +178,21 @@ const { chainIdFromRoute } = storeToRefs(useAppStore())
 const valoper = computed(() => (route.params as {valoper: string}).valoper)
 const validator = computed(() => getValidatorInfo(availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.chainId || '')?.find(v => v?.operatorAddress === valoper.value))
 
-const _series = [7,1,1,1,5]
+const _series = computed(() => {
+    // [min, step, current, step, max]
+    console.log(validator.value?.commission.commissionRates.rate.toString())
+    return [    
+        (parseInt(validator.value?.commission.commissionRates.rate.toString() || '0') - parseInt(validator.value?.commission.commissionRates.maxChangeRate.toString() || '0') ) / Math.pow(10,18) * 100,
+        parseInt(validator.value?.commission.commissionRates.maxChangeRate.toString() || '0') / Math.pow(10,18) * 100,
+        1,
+        parseInt(validator.value?.commission.commissionRates.maxChangeRate.toString() || '0') / Math.pow(10,18) * 100,
+        (parseInt(validator.value?.commission.commissionRates.maxRate.toString() || '0')) / Math.pow(10,18) * 100,
+    ] as number[]
+})
 
 const chartOptions: ApexOptions = {
     colors: ['#868686', '#5ab580', '#0d8d42','#5ab580','#868686'],
-    series: _series,
+    series: _series.value || [],
     labels: ['Min', 'Daily Change', 'Current', 'Daily Change', 'Max'],
     chart: {
       type: 'donut',
@@ -209,9 +219,9 @@ const chartOptions: ApexOptions = {
                     },
                     value: {
                         show: true,
-                        formatter: (w) => (w == _series[_series.length-1].toString()
-                            ? _series.reduce((acc, i) => { acc += i; return acc}, 0).toString() + '%'
-                            : w == _series[0].toString() ? '0%': (w == _series[1].toString() || w == _series[3].toString()) ? _series[3] + '%' : '')
+                        formatter: (w) => (w == _series.value[_series.value.length-1].toString()
+                            ? _series.value[_series.value.length - 1] + '%'
+                            : w == _series.value[0].toString() ? '0%': (w == _series.value[1].toString() || w == _series.value[3].toString()) ? _series.value[3] + '%' : '')
                     },
                     total: {
                         fontSize: '12px',
@@ -254,9 +264,24 @@ const chartOptions: ApexOptions = {
         colors: ['#868686', '#5ab580', '#0d8d42','#5ab580','#868686']
     },
 }
+
+let apecxChart: ApexCharts|undefined = undefined
+
 onMounted(() => {
-    const chart = new ApexCharts(document.querySelector("#validatorCommissionChart"), chartOptions);
-    chart.render();
+    apecxChart = new ApexCharts(document.querySelector("#validatorCommissionChart"), chartOptions);
+
+    watch(validator, (newVal, oldVal) => {
+        console.log('validator chanegd ')
+        console.log(_series.value)
+        chartOptions.series = _series.value;
+        if(apecxChart) {
+            try {
+                apecxChart?.destroy()
+            } catch { /* */ }
+        }
+        apecxChart = new ApexCharts(document.querySelector("#validatorCommissionChart"), chartOptions);
+        apecxChart.render()
+    })
 })
 
 </script>
