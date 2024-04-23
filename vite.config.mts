@@ -51,7 +51,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
-      '@buf/evmos_evmos.bufbuild_es':  fileURLToPath(new URL('./utils', import.meta.url)) + '/evmos_evmos.bufbuild_es'
+      '@buf/evmos_evmos.bufbuild_es':  fileURLToPath(new URL('./utils', import.meta.url)) + '/evmos_evmos.bufbuild_es',
+      '@evoms/proto':  fileURLToPath(new URL('./utils', import.meta.url)) + '/evmos/poto'
     },
     extensions: [
       '.js',
