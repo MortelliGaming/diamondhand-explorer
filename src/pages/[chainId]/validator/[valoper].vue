@@ -14,6 +14,21 @@
                         <validator-staking-commission-chart 
                             :valoperAddress="valoper"
                             :chainId="cosmosChainId || ''" />
+                         <v-container class="d-flex justify-center"  style="margin-top:-25px;">
+                            <div class="">
+                                Rate: {{ parseInt(validator?.commission.commissionRates.rate || '0') / Math.pow(10, 18) * 100 }}%
+                            </div>
+                            <div class="pl-3 pr-3">
+                                24h ±: {{ parseInt(validator?.commission.commissionRates.maxChangeRate || '0') / Math.pow(10, 18) * 100 }}%
+                            </div>
+                            <div class="">
+                                Max: {{ parseInt(validator?.commission.commissionRates.maxRate || '0') / Math.pow(10, 18) * 100 }}%
+                            </div>
+                        </v-container>
+
+                        <div class="text-center">
+                            Updated: {{ moment(parseInt(validator?.commission.updateTime.seconds.toString() || '0') * 1000).format('DD.MM.yyyy')  }}
+                        </div>
                     </v-sheet>
                 </v-col>
                 <v-col cols="12" sm="6" md="4" :gutters="3">
