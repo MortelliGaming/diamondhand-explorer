@@ -16,13 +16,13 @@
                             :chainId="cosmosChainId || ''" />
                          <v-container class="d-flex justify-center"  style="margin-top:-25px;">
                             <div class="">
-                                Rate: {{ parseInt(validator?.commission.commissionRates.rate || '0') / Math.pow(10, 18) * 100 }}%
+                                Rate: {{ (parseInt(validator?.commission.commissionRates.rate || '0') / Math.pow(10, 18) * 100).toFixed(0) }}%
                             </div>
                             <div class="pl-3 pr-3">
-                                24h ±: {{ parseInt(validator?.commission.commissionRates.maxChangeRate || '0') / Math.pow(10, 18) * 100 }}%
+                                24h ±: {{ (parseInt(validator?.commission.commissionRates.maxChangeRate || '0') / Math.pow(10, 18) * 100).toFixed(0) }}%
                             </div>
                             <div class="">
-                                Max: {{ parseInt(validator?.commission.commissionRates.maxRate || '0') / Math.pow(10, 18) * 100 }}%
+                                Max: {{ (parseInt(validator?.commission.commissionRates.maxRate || '0') / Math.pow(10, 18) * 100).toFixed(0) }}%
                             </div>
                         </v-container>
 
