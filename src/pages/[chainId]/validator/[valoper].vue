@@ -72,12 +72,14 @@ import ValidatorBondingSheet from '@/components/validator/ValidatorBondingSheet.
 import ValidatorAddressesSheet from '@/components/validator/ValidatorAddressesSheet.vue';
 
 import { useBlockchainStore } from '@/store/blockchain';
+import { useValidatorsStore } from '@/store/validators';
 import { useAppStore } from '@/store/app';
 import { storeToRefs } from 'pinia';
 
 const route = useRoute()
-const { getValidatorInfo } = useBlockchainStore()
-const { availableChains, cosmosChaindata } = storeToRefs(useBlockchainStore())
+const { getValidatorInfo, loadCosmosValidators } = useValidatorsStore()
+const { validators } = storeToRefs(useValidatorsStore())
+const { availableChains } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 
 const valoper = computed(() => (route.params as {valoper: string}).valoper)
@@ -87,11 +89,11 @@ const cosmosChainId = computed(() => {
 })
 
 const basicValidator = computed(() => {
-    return cosmosChaindata.value[cosmosChainId.value || '']?.validators?.validators.find(v => v.operatorAddress === valoper.value);
+    return validators.value[cosmosChainId.value || '']?.find(v => v.operatorAddress === valoper.value);
 })
-
 const validator = computed(() => { return (basicValidator.value != undefined ? getValidatorInfo(cosmosChainId.value || '', basicValidator.value) : null)})
 
+setTimeout(() => loadCosmosValidators(cosmosChainId.value || ''), 300);
 </script>
 <style>
 .break-string {

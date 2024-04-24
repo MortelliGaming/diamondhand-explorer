@@ -24,6 +24,7 @@ export const en = {
         consensusAddress: 'Consensus Address',
         consensusHexAddress: 'Consensus Address Hex',
         operatorWallet: 'Operator Wallet Address',
-        consensusPublicKey: 'Consensus Public Key'
+        consensusPublicKey: 'Consensus Public Key',
+        delegate: 'Stake'
     }
 }

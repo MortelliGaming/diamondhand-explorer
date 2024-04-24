@@ -32,7 +32,7 @@
 <script lang="ts" setup>
 import { type PropType } from 'vue';
 import moment from 'moment';
-import { ExtendedValidator } from '@/store/blockchain';
+import { ExtendedValidator } from '@/store/validators';
 
 const props = defineProps({
     validator: {

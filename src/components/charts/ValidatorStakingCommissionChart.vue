@@ -7,11 +7,11 @@ import { Ref, computed, ref } from 'vue';
 import { type ApexOptions } from 'apexcharts'
 import Apexchart from 'vue3-apexcharts';
 
-import { useBlockchainStore } from '@/store/blockchain';
+import { useValidatorsStore } from '@/store/validators';
 import { storeToRefs } from 'pinia';
 
-const { getValidatorInfo } = useBlockchainStore()
-const { cosmosChaindata } = storeToRefs(useBlockchainStore())
+const { getValidatorInfo } = useValidatorsStore()
+const { validators } = storeToRefs(useValidatorsStore())
 
 
 const props = defineProps({
@@ -27,7 +27,7 @@ const props = defineProps({
 
 const valoper = computed(() => props.valoperAddress)
 const basicValidator = computed(() => {
-    return cosmosChaindata.value[props.chainId]?.validators?.validators.find(v => v.operatorAddress === valoper.value);
+    return validators.value[props.chainId]?.find(v => v.operatorAddress === valoper.value);
 })
 
 const validator = computed(() => { return (basicValidator.value != undefined ? getValidatorInfo(props.chainId, basicValidator.value) : null)})

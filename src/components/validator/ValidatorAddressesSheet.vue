@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ExtendedValidator } from '@/store/blockchain';
+import { ExtendedValidator } from '@/store/validators';
 import type { PropType } from 'vue';
 import { useI18n } from 'vue-i18n';
 

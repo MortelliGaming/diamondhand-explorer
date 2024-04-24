@@ -36,15 +36,20 @@
                     <v-icon :icon="props.validator?.jailed ? 'mdi-handcuffs' : 'mdi-check'" :color="props.validator?.jailed ? 'error' : 'success'" />
                 </div>
             </div>
+            <div>
+                <v-btn density="compact" color="blue-grey-lighten-1">{{ t('validator.delegate') }}</v-btn>
+            </div>
     </v-sheet>
 </template>
 
 <script lang="ts" setup>
 import { type PropType } from 'vue';
 import { storeToRefs } from 'pinia';
-import { ExtendedValidator, useBlockchainStore } from '@/store/blockchain';
+import { ExtendedValidator, useValidatorsStore } from '@/store/validators';
+import { useI18n } from 'vue-i18n';
 
-const { keybaseAvatars } = storeToRefs(useBlockchainStore())
+const { t } = useI18n();
+const { keybaseAvatars } = storeToRefs(useValidatorsStore())
 
 const props = defineProps({
     validator: {

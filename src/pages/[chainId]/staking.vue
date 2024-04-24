@@ -124,16 +124,19 @@ import { storeToRefs } from 'pinia'
 import ChainContent from '@/components/ChainContent.vue'
 import Loading from '@/components/Loading.vue'
 import { useAppStore } from '@/store/app'
-import { useBlockchainStore } from '@/store/blockchain'
 import { Ref, computed, onMounted, onUnmounted, ref } from 'vue';
 import { VLayout, VRow } from 'vuetify/components';
 import { BondStatus } from "cosmjs-types/cosmos/staking/v1beta1/staking";
 
+import { useBlockchainStore } from '@/store/blockchain'
+import { useValidatorsStore } from '@/store/validators'
+
 import { QueryParamsResponse as QuerySlashingParamsResponse } from 'cosmjs-types/cosmos/slashing/v1beta1/query';
 
 const { chainIdFromRoute } = storeToRefs(useAppStore())
-const { availableChains, keybaseAvatars, cosmosChaindata, isLoading } = storeToRefs(useBlockchainStore())
-const { getValidatorInfo } = useBlockchainStore()
+const { availableChains, cosmosChaindata } = storeToRefs(useBlockchainStore())
+const { getValidatorInfo,loadCosmosValidators } = useValidatorsStore()
+const { keybaseAvatars, validators, isLoading } = storeToRefs(useValidatorsStore())
 
 const tableContainer: Ref<typeof ChainContent|undefined> = ref()
 
@@ -201,12 +204,8 @@ const tableValidators = computed(() => {
   })
 })
 
-const validators = computed(() => {
-  return cosmosChaindata.value[cosmosChainId?.value || '']?.validators?.validators
-})
-
 const validatorsToShow = computed(() => {
-  return validators.value?.filter(v => (BondStatus[v?.status]) === activeTab.value)
+  return validators.value[cosmosChainId.value || '']?.filter(v => (BondStatus[v?.status]) === activeTab.value)
 })
 
 const isCurrentChainLoading = computed(() => {
@@ -216,6 +215,8 @@ const isCurrentChainLoading = computed(() => {
 const isTableVisible = ref(false)
 
 onMounted(() => {
+
+  setTimeout(() => loadCosmosValidators(cosmosChainId.value || ''), 300);
   isTableVisible.value = true;
 })
 

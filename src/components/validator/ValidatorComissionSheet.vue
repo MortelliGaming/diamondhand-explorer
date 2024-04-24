@@ -25,7 +25,7 @@
 <script lang="ts" setup>
 import { computed, type PropType } from 'vue';
 import moment from 'moment';
-import { ExtendedValidator } from '@/store/blockchain';
+import { ExtendedValidator } from '@/store/validators';
 import ValidatorStakingCommissionChart from '../charts/ValidatorStakingCommissionChart.vue';
 import { useBlockchainStore } from '@/store/blockchain';
 import { useAppStore } from '@/store/app';
