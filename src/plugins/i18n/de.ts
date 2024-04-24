@@ -19,10 +19,11 @@ export const de = {
         twitter: 'X (Twitter)',
     },
     validator: {
-        addresses: 'Adressen',
+        addresses: 'Addressen',
         operatorAddress: 'Operator Addresse',
         consensusAddress: 'Consensus Addresse',
         consensusHexAddress: 'Consensus Addresse Hex',
-        operatorWallet: 'Operator Wallet Addresse'
+        operatorWallet: 'Operator Wallet Addresse',
+        consensusPublicKey: 'Consensus Public Key'
     }
 }

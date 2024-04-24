@@ -4,13 +4,13 @@
             <div>
                 <v-row class="d-flex align-center justify-center pb-2">
                     <v-col cols="3" class="d-flex align-center justify-center pl-5">
-                        <v-avatar>
+                        <v-avatar size="x-large">
                             <v-img v-if="props.validator?.description.identity" :src="keybaseAvatars[props.validator?.description.identity]" />
                             <v-icon icon="mdi-account" v-else />
                         </v-avatar>
                     </v-col>
                     <v-col cols="9">
-                        <div>
+                        <div class="text-bold">
                             <b>{{ props.validator?.description.moniker }}</b>
                         </div>
                     </v-col>
