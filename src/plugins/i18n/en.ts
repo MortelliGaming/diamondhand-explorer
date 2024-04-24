@@ -17,5 +17,13 @@ export const en = {
         wallethelper: 'Wallet Helper',
         website: 'Website',
         twitter: 'X (Twitter)',
+    },
+    validator: {
+        addresses: 'Addresses',
+        operatorAddress: 'Operator Address',
+        consensusAddress: 'Consensus Address',
+        consensusHexAddress: 'Consensus Address Hex',
+        operatorWallet: 'Operator Wallet Address',
+        consensusPublicKey: 'Consensus Public Key'
     }
 }

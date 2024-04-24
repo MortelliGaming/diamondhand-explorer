@@ -55,8 +55,5 @@ const props = defineProps({
 
 </script>
 <style>
-.test {
-    color: #0d8d42
-}
 </style>
   

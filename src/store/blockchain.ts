@@ -1,5 +1,5 @@
 import { defineStore, storeToRefs } from 'pinia';
-import { type Ref, computed, ref } from 'vue';
+import { type Ref, computed, ref, ComputedRef } from 'vue';
 
 import { blockchainConfigs, type Mainnets, type Testnets } from '@/lib/chains'
 
@@ -63,7 +63,7 @@ export const useBlockchainStore = defineStore('blockchain', () => {
         return availableChains.value.map(c => c.name)
     })
     
-    const availableChains = computed(() => {
+    const availableChains: ComputedRef<ExplorerChainInfo[]> = computed(() => {
         const { isTestnet } = storeToRefs(useAppStore())
         return Object.values(blockchainConfigs.networks)
             .filter(chainConfig => isTestnet.value 
