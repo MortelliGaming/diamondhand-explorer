@@ -98,8 +98,6 @@ export const useValidatorsStore = defineStore('validators', () => {
             validatorDelegations.value[chainId][valoperAddress] = []
         }
         validatorDelegations.value[chainId][valoperAddress] =  ((await cosmosHelper.value.GetValidatorDelegations(chainId, valoperAddress))?.delegationResponses || [])
-        // dont wait for the avatars
-        console.log(validatorDelegations.value[chainId][valoperAddress])
         const isLoadingIndex = isLoading.value.indexOf(chainId)
         isLoading.value.splice(isLoadingIndex, 1)
         return Promise.resolve(true)
