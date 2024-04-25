@@ -1,26 +1,62 @@
 
 import type { Subscription } from "xstream";
 
-import { type Block, StargateClient, defaultRegistryTypes, setupStakingExtension, setupAuthExtension, setupAuthzExtension, setupBankExtension, setupDistributionExtension, setupFeegrantExtension, setupGovExtension, setupIbcExtension, setupMintExtension, setupSlashingExtension, setupTxExtension, QueryClient, StakingExtension, AuthExtension, BankExtension, DistributionExtension, GovExtension, IbcExtension, MintExtension, TxExtension, } from '@cosmjs/stargate';
+import { 
+    type Block, 
+    StargateClient,
+    defaultRegistryTypes,
+    setupStakingExtension,
+    setupAuthExtension,
+    setupAuthzExtension,
+    setupBankExtension,
+    setupDistributionExtension,
+    setupFeegrantExtension,
+    setupGovExtension,
+    setupIbcExtension,
+    setupMintExtension,
+    setupSlashingExtension,
+    setupTxExtension,
+    QueryClient,
+    StakingExtension,
+    AuthExtension,
+    BankExtension,
+    DistributionExtension,
+    GovExtension,
+    IbcExtension,
+    MintExtension,
+    TxExtension,
+} from '@cosmjs/stargate';
+
 import { type AuthzExtension } from '@cosmjs/stargate/build/modules/authz/queries'
 import { type SlashingExtension } from '@cosmjs/stargate/build/modules/slashing/queries'
 import { type FeegrantExtension } from '@cosmjs/stargate/build/modules/feegrant/queries'
 import { QueryValidatorsResponse, QueryParamsResponse } from 'cosmjs-types/cosmos/staking/v1beta1/query'
+import { QueryProposalsResponse, } from 'cosmjs-types/cosmos/gov/v1beta1/query'
 import { type QueryParamsResponse as SlashingQueryParametersResponse  } from 'cosmjs-types/cosmos/slashing/v1beta1/query'
 
 import { type BlockchainResponse, NewBlockHeaderEvent, Tendermint37Client, } from "@cosmjs/tendermint-rpc";
-import { decodeTxRaw, Registry } from '@cosmjs/proto-signing';
+import { decodeTxRaw, Registry, GeneratedType } from '@cosmjs/proto-signing';
+
+import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
 
 import type { ChainInfo } from '@keplr-wallet/types';
 
 import { BondStatusString } from "@cosmjs/stargate/build/modules/staking/queries";
-
+import { SoftwareUpgradeProposal, CancelSoftwareUpgradeProposal } from 'cosmjs-types/cosmos/upgrade/v1beta1/upgrade';
+import { MsgSoftwareUpgrade, MsgCancelUpgrade } from 'cosmjs-types/cosmos/upgrade/v1beta1/tx';
+import { ParameterChangeProposal } from 'cosmjs-types/cosmos/params/v1beta1/params';
+import { MsgUpdateParams as MsgFeemarketUpdateParams } from '@/lib/proto/ethermint/feemarket/v1/tx'
+import { QueryVoteResponse } from "../proto/cosmos/gov/v1beta1/query";
 // Map message type strings to decoder functions
-export const protoRegistry = new  Registry()
+export const protoRegistry = new  Registry(defaultRegistryTypes)
 
-for(const defaultMsgType of defaultRegistryTypes) {
-    protoRegistry.register(defaultMsgType[0], defaultMsgType[1])
-}
+protoRegistry.register(SoftwareUpgradeProposal.typeUrl, SoftwareUpgradeProposal)
+protoRegistry.register(CancelSoftwareUpgradeProposal.typeUrl, CancelSoftwareUpgradeProposal)
+protoRegistry.register(ParameterChangeProposal.typeUrl, ParameterChangeProposal)
+protoRegistry.register(MsgCancelUpgrade.typeUrl, MsgCancelUpgrade)
+protoRegistry.register(MsgSoftwareUpgrade.typeUrl, MsgSoftwareUpgrade)
+protoRegistry.register(MsgFeemarketUpdateParams.typeUrl, MsgFeemarketUpdateParams as GeneratedType)
+
 export type CosmosHelperPublic = {
     ConnectClients: (keplrConfigs: ChainInfo[]) => void
     GetBlock: (chainId: string, height?: number) => Promise<Block|undefined>
@@ -32,6 +68,8 @@ export type CosmosHelperPublic = {
     GetUnbondingValidatorsInfo: (chainId: string) => Promise<QueryValidatorsResponse|undefined>
     GetStakingParams: (chainId: string) => Promise<QueryParamsResponse|undefined>
     GetSlashingParams: (chainId: string) => Promise<SlashingQueryParametersResponse|undefined>
+    GetAllProposals: (chainId: string) => Promise<QueryProposalsResponse|undefined>
+    GetProposalVotes: (chainId: string, proposalId: BigInt, valoperAddress: string) => Promise<QueryVoteResponse|undefined>
 } & EventTarget
 
 export class EvmTxEvent extends Event {
@@ -255,6 +293,44 @@ export class CosmosHelper extends EventTarget {
     public async GetSlashingParams(chainId: string) {
         if(this.queryClients[chainId]) {
             return this.queryClients[chainId].extensions.slashing.slashing.params();
+        }
+    }
+    public async GetAllProposals(chainId: string) {
+        if(this.queryClients[chainId]) {
+            const response = {
+                proposals: []
+            } as QueryProposalsResponse
+
+            for(const proposalStatus of [ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD, ProposalStatus.PROPOSAL_STATUS_FAILED, ProposalStatus.PROPOSAL_STATUS_PASSED, ProposalStatus.PROPOSAL_STATUS_REJECTED, ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD]) {
+                try {
+                    const proposals = await this.queryClients[chainId].extensions.gov.gov.proposals(proposalStatus as ProposalStatus, '', '')
+                    while (proposals.pagination && proposals.pagination.nextKey.length  > 0) {
+                        try {
+                            const nextResult = await this.queryClients[chainId].extensions.gov.gov.proposals(proposalStatus as ProposalStatus, '', '', proposals.pagination.nextKey)
+                            proposals.proposals.push(...nextResult.proposals)
+                            proposals.pagination = nextResult.pagination
+                        } catch {
+                            proposals.pagination = undefined
+                            proposals.proposals = []
+                        }
+                    }
+                    response.proposals.push(...proposals.proposals)
+                } catch(err) { 
+                    console.error('error fetching validator infos: ', err)
+                }
+            }
+            return Promise.resolve(response)
+        }
+        return Promise.resolve(undefined)
+    }
+
+    public async GetProposalVotes(chainId: string, proposalId: BigInt, valoperAddress: string) {
+        if(this.queryClients[chainId]) {
+            try {
+                return this.queryClients[chainId].extensions.gov.gov.vote(parseInt(proposalId.toString()), valoperAddress);
+            } catch {
+                return Promise.resolve(undefined)
+            }
         }
     }
 }
