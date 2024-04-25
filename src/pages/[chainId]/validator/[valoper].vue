@@ -38,17 +38,6 @@
                         :validator="validator" />
                 </v-col>
             </v-row>
-            <v-row  class="mt-5">
-                <v-col>
-                    <v-sheet width="100%">
-                        <v-row>
-                            <v-col>
-                                <div class="text-h6 text-center pb-3">Operator Transactions</div>
-                            </v-col>
-                        </v-row>
-                    </v-sheet>
-                </v-col>
-            </v-row>
         </v-container>
     </div>
 </template>

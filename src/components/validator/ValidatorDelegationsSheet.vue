@@ -1,6 +1,6 @@
 <template>
     <v-sheet class="text-caption pa-3 fill-height">
-        <div class="text-h6 text-center">Delegations</div>
+        <div class="text-h6 text-center">Delegations ({{ (validatorDelegations[cosmosChainId || ''] ? (validatorDelegations[cosmosChainId || ''][validator?.operatorAddress || ''])?.length : '')}})</div>
             <v-container style="height: 300px;overflow-y: scroll;" v-if="validatorDelegations[cosmosChainId || '']">
                 <v-row v-for="(delegation, i) in (validatorDelegations[cosmosChainId || ''][validator?.operatorAddress || '']).toSorted((a,b) => parseInt(b.balance.amount) - parseInt(a.balance.amount))" :key="delegation.delegation.delegatorAddress">
                     <v-col cols="12" class="d-flex  d-flex align-center" v-if="delegation">
