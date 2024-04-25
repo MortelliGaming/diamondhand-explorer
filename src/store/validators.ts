@@ -10,6 +10,7 @@ import type { Validator } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
 import { fetchAvatar } from '@/lib/http/keybase';
 import { useBlockchainStore } from '@/store/blockchain';
 import { fromBech32, toBech32, toHex, fromBase64 } from '@cosmjs/encoding';
+import { DelegationResponse } from '@/lib/proto/cosmos/staking/v1beta1/staking';
 
 // Augmented Data For Validators
 interface ValidatorExtension {
@@ -27,6 +28,8 @@ export interface ExtendedValidator extends Validator, ValidatorExtension {}
 export const useValidatorsStore = defineStore('validators', () => {
 
     const validators: Ref<Record<string, Validator[]>> = ref({})
+    const validatorDelegations: Ref<Record<string, Record<string, DelegationResponse[]>>> = ref({})
+
     const keybaseAvatars: Ref<Record<string, string>> = ref({})
     
     const isLoading: Ref<string[]> = ref([])
@@ -82,11 +85,33 @@ export const useValidatorsStore = defineStore('validators', () => {
         }
     }
 
+    async function loadValidatorDelegations(chainId: string, valoperAddress: string) {
+        if(isLoading.value.includes(chainId)) {
+            return Promise.resolve(true)
+        }
+        isLoading.value.push(chainId)
+        const { cosmosHelper } = storeToRefs(useBlockchainStore())
+        if(!validatorDelegations.value[chainId]) {
+            validatorDelegations.value[chainId] = {}
+        }
+        if(!validatorDelegations.value[chainId][valoperAddress]) {
+            validatorDelegations.value[chainId][valoperAddress] = []
+        }
+        validatorDelegations.value[chainId][valoperAddress] =  ((await cosmosHelper.value.GetValidatorDelegations(chainId, valoperAddress))?.delegationResponses || [])
+        // dont wait for the avatars
+        console.log(validatorDelegations.value[chainId][valoperAddress])
+        const isLoadingIndex = isLoading.value.indexOf(chainId)
+        isLoading.value.splice(isLoadingIndex, 1)
+        return Promise.resolve(true)
+    }
+
     return {
         isLoading,
         validators,
         keybaseAvatars,
+        validatorDelegations,
         loadCosmosValidators,
-        getValidatorInfo
+        loadValidatorDelegations,
+        getValidatorInfo,
     }
 })

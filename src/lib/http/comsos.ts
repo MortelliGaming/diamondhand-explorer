@@ -46,7 +46,8 @@ import { SoftwareUpgradeProposal, CancelSoftwareUpgradeProposal } from 'cosmjs-t
 import { MsgSoftwareUpgrade, MsgCancelUpgrade } from 'cosmjs-types/cosmos/upgrade/v1beta1/tx';
 import { ParameterChangeProposal } from 'cosmjs-types/cosmos/params/v1beta1/params';
 import { MsgUpdateParams as MsgFeemarketUpdateParams } from '@/lib/proto/ethermint/feemarket/v1/tx'
-import { QueryVoteResponse } from "../proto/cosmos/gov/v1beta1/query";
+import { QueryVoteResponse } from "@/lib/proto/cosmos/gov/v1beta1/query";
+import { QueryValidatorDelegationsResponse } from "@/lib/proto/cosmos/staking/v1beta1/query";
 // Map message type strings to decoder functions
 export const protoRegistry = new  Registry(defaultRegistryTypes)
 
@@ -69,7 +70,9 @@ export type CosmosHelperPublic = {
     GetStakingParams: (chainId: string) => Promise<QueryParamsResponse|undefined>
     GetSlashingParams: (chainId: string) => Promise<SlashingQueryParametersResponse|undefined>
     GetAllProposals: (chainId: string) => Promise<QueryProposalsResponse|undefined>
-    GetProposalVotes: (chainId: string, proposalId: BigInt, valoperAddress: string) => Promise<QueryVoteResponse|undefined>
+    GetProposalVotes: (chainId: string, proposalId: BigInt, operatorAddress: string) => Promise<QueryVoteResponse|undefined>
+    GetValidatorDelegations: (chainId: string, valoperAddress: string) => Promise<QueryValidatorDelegationsResponse|undefined>
+    
 } & EventTarget
 
 export class EvmTxEvent extends Event {
@@ -324,13 +327,38 @@ export class CosmosHelper extends EventTarget {
         return Promise.resolve(undefined)
     }
 
-    public async GetProposalVotes(chainId: string, proposalId: BigInt, valoperAddress: string) {
+    public async GetProposalVotes(chainId: string, proposalId: BigInt, operatorAddress: string) {
         if(this.queryClients[chainId]) {
             try {
-                return this.queryClients[chainId].extensions.gov.gov.vote(parseInt(proposalId.toString()), valoperAddress);
+                return this.queryClients[chainId].extensions.gov.gov.vote(parseInt(proposalId.toString()), operatorAddress);
             } catch {
                 return Promise.resolve(undefined)
             }
         }
+    }
+
+    public async GetValidatorDelegations(chainId: string, valoperAddress: string) {
+        const response = {
+            delegationResponses: []
+        } as QueryValidatorDelegationsResponse
+
+        if(this.queryClients[chainId]) {
+            try {
+                const delegations = await this.queryClients[chainId].extensions.staking.staking.validatorDelegations(valoperAddress)
+                while (delegations.pagination && delegations.pagination.nextKey.length > 0) {
+                    try {
+                        const nextResult = await this.queryClients[chainId].extensions.staking.staking.validatorDelegations(valoperAddress, delegations.pagination.nextKey)
+                        delegations.delegationResponses.push(...nextResult.delegationResponses)
+                        delegations.pagination = nextResult.pagination
+                    } catch {
+                        delegations.pagination = undefined
+                    }
+                }
+                response.delegationResponses.push(...delegations.delegationResponses)
+            } catch(err) { 
+                console.error('error fetching validator infos: ', err)
+            }
+        }
+        return Promise.resolve(response)
     }
 }

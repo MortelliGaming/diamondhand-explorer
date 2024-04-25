@@ -1,6 +1,7 @@
 <template>
     <v-sheet class="text-caption pa-3 fill-height">
-        <div class="text-h6 text-center pb-3">Validator</div>
+        <v-container>
+            <div class="text-h6 text-center pb-3">Validator</div>
             <div>
                 <v-row class="d-flex align-center justify-center pb-2">
                     <v-col cols="3" class="d-flex align-center justify-center pl-5">
@@ -39,6 +40,7 @@
             <div>
                 <v-btn density="compact" color="blue-grey-lighten-1">{{ t('validator.delegate') }}</v-btn>
             </div>
+        </v-container>
     </v-sheet>
 </template>
 

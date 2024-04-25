@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     404: typeof import('./src/components/404.vue')['default']
     ChainContent: typeof import('./src/components/ChainContent.vue')['default']
+    copy: typeof import('./src/components/validator/ValidatorVotesSheet copy.vue')['default']
     Home: typeof import('./src/components/Home.vue')['default']
     Loading: typeof import('./src/components/Loading.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
@@ -16,7 +17,9 @@ declare module 'vue' {
     ValidatorAddressesSheet: typeof import('./src/components/validator/ValidatorAddressesSheet.vue')['default']
     ValidatorBondingSheet: typeof import('./src/components/validator/ValidatorBondingSheet.vue')['default']
     ValidatorComissionSheet: typeof import('./src/components/validator/ValidatorComissionSheet.vue')['default']
+    ValidatorDelegationsSheet: typeof import('./src/components/validator/ValidatorDelegationsSheet.vue')['default']
     ValidatorInfoSheet: typeof import('./src/components/validator/ValidatorInfoSheet.vue')['default']
     ValidatorStakingCommissionChart: typeof import('./src/components/charts/ValidatorStakingCommissionChart.vue')['default']
+    ValidatorVotesSheet: typeof import('./src/components/validator/ValidatorVotesSheet.vue')['default']
   }
 }
