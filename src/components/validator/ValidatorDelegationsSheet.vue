@@ -22,7 +22,7 @@
                     <v-col>
                         <v-pagination
                             v-model="page"
-                            :length="((allDelegations?.length || 0) / numDelegationPerPage + 1).toFixed(0)"
+                            :length="numPages"
                             rounded="circle"
                         ></v-pagination>
                     </v-col>
@@ -57,10 +57,20 @@ const props = defineProps({
 const page=ref(1)
 const numDelegationPerPage = ref(50)
 
+const numPages = computed(() => {
+    // when max < numpages dont add extra page
+    // wehen max % numperpage == 0, dont add extra page
+    const allDelegationsCount = (allDelegations.value?.length || 0) 
+    const isModulo0 = allDelegationsCount % numDelegationPerPage.value == 0
+    const isLessLongThan1Page = allDelegations.value?.length < numDelegationPerPage.value
+    return (allDelegationsCount / numDelegationPerPage.value 
+        + ((isLessLongThan1Page || isModulo0 ) ? 0 : 1))
+        .toFixed(0)
+})
 
 const allDelegations = computed(() => {
     if(validatorDelegations.value[cosmosChainId.value || '']) {
-        return (validatorDelegations.value[cosmosChainId.value || ''][props.validator?.operatorAddress || '']).toSorted((a,b) => Number(BigInt(b.balance.amount) - BigInt(a.balance.amount) / BigInt(Math.pow(10,18))))
+        return (validatorDelegations.value[cosmosChainId.value || ''][props.validator?.operatorAddress || ''])?.toSorted((a,b) => Number(BigInt(b.balance.amount) - BigInt(a.balance.amount) / BigInt(Math.pow(10,18)))) || []
     } else {
         return []
     }
