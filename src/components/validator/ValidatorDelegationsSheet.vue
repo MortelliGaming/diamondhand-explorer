@@ -20,7 +20,7 @@
                     <v-col>
                         <v-pagination
                             v-model="page"
-                            :length="allDelegations.length / numDelegationPerPage"
+                            :length="((allDelegations?.length || 0) / numDelegationPerPage + 1).toFixed(0)"
                             rounded="circle"
                         ></v-pagination>
                     </v-col>
