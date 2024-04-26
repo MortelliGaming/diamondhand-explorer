@@ -34,12 +34,21 @@ const validator = computed(() => { return (basicValidator.value != undefined ? g
 
 const series = computed(() => {
     // [min, step, current, step, max]
+    const rate = Number(BigInt(validator.value?.commission.commissionRates.rate || 0n)) / Number(BigInt(Math.pow(10,18))) * 100
+    const maxChange = Number(BigInt(validator.value?.commission.commissionRates.maxChangeRate || 0n)) / Number(BigInt(Math.pow(10,18))) * 100
+    const max = Number(BigInt(validator.value?.commission.commissionRates.maxRate || 0n)) / Number(BigInt(Math.pow(10,18))) * 100
+    console.log(rate)
     return [    
-        (BigInt(validator.value?.commission.commissionRates.rate || 0n) - BigInt(validator.value?.commission.commissionRates.maxChangeRate || 0n )) / BigInt(Math.pow(10,18) * 100),
-        BigInt(validator.value?.commission.commissionRates.maxChangeRate || 0n) / BigInt(Math.pow(10,18) * 100),
+        // commmision rate - maxChange
+        rate - maxChange,
+        // max Change
+        maxChange,
+        // current
         1,
-        BigInt(validator.value?.commission.commissionRates.maxChangeRate || 0n) / BigInt(Math.pow(10,18) * 100),
-        (BigInt(validator.value?.commission.commissionRates.maxRate || 0n)) / BigInt(Math.pow(10,18) * 100),
+        // max change
+        maxChange,
+        // max
+        max,
     ] as number[]
 })
 
@@ -82,7 +91,7 @@ const chartOptions: Ref<ApexOptions> = ref({
                         color: '#0d8d42',
                         label: 'Current',
                         formatter: function () {
-                            return Number(BigInt((validator?.value?.commission.commissionRates.rate || 0n)) / BigInt(Math.pow(10,18) * 100)).toFixed(2) + '%'
+                            return (Number((validator?.value?.commission.commissionRates.rate || 0n)) / Math.pow(10,18) * 100).toFixed(2) + '%'
                         }
                     }
                 }
