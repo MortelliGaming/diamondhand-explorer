@@ -52,7 +52,7 @@
           </div>
         </v-col>
       </v-row>
-    <chain-content class="pl-5 pr-5 fill-height" ref="tableContainer">
+      <chain-content class="pl-5 pr-5 fill-height" ref="tableContainer">
         <div>
           <v-data-table 
             v-if="isTableVisible"

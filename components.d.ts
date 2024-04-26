@@ -12,6 +12,7 @@ declare module 'vue' {
     copy: typeof import('./src/components/validator/ValidatorVotesSheet copy.vue')['default']
     Home: typeof import('./src/components/Home.vue')['default']
     Loading: typeof import('./src/components/Loading.vue')['default']
+    ProposalHeaderRow: typeof import('./src/components/governance/ProposalHeaderRow.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     ValidatorAddressesSheet: typeof import('./src/components/validator/ValidatorAddressesSheet.vue')['default']
