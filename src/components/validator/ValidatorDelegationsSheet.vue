@@ -4,13 +4,13 @@
             <v-container style="height: 300px;overflow-y: scroll;" v-if="validatorDelegations[cosmosChainId || '']">
                 <v-row v-for="(delegation, i) in (validatorDelegations[cosmosChainId || ''][validator?.operatorAddress || '']).toSorted((a,b) => parseInt(b.balance.amount) - parseInt(a.balance.amount))" :key="delegation.delegation.delegatorAddress">
                     <v-col cols="12" class="d-flex  d-flex align-center" v-if="delegation">
-                        <v-chip>{{ i + 1 }}</v-chip>
-                        <div class="pl-2 pr-2 d-flex flex-grow-1" style="max-width: 90%;">
+                        <v-chip class="justify-center">{{ i + 1 }}</v-chip>
+                        <div class="pl-2 pr-2" style="max-width: 65%; overflow-wrap: break-word;">
                             <div class="text-caption">
                                 {{ delegation.delegation.delegatorAddress }}
                             </div>
                         </div>
-                        <div class="text-caption text-right d-flex align-end" style="word-break: break-word;">
+                        <div class="text-caption text-right d-flex align-end justify-end flex-grow-1" style="word-break: break-word;">
                             {{ (parseInt(delegation.balance.amount) / Math.pow(10,18)).toFixed(2) }} {{ delegation.balance.denom }}
                         </div>
                     </v-col>

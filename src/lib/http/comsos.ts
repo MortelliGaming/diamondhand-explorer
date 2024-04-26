@@ -251,7 +251,6 @@ export class CosmosHelper extends EventTarget {
         const response = {
             validators: []
         } as QueryValidatorsResponse
-
         if(this.queryClients[chainId]) {
             for(const bondStatus of ['BOND_STATUS_BONDED','BOND_STATUS_UNBONDED', 'BOND_STATUS_UNBONDING']) {
                 try {
