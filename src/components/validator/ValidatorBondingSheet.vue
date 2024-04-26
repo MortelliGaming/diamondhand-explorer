@@ -25,7 +25,7 @@
             <div class="d-flex flex-direction-row align-center" v-if="props.validator?.unbondingHeight">
                 <v-icon icon="mdi-lan-disconnect" />
                 <div class="pr-1 pl-3"> Unbonding Time: </div>
-                <div class="d-flex flex-grow-1"> {{ moment(parseInt(props.validator?.unbondingTime.seconds.toString() || '0') * 1000).format('DD.MM.YYYY HH:mm:ss') }}</div>
+                <div class="d-flex flex-grow-1"> {{ moment(Number(BigInt(props.validator?.unbondingTime.seconds || 0n) * BigInt(1000))).format('DD.MM.YYYY HH:mm:ss') }}</div>
             </div>
         </v-container>
     </v-sheet>

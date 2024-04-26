@@ -56,7 +56,7 @@ const votingAndEndedProposals = computed(() => {
     return proposals.value[cosmosChainId.value || '']?.filter(p => [ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD, ProposalStatus.PROPOSAL_STATUS_PASSED].includes(p.status))
         .map(p => getProposalInfo(cosmosChainId.value || '', p.proposalId))
         .filter(a => a)
-        .toSorted((a,b) => parseInt(b!.proposalId.toString()) - parseInt(a!.proposalId.toString()))
+        .toSorted((a,b) => Number(b!.proposalId - a!.proposalId))
 })
 
 function decodePropsalContent(proposal: Proposal): any {

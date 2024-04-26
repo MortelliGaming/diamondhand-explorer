@@ -5,7 +5,7 @@
         <v-col class="text-center">
           <v-alert
             class="d-flex justify-center"
-            :text="moment(parseInt(chainData?.stakingParams?.params.unbondingTime.seconds.toString() || '0') * 1000).format('HH:mm:ss')"
+            :text="moment(Number(BigInt(chainData?.stakingParams?.params.unbondingTime.seconds || 0n) * BigInt(1000))).format('HH:mm:ss')"
             title="Unbond"
             :icon="'mdi-clock-outline'"
             type="success"
@@ -14,7 +14,7 @@
         <v-col class="text-center">
           <v-alert
             class="d-flex justify-center"
-            :text="(parseInt(slashingParams?.slashFractionDowntime?.toString() || '') / Math.pow(10, 18) * 100).toString() + '%'"
+            :text="Number(BigInt(slashingParams?.slashFractionDowntime || 0n) / BigInt(Math.pow(10, 18) * 100)).toString() + '%'"
             title="Downtime"
             :icon="'mdi-arrow-down'"
             type="warning"
@@ -23,7 +23,7 @@
         <v-col class="text-center">
           <v-alert
             class="d-flex justify-center"
-            :text="(parseInt(slashingParams?.slashFractionDoubleSign?.toString() || '') / Math.pow(10, 18) * 100).toString() + '%'"
+            :text="(BigInt(slashingParams?.slashFractionDoubleSign || 0n) / BigInt(Math.pow(10, 18) * 100)).toString() + '%'"
             title="Double Sign"
             :icon="'mdi-chevron-double-up'"
             type="error"
@@ -179,11 +179,11 @@ const slashingParams = computed(() => {
     return {}
   }
   return { 
-    signedBlocksWindow: parseInt(parsed.params.signedBlocksWindow), 
+    signedBlocksWindow: BigInt(parsed.params.signedBlocksWindow), 
     minSignedPerWindow: BigInt(window.atob(parsed.params.minSignedPerWindow)), 
     downtimeJailDuration: { 
-      seconds: parseInt(parsed.params.downtimeJailDuration.seconds), 
-      nanos: parsed.params.downtimeJailDuration.nanos
+      seconds: BigInt(parsed.params.downtimeJailDuration.seconds), 
+      nanos: BigInt(parsed.params.downtimeJailDuration.nanos)
     }, 
     slashFractionDoubleSign: BigInt(window.atob(parsed.params.slashFractionDoubleSign)), 
     slashFractionDowntime: BigInt(window.atob(parsed.params.slashFractionDowntime))
@@ -191,14 +191,14 @@ const slashingParams = computed(() => {
 })
 
 const tableValidators = computed(() => {
-  return validatorsToShow.value?.toSorted((a,b) => (parseInt(b?.tokens || '0') - parseInt(a?.tokens || '0')))
+  return validatorsToShow.value?.toSorted((a,b) => Number(BigInt(b?.tokens || 0n) - BigInt(a?.tokens || 0n)))
     .map(v => getValidatorInfo(cosmosChainId.value || '',v))
     .map((v, i) => {
     return {
         rank: i + 1,
         description: [v?.description.identity, v?.description?.moniker, v?.description?.website, v?.operatorAddress],
-        votingPower: numeral(((parseInt(v?.tokens || '0')) / Math.pow(10, 18))).format("0,0"),
-        comission: numeral((parseInt(v?.commission.commissionRates.rate || '0')) / Math.pow(10, 18) * 100).format("0,0") + '%',
+        votingPower: numeral(((BigInt(v?.tokens || 0n)) / BigInt(Math.pow(10, 18)))).format("0,0"),
+        comission: numeral((BigInt((v?.commission.commissionRates.rate || 0n)) / BigInt(Math.pow(10, 18) * 100))).format("0,0") + '%',
         action: [() => { console.log(v?.operatorAddress); /* showDelegateDialog(v?.operatorAddress || '') */}, (v?.jailed)]
     }
   })

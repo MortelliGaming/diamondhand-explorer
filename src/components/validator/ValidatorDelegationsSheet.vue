@@ -11,7 +11,7 @@
                             </div>
                         </div>
                         <div class="text-caption text-right d-flex align-end justify-end flex-grow-1" style="word-break: break-word;">
-                            {{ (parseInt(delegation.balance.amount) / Math.pow(10,18)).toFixed(2) }} {{ delegation.balance.denom }}
+                            {{ Number(BigInt(delegation.balance.amount) / BigInt(Math.pow(10,18))).toFixed(2) }} {{ delegation.balance.denom }}
                         </div>
                     </v-col>
                     <v-divider />
@@ -60,7 +60,7 @@ const numDelegationPerPage = ref(50)
 
 const allDelegations = computed(() => {
     if(validatorDelegations.value[cosmosChainId.value || '']) {
-        return (validatorDelegations.value[cosmosChainId.value || ''][props.validator?.operatorAddress || '']).toSorted((a,b) => parseInt(b.balance.amount) - parseInt(a.balance.amount))
+        return (validatorDelegations.value[cosmosChainId.value || ''][props.validator?.operatorAddress || '']).toSorted((a,b) => Number(BigInt(b.balance.amount) - BigInt(a.balance.amount) / BigInt(Math.pow(10,18))))
     } else {
         return []
     }

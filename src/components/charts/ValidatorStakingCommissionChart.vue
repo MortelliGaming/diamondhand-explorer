@@ -35,11 +35,11 @@ const validator = computed(() => { return (basicValidator.value != undefined ? g
 const series = computed(() => {
     // [min, step, current, step, max]
     return [    
-        (parseInt(validator.value?.commission.commissionRates.rate.toString() || '0') - parseInt(validator.value?.commission.commissionRates.maxChangeRate.toString() || '0') ) / Math.pow(10,18) * 100,
-        parseInt(validator.value?.commission.commissionRates.maxChangeRate.toString() || '0') / Math.pow(10,18) * 100,
+        (BigInt(validator.value?.commission.commissionRates.rate || 0n) - BigInt(validator.value?.commission.commissionRates.maxChangeRate || 0n )) / BigInt(Math.pow(10,18) * 100),
+        BigInt(validator.value?.commission.commissionRates.maxChangeRate || 0n) / BigInt(Math.pow(10,18) * 100),
         1,
-        parseInt(validator.value?.commission.commissionRates.maxChangeRate.toString() || '0') / Math.pow(10,18) * 100,
-        (parseInt(validator.value?.commission.commissionRates.maxRate.toString() || '0')) / Math.pow(10,18) * 100,
+        BigInt(validator.value?.commission.commissionRates.maxChangeRate || 0n) / BigInt(Math.pow(10,18) * 100),
+        (BigInt(validator.value?.commission.commissionRates.maxRate || 0n)) / BigInt(Math.pow(10,18) * 100),
     ] as number[]
 })
 
@@ -82,7 +82,7 @@ const chartOptions: Ref<ApexOptions> = ref({
                         color: '#0d8d42',
                         label: 'Current',
                         formatter: function () {
-                            return (parseInt((validator?.value?.commission.commissionRates.rate.toString() || '0')) / Math.pow(10,18) * 100).toFixed(2) + '%'
+                            return Number(BigInt((validator?.value?.commission.commissionRates.rate || 0n)) / BigInt(Math.pow(10,18) * 100)).toFixed(2) + '%'
                         }
                     }
                 }

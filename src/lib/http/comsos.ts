@@ -329,7 +329,7 @@ export class CosmosHelper extends EventTarget {
     public async GetProposalVotes(chainId: string, proposalId: BigInt, operatorAddress: string) {
         if(this.queryClients[chainId]) {
             try {
-                return this.queryClients[chainId].extensions.gov.gov.vote(parseInt(proposalId.toString()), operatorAddress);
+                return this.queryClients[chainId].extensions.gov.gov.vote(proposalId.toString(), operatorAddress);
             } catch {
                 return Promise.resolve(undefined)
             }
