@@ -16,6 +16,8 @@
                     </v-col>
                     <v-divider />
                 </v-row>
+            </v-container>
+            <v-container class="pt-0 pb-0">
                 <v-row>
                     <v-col>
                         <v-pagination
