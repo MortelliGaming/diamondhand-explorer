@@ -11,8 +11,8 @@
             </div>
         </v-col>
 
-        <v-col v-else cols="8" style="overflow-wrap: break-word;" class="d-flex align-center">
-            <div>
+        <v-col v-else cols="8" class="d-flex align-center">
+            <div  style="overflow-wrap: anywhere;" >
                 {{ displayProp[1] }}
             </div>
         </v-col>
