@@ -26,7 +26,7 @@
             </div>
           </v-col>
         </v-row>
-        <proposal-header-row v-for="proposal in proposalsToDisplay" :key="proposal.proposalId.toString()" :proposal="proposal"/>
+        <proposal-header-row v-for="proposal in proposalsToDisplay" :key="proposal.proposalId.toString()" :proposal="proposal"  role="button" @click="() => $router.push('proposal/' + proposal.proposalId.toString())"/>
     </v-container>
   </div>
 </template>

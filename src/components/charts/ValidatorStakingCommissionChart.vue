@@ -37,8 +37,7 @@ const series = computed(() => {
     const rate = Number(BigInt(validator.value?.commission.commissionRates.rate || 0n)) / Number(BigInt(Math.pow(10,18))) * 100
     const maxChange = Number(BigInt(validator.value?.commission.commissionRates.maxChangeRate || 0n)) / Number(BigInt(Math.pow(10,18))) * 100
     const max = Number(BigInt(validator.value?.commission.commissionRates.maxRate || 0n)) / Number(BigInt(Math.pow(10,18))) * 100
-    console.log(rate)
-    return [    
+    return [
         // commmision rate - maxChange
         rate - maxChange,
         // max Change

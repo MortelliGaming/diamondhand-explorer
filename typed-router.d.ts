@@ -48,6 +48,7 @@ declare module 'vue-router/auto/routes' {
     '/[chainId]/governance': RouteRecordInfo<'/[chainId]/governance', '/:chainId/governance', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,
     '/[chainId]/ibc': RouteRecordInfo<'/[chainId]/ibc', '/:chainId/ibc', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,
     '/[chainId]/parameters': RouteRecordInfo<'/[chainId]/parameters', '/:chainId/parameters', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,
+    '/[chainId]/proposal/[proposalId]': RouteRecordInfo<'/[chainId]/proposal/[proposalId]', '/:chainId/proposal/:proposalId', { chainId: ParamValue<true>, proposalId: ParamValue<true> }, { chainId: ParamValue<false>, proposalId: ParamValue<false> }>,
     '/[chainId]/staking': RouteRecordInfo<'/[chainId]/staking', '/:chainId/staking', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,
     '/[chainId]/supply': RouteRecordInfo<'/[chainId]/supply', '/:chainId/supply', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,
     '/[chainId]/transactions': RouteRecordInfo<'/[chainId]/transactions', '/:chainId/transactions', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,
