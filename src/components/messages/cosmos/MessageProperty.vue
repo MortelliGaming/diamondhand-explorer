@@ -1,22 +1,10 @@
 <template>
-    <v-row>
+    <v-row v-if="displayProp && displayProp[1] && !Array.isArray(displayProp[1])">
         <v-col cols="3">
             <b>{{ displayProp[0] }}</b>
         </v-col>
-        <v-col 
-            v-if="displayProp && (typeof displayProp[1] === 'object') && Array.isArray(displayProp[1])"
-            cols="9" style="overflow-wrap: break-word;">
-            <div class="text-caption mt-3 mb-3" v-for="(prop, i) in (displayProp[1] as Array<object>)" :key="i">
-                <v-sheet elevation="24" color="blue-grey-darken-4" class="pa-3">
-                        <div class="text-caption" v-for="childProp in Object.entries(prop)" :key="childProp[0]">
-                            <message-property :property="childProp" />
-                        </div>
-                </v-sheet>
-            </div>
-        </v-col>
-
-        <v-col
-            v-else-if="displayProp && displayProp[1] && typeof displayProp[1] === 'object'"
+        <v-col  
+            v-if="displayProp && displayProp[1] && typeof displayProp[1] === 'object'"
             cols="9" style="overflow-wrap: break-word;">
             <div class="text-caption" v-for="prop in Object.entries(displayProp[1])" :key="prop[0]">
                 <message-property :property="prop" />
@@ -29,6 +17,26 @@
             </div>
         </v-col>
     </v-row>
+    <div v-if="displayProp && (typeof displayProp[1] === 'object') && Array.isArray(displayProp[1])">
+        <v-row>
+            <v-col class="pb-0">
+                <b>{{ displayProp[0] }}</b>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col 
+                class="pt-0"
+                cols="12" style="overflow-wrap: break-word;">
+                <div class="text-caption mt-2 mb-2" v-for="(prop, i) in (displayProp[1] as Array<object>)" :key="i">
+                    <v-sheet elevation="24" color="blue-grey-darken-4" class="pa-3">
+                            <div class="text-caption" v-for="childProp in Object.entries(prop)" :key="childProp[0]">
+                                <message-property :property="childProp" />
+                            </div>
+                    </v-sheet>
+                </div>
+            </v-col>
+        </v-row>
+    </div>
     <v-divider />
 </template>
 
