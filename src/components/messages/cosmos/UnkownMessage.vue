@@ -1,6 +1,7 @@
 <template>
     <div class="text-caption" v-for="prop in Object.entries(dynamicMessage)" :key="prop[0]">
         <message-property :property="prop" />
+        <v-divider />
     </div>
 </template>
 

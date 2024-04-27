@@ -1,22 +1,24 @@
 <template>
-    <v-row v-if="displayProp && displayProp[1] && !Array.isArray(displayProp[1])">
-        <v-col cols="4">
-            <b>{{ displayProp[0] }}</b>
-        </v-col>
-        <v-col  
-            v-if="displayProp && displayProp[1] && typeof displayProp[1] === 'object'"
-            cols="8" style="overflow-wrap: break-word;">
-            <div class="text-caption" v-for="prop in Object.entries(displayProp[1])" :key="prop[0]">
-                <message-property :property="prop" />
-            </div>
-        </v-col>
+    <div v-if="displayProp && displayProp[1] && !Array.isArray(displayProp[1])">
+        <v-row>
+            <v-col cols="4">
+                <b>{{ displayProp[0] }}</b>
+            </v-col>
+            <v-col  
+                v-if="displayProp && displayProp[1] && typeof displayProp[1] === 'object'"
+                cols="8" style="overflow-wrap: break-word;">
+                <div class="text-caption" v-for="prop in Object.entries(displayProp[1])" :key="prop[0]">
+                    <message-property :property="prop" />
+                </div>
+            </v-col>
 
-        <v-col v-else cols="8" class="d-flex align-center">
-            <div  style="overflow-wrap: anywhere;" >
-                {{ displayProp[1] }}
-            </div>
-        </v-col>
-    </v-row>
+            <v-col v-else cols="8" class="d-flex align-center">
+                <div  style="overflow-wrap: anywhere;" >
+                    {{ displayProp[1] }}
+                </div>
+            </v-col>
+        </v-row>
+    </div>
     <div v-if="displayProp && (typeof displayProp[1] === 'object') && Array.isArray(displayProp[1])">
         <v-row>
             <v-col class="pb-0">
@@ -37,7 +39,6 @@
             </v-col>
         </v-row>
     </div>
-    <v-divider />
 </template>
 
 <script lang="ts" setup>
