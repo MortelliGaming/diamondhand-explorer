@@ -3,10 +3,10 @@
         <v-container class="pt-0">
             <div class="text-h6 text-center">Info</div>
             <v-row class="text-caption">
-                <v-col cols="3">
+                <v-col cols="4">
                     <b>type:</b>
                 </v-col>
-                <v-col cols="9" style="overflow-wrap: break-word;">
+                <v-col cols="8" style="overflow-wrap: break-word;">
                     <b>{{ proposal?.content?.typeUrl }}</b>
                 </v-col>
             </v-row>
