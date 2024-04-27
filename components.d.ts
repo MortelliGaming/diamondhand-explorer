@@ -9,8 +9,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     404: typeof import('./src/components/404.vue')['default']
     ChainContent: typeof import('./src/components/ChainContent.vue')['default']
-    copy: typeof import('./src/components/messages/cosmos/UnkownMessage copy.vue')['default']
-    DefaultMessage: typeof import('./src/components/messages/cosmos/DefaultMessage.vue')['default']
     Home: typeof import('./src/components/Home.vue')['default']
     Loading: typeof import('./src/components/Loading.vue')['default']
     MessageProperty: typeof import('./src/components/messages/cosmos/MessageProperty.vue')['default']
@@ -21,7 +19,6 @@ declare module 'vue' {
     ProposalTimelineSheet: typeof import('./src/components/governance/ProposalTimelineSheet.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    Time: typeof import('./src/components/Time.vue')['default']
     TimeFormatter: typeof import('./src/components/TimeFormatter.vue')['default']
     UnkownMessage: typeof import('./src/components/messages/cosmos/UnkownMessage.vue')['default']
     ValidatorAddressesSheet: typeof import('./src/components/validator/ValidatorAddressesSheet.vue')['default']

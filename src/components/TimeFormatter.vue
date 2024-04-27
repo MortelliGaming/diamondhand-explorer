@@ -12,6 +12,7 @@
   <script setup lang="ts">
   import { computed, type PropType } from 'vue';
   import moment from 'moment';
+import { Timestamp } from '@/lib/proto/google/protobuf/timestamp';
 
   const props = defineProps({
     title: {
@@ -19,12 +20,12 @@
         default: ''
     },
     time: {
-        type: Object as PropType<{ "seconds": string, "nanos": number }>,
+        type: Object as PropType<Timestamp|undefined>,
         required: true
     }
   })
 
   const displayTime = computed(() => {
-    return props.time ? moment(parseInt(props.time?.seconds || '0') * 1000) : moment()
+    return props.time ? moment(parseInt(props.time?.seconds.toLocaleString() || '0') * 1000) : moment()
   })
   </script>
