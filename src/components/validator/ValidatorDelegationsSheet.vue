@@ -1,6 +1,6 @@
 <template>
     <v-sheet class="text-caption pa-3 fill-height">
-        <div class="text-h6 text-center">Delegations ({{ (validatorDelegations[cosmosChainId || ''] ? (validatorDelegations[cosmosChainId || ''][validator?.operatorAddress || ''])?.length : '')}})</div>
+        <div class="text-h6 text-center">{{t('validator.delegations')}} ({{ (validatorDelegations[cosmosChainId || ''] ? (validatorDelegations[cosmosChainId || ''][validator?.operatorAddress || ''])?.length : '')}})</div>
             <v-container style="height: 300px;overflow-y: scroll;" v-if="validatorDelegations[cosmosChainId || '']">
                 <v-row v-for="(delegation, i) in delegationsToShow" :key="delegation.delegation.delegatorAddress">
                     <v-col cols="12" class="d-flex  d-flex align-center" v-if="delegation">
@@ -33,11 +33,21 @@
 
 <script lang="ts" setup>
 import { computed, ref, type PropType } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
+
 import { ExtendedValidator, useValidatorsStore } from '@/store/validators';
 import { useBlockchainStore } from '@/store/blockchain';
 import { useAppStore } from '@/store/app';
-import { storeToRefs } from 'pinia';
 
+
+const props = defineProps({
+    validator: {
+        type: Object as PropType<ExtendedValidator>,
+        regquired: true,
+    },
+})
+const { t } = useI18n()
 const { availableChains } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 
@@ -46,12 +56,6 @@ const { validatorDelegations } = storeToRefs(useValidatorsStore())
 
 const cosmosChainId = computed(() => {
     return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.chainId
-})
-const props = defineProps({
-    validator: {
-        type: Object as PropType<ExtendedValidator>,
-        regquired: true,
-    },
 })
 
 const page=ref(1)

@@ -19,13 +19,36 @@ export const en = {
         twitter: 'X (Twitter)',
     },
     validator: {
+        status: 'Status',
         addresses: 'Addresses',
         operatorAddress: 'Operator Address',
         consensusAddress: 'Consensus Address',
         consensusHexAddress: 'Consensus Address Hex',
         operatorWallet: 'Operator Wallet Address',
         consensusPublicKey: 'Consensus Public Key',
-        delegate: 'Stake'
+        delegate: 'Stake',
+        bonding: 'Bonding',
+        bondedTokens: 'Bonded Tokens',
+        delegators: 'Delegators',
+        minSelfDelegation: 'Min Self Delegation',
+        unbondingHeight: 'Unbonding Height',
+        unbondingTime: 'Unbonding Time',
+        commission: 'Commission',
+        rate: 'Rate',
+        max: 'Max',
+        updated: 'Last Update',
+        delegations: 'Delegations',
+        votes: 'Votes',
+        didNotVote: 'No Vote',
+        validator: 'Validator',
+        jailed: 'Jailed',
+        bondStatus: {
+            BOND_STATUS_BONDED: 'Bonded',
+            BOND_STATUS_UNBONDED: 'Unbonded',
+            BOND_STATUS_UNBONDING: 'Unbonding',
+            BOND_STATUS_UNSPECIFIED: 'Unspecified',
+            UNRECOGNIZED: 'Unrecognized',
+        }
     },
     proposal: {
         info: 'Info',
@@ -45,6 +68,14 @@ export const en = {
             PROPOSAL_STATUS_UNSPECIFIED: 'Unspecified',
             UNRECOGNIZED: 'Unrecognized'
         },
+        voteOption: {
+            UNRECOGNIZED: 'Unrecognized',
+            VOTE_OPTION_ABSTAIN: 'Abstain',
+            VOTE_OPTION_NO: 'No',
+            VOTE_OPTION_NO_WITH_VETO: 'No with Veto',
+            VOTE_OPTION_UNSPECIFIED: 'Unspecified',
+            VOTE_OPTION_YES: 'Yes',
+        },
         voting: 'Voting Results',
         votes: 'Votes',
         yes: 'Yes',
@@ -62,6 +93,8 @@ export const en = {
         daysToGo: 'days'
     },
     message: {
-        copied: 'Copied to the clipboard'
-    }
+        copied: 'Copied to the clipboard',
+        yes: 'Yes',
+        no: 'No',
+    },
 }

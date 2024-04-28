@@ -19,13 +19,36 @@ export const de = {
         twitter: 'X (Twitter)',
     },
     validator: {
+        status: 'Status',
         addresses: 'Addressen',
         operatorAddress: 'Operator Addresse',
         consensusAddress: 'Consensus Addresse',
         consensusHexAddress: 'Consensus Addresse Hex',
         operatorWallet: 'Operator Wallet Addresse',
         consensusPublicKey: 'Consensus Public Key',
-        delegate: 'Staken'
+        delegate: 'Staken',
+        bonding: 'Bonding',
+        bondedTokens: 'Bonded Tokens',
+        delegators: 'Delegators',
+        minSelfDelegation: 'Min Eigen Delegation',
+        unbondingHeight: 'Unbonding Höhe',
+        unbondingTime: 'Unbonding Zeit',
+        commission: 'Kommission',
+        rate: 'Rate',
+        max: 'Max',
+        updated: 'Letztes Update',
+        delegations: 'Delegationen',
+        votes: 'Votes',
+        didNotVote: 'Keine Stimme',
+        validator: 'Validator',
+        jailed: 'Knast',
+        bondStatus: {
+            BOND_STATUS_BONDED: 'Bonded',
+            BOND_STATUS_UNBONDED: 'Unbonded',
+            BOND_STATUS_UNBONDING: 'Unbonding',
+            BOND_STATUS_UNSPECIFIED: 'Nicht spezifiziert',
+            UNRECOGNIZED: 'Nicht erkannt',
+        }
     },
     proposal: {
         info: 'Info',
@@ -49,6 +72,14 @@ export const de = {
             PROPOSAL_STATUS_UNSPECIFIED: 'Nicht spezifiziert',
             UNRECOGNIZED: 'Nicht erkannt'
         },
+        voteOption: {
+            UNRECOGNIZED: 'Nicht erkannt',
+            VOTE_OPTION_ABSTAIN: 'Enthalten',
+            VOTE_OPTION_NO: 'Nein',
+            VOTE_OPTION_NO_WITH_VETO: 'Ja mit Veto',
+            VOTE_OPTION_UNSPECIFIED: 'Nicht spezifiziert',
+            VOTE_OPTION_YES: 'Ja',
+        },
         voting: 'Abstimmung',
         votes: 'Stimmen',
         yes: 'Ja',
@@ -66,6 +97,8 @@ export const de = {
         daysToGo: 'Tagen'
     },
     message: {
-        copied: 'In die Zwischenablage kopiert'
+        copied: 'In die Zwischenablage kopiert',
+        yes: 'Ja',
+        no: 'Nein',
     }
 }

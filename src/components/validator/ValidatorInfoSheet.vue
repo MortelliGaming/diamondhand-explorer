@@ -1,7 +1,7 @@
 <template>
     <v-sheet class="text-caption pa-3 fill-height">
         <v-container>
-            <div class="text-h6 text-center pb-3">Validator</div>
+            <div class="text-h6 text-center pb-3">{{ t('validator.validator')}}</div>
             <div>
                 <v-row class="d-flex align-center justify-center pb-2">
                     <v-col cols="3" class="d-flex align-center justify-center pl-5">
@@ -27,13 +27,13 @@
                 <a :href="'mailto:'+props.validator?.description.securityContact">{{  props.validator?.description.securityContact  }}</a>
             </div>
             <div class="d-flex flex-direction-row">
-                <div class="pr-1"> Status: </div>
-                <div> {{ props.validator?.bondStatus }}</div>
+                <div class="pr-1"> {{ t('validator.status')}}: </div>
+                <div> {{ bondStatusTranslation }}</div>
             </div>
             <div>
                 <div class="d-flex flex-direction-row">
-                    <div class="pr-1"> Jailed: </div>
-                    <div class="pr-1">{{ props.validator?.jailed ? 'yes' : 'no' }}</div>
+                    <div class="pr-1"> {{t('validator.jailed')}}: </div>
+                    <div class="pr-1">{{ props.validator?.jailed ? t('message.yes') : t('message.no') }}</div>
                     <v-icon :icon="props.validator?.jailed ? 'mdi-handcuffs' : 'mdi-check'" :color="props.validator?.jailed ? 'error' : 'success'" />
                 </div>
             </div>
@@ -45,7 +45,7 @@
 </template>
 
 <script lang="ts" setup>
-import { type PropType } from 'vue';
+import { computed, type PropType } from 'vue';
 import { storeToRefs } from 'pinia';
 import { ExtendedValidator, useValidatorsStore } from '@/store/validators';
 import { useI18n } from 'vue-i18n';
@@ -58,6 +58,9 @@ const props = defineProps({
         type: Object as PropType<ExtendedValidator>,
         regquired: true,
     },
+})
+const bondStatusTranslation = computed(() => {
+    return t('validator.bondStatus.' + props.validator?.bondStatus)
 })
 
 </script>

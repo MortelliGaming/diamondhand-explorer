@@ -1,6 +1,6 @@
 <template>
     <v-sheet class="text-caption pa-3 fill-height">
-        <div class="text-h6 text-center">Votes</div>
+        <div class="text-h6 text-center">{{t('validator.votes')}}</div>
             <v-container style="height: 300px;overflow-y: scroll;" class="pa-0">
                 <proposal-header-row 
                     v-for="proposal in votingAndEndedProposals" :key="proposal?.proposalId.toString()"
@@ -9,7 +9,7 @@
                     >
                     <template v-slot:append>
                         <div class="text-caption flex-grow-1 d-flex justify-end align-center">
-                            {{  validatorVotes[proposal?.proposalId.toString() || ''] ? validatorVotes[proposal?.proposalId.toString() || ''] : 'did not vote' }}
+                            {{  validatorVote(proposal?.proposalId.toString() || '0') }}
                         </div>
                     </template>
                 </proposal-header-row>
@@ -19,16 +19,25 @@
 
 <script lang="ts" setup>
 import { Ref, computed, ref, type PropType } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
+
 import { ExtendedValidator } from '@/store/validators';
 import { useBlockchainStore } from '@/store/blockchain';
 import { useProposalsStore } from '@/store/proposals';
 import { useAppStore } from '@/store/app';
-import { storeToRefs } from 'pinia';
 
-import { ProposalStatus, Vote } from '@/lib/proto/cosmos/gov/v1beta1/gov';
+import { ProposalStatus, Vote, VoteOption } from '@/lib/proto/cosmos/gov/v1beta1/gov';
 
 import ProposalHeaderRow from '../governance/ProposalHeaderRow.vue';
 
+const props = defineProps({
+    validator: {
+        type: Object as PropType<ExtendedValidator>,
+        regquired: true,
+    },
+})
+const { t } = useI18n()
 const { availableChains, cosmosHelper } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 
@@ -40,12 +49,6 @@ const validatorVotes: Ref<Record<string, Vote|undefined>> = ref({})
 const cosmosChainId = computed(() => {
     return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.chainId
 })
-const props = defineProps({
-    validator: {
-        type: Object as PropType<ExtendedValidator>,
-        regquired: true,
-    },
-})
 
 const votingAndEndedProposals = computed(() => {
     return proposals.value[cosmosChainId.value || '']?.filter(p => [ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD, ProposalStatus.PROPOSAL_STATUS_PASSED].includes(p.status))
@@ -53,6 +56,10 @@ const votingAndEndedProposals = computed(() => {
         .filter(a => a)
         .toSorted((a,b) => Number(b!.proposalId - a!.proposalId))
 })
+
+function validatorVote(proposalId: string) {
+    return validatorVotes.value[proposalId] ? t('proposal.voteOption.'+ VoteOption[validatorVotes.value[proposalId]?.options[0].option || 0]) : t('validator.didNotVote')
+}
 
 setTimeout(() => {
     loadCosmosProposals(cosmosChainId.value || '').then(async () => {

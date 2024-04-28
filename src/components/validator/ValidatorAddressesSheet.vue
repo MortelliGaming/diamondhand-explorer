@@ -1,8 +1,8 @@
 <template>
     <v-sheet class="text-caption pa-3 fill-height">
         <v-container>   
-            <div class="text-h6 text-center pb-3">{{t('validator.addresses')}}</div>
-            <v-row class="d-flex justify-center align-center" no-gutters style="max-height: 300px; overflow-y: scroll;">
+            <div class="text-h6 text-center pb-3">{{ t('validator.addresses') }}</div>
+            <v-row class="d-flex justify-center align-center" no-gutters style="max-height: 220px; overflow-y: scroll;">
                 <v-col cols="12" lg="4">
                     <div class="d-flex flex-column">
                         <b><div>{{ t('validator.operatorAddress') }}</div></b>
