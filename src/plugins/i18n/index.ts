@@ -1,9 +1,19 @@
-import { de } from './de'
-import { en } from './en'
+import { de } from './de';
+import { en } from './en';
+import { fr } from './fr';
+import { id } from './id';
+import { it } from './it';
+import { ko } from './ko';
+import { zh } from './zh';
 
 export const messages = {
-    de,
-    en
+  de,
+  en,
+  fr,
+  id,
+  it,
+  ko,
+  zh
 }
 
 import { createI18n } from 'vue-i18n'
