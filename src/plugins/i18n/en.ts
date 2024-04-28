@@ -51,6 +51,7 @@ export const en = {
         noWithVeto: 'No With Veto',
         abstain: 'Abstain',
         notVoted: 'Not Voted',
+        content: 'Content'
     },
     time: {
         in: 'in',

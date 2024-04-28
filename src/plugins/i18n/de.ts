@@ -49,12 +49,13 @@ export const de = {
             PROPOSAL_STATUS_UNSPECIFIED: 'Nicht spezifiziert',
             UNRECOGNIZED: 'Nicht erkannt'
         },
-        voting: 'Resultate',
+        voting: 'Abstimmung',
         yes: 'Ja',
         no: 'Nein',
         noWithVeto: 'Nein mit Veto',
         abstain: 'Enthalten',
         notVoted: 'Nicht abgestimmt',
+        content: 'Inhalt'
     },
     time: {
         in: 'In',

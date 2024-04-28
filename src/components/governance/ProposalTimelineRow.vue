@@ -2,23 +2,23 @@
     <v-row class="d-flex justify-center pt-2">
         <v-col cols="6" sm="3" class="text-center">
             <v-sheet elevation="6" color="grey-darken-3" class="pa-1">
-                <time-formatter :time="props.proposal?.submitTime" :title="t('proposal.submitTime')" />
+                <time-formatter :time="props.proposal?.submitTime || {seconds: 0}" :title="t('proposal.submitTime')" />
             </v-sheet>
         </v-col>
         <v-col cols="6" sm="3" class="text-center">
             <v-sheet elevation="6" color="grey-darken-3" class="pa-1">
-                <time-formatter :time="props.proposal?.depositEndTime" :title="t('proposal.depositEndTime')" />
+                <time-formatter :time="props.proposal?.depositEndTime || {seconds: 0}" :title="t('proposal.depositEndTime')" />
             </v-sheet>
             
         </v-col>
         <v-col cols="6" sm="3" class="text-center">
             <v-sheet elevation="6" color="grey-darken-3" class="pa-1">
-                <time-formatter :time="props.proposal?.votingStartTime" :title="t('proposal.votingStartTime')" />
+                <time-formatter :time="props.proposal?.votingStartTime || {seconds: 0}" :title="t('proposal.votingStartTime')" />
             </v-sheet>
         </v-col>
         <v-col cols="6" sm="3" class="text-center">
             <v-sheet elevation="6" color="grey-darken-3" class="pa-1">
-                <time-formatter :time="props.proposal?.votingEndTime" :title="t('proposal.votingEndTime')" />
+                <time-formatter :time="props.proposal?.votingEndTime || {seconds: 0}" :title="t('proposal.votingEndTime')" />
             </v-sheet>
             
         </v-col>

@@ -5,7 +5,7 @@
                 <proposal-header-row 
                     v-for="proposal in votingAndEndedProposals" :key="proposal?.proposalId.toString()"
                     :proposal="proposal" 
-                    role="button" @click="() => $router.push('../proposal/' + proposal?.proposalId.toString())"
+                    @click="() => $router.push('../proposal/' + proposal?.proposalId.toString())"
                     >
                     <template v-slot:append>
                         <div class="text-caption flex-grow-1 d-flex justify-end align-center">
