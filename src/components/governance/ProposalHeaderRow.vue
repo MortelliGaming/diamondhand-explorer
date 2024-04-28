@@ -1,7 +1,7 @@
 <template>
-    <v-container class="pa-0 pl-1 pr-1">
+    <v-container class="pa-0">
         <v-row class="pa-2" role="button" @click="emit('click')">
-            <v-col cols="1"  class="d-flex justify-center align-center">
+            <v-col cols="1" class="d-flex justify-center align-center pb-2">
                 <v-chip class="justify-center">{{ props.proposal?.proposalId }}</v-chip>
             </v-col>
             <v-col cols="6" class="d-flex flex-grow-1 justify-center align-center" v-if="props.proposal">

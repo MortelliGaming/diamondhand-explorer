@@ -1,6 +1,6 @@
 <template>
     <v-chip :color="statusChipColor">
-        <div  class="text-caption" >{{ statusText }}</div>
+        <div  style="font-size: xx-small;" >{{ statusText }}</div>
     </v-chip>
 </template>
 

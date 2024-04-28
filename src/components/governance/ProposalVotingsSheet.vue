@@ -7,7 +7,7 @@
                 </v-col>
             </v-row>
             <v-row>
-                <v-col cols="12" sm="12">
+                <v-col cols="12">
                     <proposal-voting-chart :proposal="props.proposal" />
                 </v-col>
                 <v-col cols="12" sm="3">
