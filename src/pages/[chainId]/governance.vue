@@ -1,47 +1,46 @@
 <template>
-  <div>
-    <v-container class="mt-3">
-        <v-row>
-          <v-col class="text-h6 text-center">{{t('module.governance')}}</v-col>
-        </v-row>
-        <v-row>
-          <v-col class="text-center pl-6">
-            <div class="d-flex">
-              <div class="pa-3 text-caption" v-if="votingProposals?.length > 0">
-                <v-btn size="x-small"
-                  @click="() => {activeTab = ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD}"
-                  :active="activeTab == ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD">Voting</v-btn>
-              </div>
-              <div class="pa-3 text-caption"  v-if="depositingProposals?.length > 0">
-                <v-btn size="x-small"
-                  @click="() => {activeTab = ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD}"
-                  :active="activeTab == ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD">Depositing</v-btn>
-              </div>
-              <div class="pa-3 text-caption">
-                <v-btn size="x-small"
-                  @click="() => {activeTab = ProposalStatus.PROPOSAL_STATUS_PASSED}"
-                  :active="activeTab == ProposalStatus.PROPOSAL_STATUS_PASSED">Ended</v-btn>
-              </div>
-              <div class="flex-grow-1"></div>
-            </div>
-          </v-col>
-        </v-row>
-        <proposal-header-row 
-          v-for="proposal in proposalsToDisplay" :key="proposal.proposalId.toString()"
-          :proposal="proposal" 
-          @click="() => $router.push('proposal/' + proposal.proposalId.toString())"
-          >
-          <template v-slot:append>
-            <proposal-status-chip :proposal="proposal" />
-          </template>
-        </proposal-header-row>
-    </v-container>
-  </div>
+  <v-container>
+      <v-container class="pt-5">
+          <v-row>
+              <v-col cols="12" class="text-center pt-0">
+                <div class="d-flex">
+                  <div class="text-caption" v-if="votingProposals?.length > 0">
+                    <v-btn size="x-small"
+                      @click="() => {activeTab = ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD}"
+                      :active="activeTab == ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD">Voting</v-btn>
+                  </div>
+                  <div class="text-caption"  v-if="depositingProposals?.length > 0">
+                    <v-btn size="x-small"
+                      @click="() => {activeTab = ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD}"
+                      :active="activeTab == ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD">Depositing</v-btn>
+                  </div>
+                  <div class="text-caption">
+                    <v-btn size="x-small"
+                      @click="() => {activeTab = ProposalStatus.PROPOSAL_STATUS_PASSED}"
+                      :active="activeTab == ProposalStatus.PROPOSAL_STATUS_PASSED">Ended</v-btn>
+                  </div>
+                  <div class="flex-grow-1"></div>
+                </div>
+            </v-col>
+          </v-row>
+
+          <v-sheet elevation="12" color="" class="text-caption pa-3 mt-2 fill-heigh2">
+            <proposal-header-row 
+              v-for="proposal in proposalsToDisplay" :key="proposal.proposalId.toString()"
+              :proposal="proposal" 
+              @click="() => $router.push('proposal/' + proposal.proposalId.toString())"
+              >
+              <template v-slot:append>
+                <proposal-status-chip :proposal="proposal" />
+              </template>
+            </proposal-header-row>
+        </v-sheet>
+        </v-container>
+  </v-container>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
 
 import { useBlockchainStore } from '@/store/blockchain';
 import { useProposalsStore } from '@/store/proposals';
@@ -52,7 +51,6 @@ import { ProposalStatus } from '@/lib/proto/cosmos/gov/v1beta1/gov';
 import ProposalHeaderRow from '@/components/governance/ProposalHeaderRow.vue';
 import ProposalStatusChip from '@/components/governance/ProposalStatusChip.vue';
 
-const { t } = useI18n()
 const { loadCosmosProposals } = useProposalsStore()
 const { proposals } = storeToRefs(useProposalsStore())
 const { availableChains } = storeToRefs(useBlockchainStore())
