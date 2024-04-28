@@ -4,12 +4,46 @@
             <v-chip>{{ props.proposal?.proposalId }}</v-chip>
         </v-col>
         <v-col cols="9" class="d-flex  d-flex justify-center align-center" v-if="props.proposal">
-            <div class="pl-2 pr-2">
-                <div class="text-caption">
+            <div class="pl-2 pr-2 text-caption" style="width: 100%;">
+                <div>
                     <b>{{ props.proposal?.content?.typeUrl?.split('.')[props.proposal?.content?.typeUrl?.split('.').length -1] }}</b>
                 </div>
-                <div class="text-caption" style="word-break: break-word;">
-                    {{ JSON.stringify(decodePropsalContent(props.proposal)) }}
+                <div v-if="props.proposal?.status != ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD">
+                    <div class="d-flex flex-row">
+                        <div class="pr-2">
+                            {{ t('proposal.votingStartTime') }}:
+                        </div>
+                        <div class="d-flex flex-row">
+                            <div class="pr-2">
+                                {{ moment(getTimeFromTimestamp(props.proposal.votingStartTime)).format('DD.mm.YY HH:mm:ss') }}
+                            </div>
+                            (<human-readable-time :time="props.proposal.votingStartTime" />)
+                        </div>
+                    </div>
+                    <div class="d-flex flex-row">
+                        <div class="pr-2">
+                            {{ t('proposal.votingEndTime') }}:
+                        </div>
+                        <div class="d-flex flex-row">
+                            <div class="pr-2">
+                                {{ moment(getTimeFromTimestamp(props.proposal.votingEndTime)).format('DD.mm.YY HH:mm:ss') }}
+                            </div>
+                            (<human-readable-time :time="props.proposal.votingEndTime" />)
+                        </div>
+                    </div>
+                </div>
+                <div v-else>
+                    <div class="d-flex flex-row">
+                        <div class="pr-2">
+                            {{ t('proposal.depositEndTime') }}:
+                        </div>
+                        <div class="d-flex flex-row">
+                            <div class="pr-2">
+                                {{ moment(getTimeFromTimestamp(props.proposal.depositEndTime)).format('DD.mm.YY HH:mm:ss') }}
+                            </div>
+                            (<human-readable-time :time="props.proposal.depositEndTime" />)
+                        </div>
+                    </div>
                 </div>
             </div>
         </v-col>
@@ -32,11 +66,15 @@
 </template>
 
 <script lang="ts" setup>
+import { type PropType } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import { protoRegistry } from '@/lib/http';
+import HumanReadableTime from '../HumanReadableTime.vue';
+
 import type { Proposal } from '@/lib/proto/cosmos/gov/v1beta1/gov';
-import type { PropType } from 'vue';
 import { ProposalStatus } from '@/lib/proto/cosmos/gov/v1beta1/gov';
+import moment from 'moment';
+import { Timestamp } from '@/lib/proto/google/protobuf/timestamp';
 
 const props = defineProps({
     proposal: {
@@ -44,14 +82,10 @@ const props = defineProps({
         regquired: true,
     },
 })
+const { t } = useI18n()
 
-function decodePropsalContent(proposal: Proposal): any {
-    try {
-        if(proposal.content) {
-            return protoRegistry.decode(proposal.content)
-        }
-    } catch {/** */}
-    return proposal
+function getTimeFromTimestamp(timestamp: Timestamp) {
+    return parseInt((timestamp.seconds * 1000n).toString())
 }
 
 </script>

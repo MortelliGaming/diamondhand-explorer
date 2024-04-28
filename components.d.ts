@@ -9,7 +9,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     404: typeof import('./src/components/404.vue')['default']
     ChainContent: typeof import('./src/components/ChainContent.vue')['default']
-    copy: typeof import('./src/components/TimeFormatter copy.vue')['default']
     Home: typeof import('./src/components/Home.vue')['default']
     HumanReadableTime: typeof import('./src/components/HumanReadableTime.vue')['default']
     Loading: typeof import('./src/components/Loading.vue')['default']
