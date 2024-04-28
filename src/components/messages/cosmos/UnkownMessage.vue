@@ -13,8 +13,6 @@
 </template>
 
 <script lang="ts" setup>
-import 'vue-json-pretty/lib/styles.css';
-
 import { protoRegistry } from '@/lib/http';
 import type { DecodeObject } from '@cosmjs/proto-signing'
 import { computed, type PropType } from 'vue';
