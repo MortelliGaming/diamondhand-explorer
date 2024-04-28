@@ -1,6 +1,5 @@
 <template>
-    <v-container>
-    <v-row class="pa-2">
+    <v-row class="pa-2" role="button" @click="$emit('click')">
         <v-col cols="1"  class="d-flex justify-center align-center">
             <v-chip class="justify-center">{{ props.proposal?.proposalId }}</v-chip>
         </v-col>
@@ -59,7 +58,6 @@
         </v-col>
     </v-row>
     <v-divider />
-</v-container>
 </template>
 
 <script lang="ts" setup>
