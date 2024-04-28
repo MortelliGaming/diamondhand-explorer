@@ -45,6 +45,12 @@ export const en = {
             PROPOSAL_STATUS_UNSPECIFIED: 'Unspecified',
             UNRECOGNIZED: 'Unrecognized'
         },
+        voting: 'Voting Results',
+        yes: 'Yes',
+        no: 'No',
+        noWithVeto: 'No With Veto',
+        abstain: 'Abstain',
+        notVoted: 'Not Voted',
     },
     time: {
         in: 'in',

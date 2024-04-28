@@ -5,9 +5,6 @@
                 <v-col cols="6">
                     <div class="text-h6 text-left">{{t('proposal.info')}}</div>
                 </v-col>
-                <v-col cols="6"  class="text-caption text-right">
-                    <proposal-status-chip :proposal="props.proposal" />
-                </v-col>
             </v-row>
 
             <v-row class="text-caption">
@@ -29,8 +26,6 @@
 import { type Component, Ref, computed, ref, type PropType, markRaw } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Proposal } from '@/lib/proto/cosmos/gov/v1beta1/gov';
-
-import ProposalStatusChip from './ProposalStatusChip.vue';
 
 import MsgSoftwareUpgrade from '@/components/messages/cosmos/MsgSoftwareUpgrade.vue';
 import MsgUpdateParams from '@/components/messages/cosmos/MsgUpdateParams.vue';
