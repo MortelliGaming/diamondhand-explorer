@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container class="pa-0 pl-1 pr-1">
         <v-row class="pa-2" role="button" @click="emit('click')">
             <v-col cols="1"  class="d-flex justify-center align-center">
                 <v-chip class="justify-center">{{ props.proposal?.proposalId }}</v-chip>
