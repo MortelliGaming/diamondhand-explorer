@@ -29,7 +29,7 @@
         <proposal-header-row 
           v-for="proposal in proposalsToDisplay" :key="proposal.proposalId.toString()"
           :proposal="proposal" 
-          role="button" @click="() => $router.push('proposal/' + proposal.proposalId.toString())"
+          @click="() => $router.push('proposal/' + proposal.proposalId.toString())"
           >
           <template v-slot:append>
             <proposal-status-chip :proposal="proposal" />

@@ -19,6 +19,7 @@ declare module 'vue' {
     ProposalHeaderRow: typeof import('./src/components/governance/ProposalHeaderRow.vue')['default']
     ProposalInfoSheet: typeof import('./src/components/governance/ProposalInfoSheet.vue')['default']
     ProposalStatusChip: typeof import('./src/components/governance/ProposalStatusChip.vue')['default']
+    ProposalTimelineRow: typeof import('./src/components/governance/ProposalTimelineRow.vue')['default']
     ProposalTimelineSheet: typeof import('./src/components/governance/ProposalTimelineSheet.vue')['default']
     ProposalVotingChart: typeof import('./src/components/charts/ProposalVotingChart.vue')['default']
     ProposalVotingsSheet: typeof import('./src/components/governance/ProposalVotingsSheet.vue')['default']

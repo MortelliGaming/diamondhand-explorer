@@ -1,5 +1,5 @@
 <template>
-    <v-row class="pa-2" role="button" @click="$emit('click')">
+    <v-row class="pa-2" role="button" @click="emit('click')">
         <v-col cols="1"  class="d-flex justify-center align-center">
             <v-chip class="justify-center">{{ props.proposal?.proposalId }}</v-chip>
         </v-col>
@@ -78,6 +78,7 @@ const props = defineProps({
     },
 })
 const { t } = useI18n()
+const emit = defineEmits(['click'])
 
 function getTimeFromTimestamp(timestamp: Timestamp) {
     return parseInt((timestamp.seconds * 1000n).toString())

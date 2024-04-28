@@ -1,5 +1,5 @@
 <template>
-    <apexchart class="d-flex justify-center" style="margin-left: -15px;" v-if="series.length > 0" width="300px" height="100px" type="bar" :options="chartOptions" :series="series"></apexchart>
+    <apexchart class="d-flex justify-center" style="margin-left: -15px;" v-if="series.length > 0" width="100%" height="100px" type="bar" :options="chartOptions" :series="series"></apexchart>
 </template>
 
 <script lang="ts" setup>
@@ -30,9 +30,6 @@ const series = computed(() => {
     }, {
         name: t('proposal.abstain'),
         data: [Number(BigInt(props.proposal?.finalTallyResult?.abstain) / BigInt(Math.pow(10,18)))]
-    }, {
-        name: t('proposal.notVoted'),
-        data: [0]
     }]
 })
 
