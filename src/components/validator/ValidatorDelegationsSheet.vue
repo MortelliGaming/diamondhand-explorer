@@ -7,7 +7,7 @@
                         <v-chip class="justify-center">{{ ((page-1) * numDelegationPerPage) + 1 + i }}</v-chip>
                         <div class="pl-2 pr-2" style="max-width: 65%; overflow-wrap: break-word;">
                             <div class="text-caption">
-                                {{ delegation.delegation.delegatorAddress }}
+                                <copy-box :text="delegation.delegation.delegatorAddress" />
                             </div>
                         </div>
                         <div class="text-caption text-right d-flex align-end justify-end flex-grow-1" style="word-break: break-word;">

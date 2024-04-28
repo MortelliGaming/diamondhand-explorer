@@ -60,5 +60,8 @@ export const en = {
         ago: 'ago',
         daysAgo: 'days',
         daysToGo: 'days'
+    },
+    message: {
+        copied: 'Copied to the clipboard'
     }
 }

@@ -5,12 +5,12 @@
                 <v-chip class="justify-center">{{ props.proposal?.proposalId }}</v-chip>
             </v-col>
             <v-col cols="6" class="d-flex flex-grow-1 justify-center align-center" v-if="props.proposal">
-                <v-row class="pl-2 pr-2 text-caption" style="width: 100%;">
+                <v-row class="pl-2 pr-2 text-caption" style="width: 100%;" no-gutters>
                     <v-col cols="12" class="text-subtitle-2">
                         <b>{{ props.proposal?.content?.typeUrl?.split('.')[props.proposal?.content?.typeUrl?.split('.').length -1] }}</b>
                     </v-col>
                     <div v-if="props.proposal?.status != ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD">
-                        <v-col cols="12" class="pt-0 flex-row d-flex">
+                        <v-col cols="12" class="pa-0 flex-row d-flex">
                             <div class="pr-2">
                                 <b>{{ t('proposal.votingEndTime') }}:</b>
                             </div>

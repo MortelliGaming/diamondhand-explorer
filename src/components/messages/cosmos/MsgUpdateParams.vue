@@ -7,7 +7,7 @@
                 Authority:
             </v-col>
             <v-col cols="9" style="overflow-wrap: break-word;">
-                {{ decodedMessage?.authority}}
+                <copy-box :text="decodedMessage?.authority" />
             </v-col>
         </v-row>
         <v-divider />
@@ -77,10 +77,11 @@
 </template>
 
 <script lang="ts" setup>
-
-import { protoRegistry } from '@/lib/http';
-import type { DecodeObject } from '@cosmjs/proto-signing'
 import { computed, type PropType } from 'vue';
+import type { DecodeObject } from '@cosmjs/proto-signing'
+
+import CopyBox from '@/components/CopyBox.vue';
+import { protoRegistry } from '@/lib/http';
 import { MsgUpdateParams } from '@/lib/proto/ethermint/feemarket/v1/tx';
 
 const props = defineProps({

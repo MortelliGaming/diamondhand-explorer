@@ -52,7 +52,7 @@
                 {{ t('proposal.authority') }}:
             </v-col>
             <v-col cols="9" style="overflow-wrap: break-word;">
-                {{ decodedMessage?.authority}}
+                <copy-box :text="decodedMessage?.authority" />
             </v-col>
         </v-row>
         <v-divider />
@@ -66,6 +66,8 @@
 import { useI18n } from 'vue-i18n';
 import { Ref, computed, onMounted, ref, type PropType } from 'vue';
 import type { DecodeObject } from '@cosmjs/proto-signing'
+
+import CopyBox from '@/components/CopyBox.vue';
 
 import { useBlockchainStore } from '@/store/blockchain';
 import { protoRegistry } from '@/lib/http';

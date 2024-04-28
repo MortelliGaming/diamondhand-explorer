@@ -64,5 +64,8 @@ export const de = {
         ago: 'her',
         daysAgo: 'Tage',
         daysToGo: 'Tagen'
+    },
+    message: {
+        copied: 'In die Zwischenablage kopiert'
     }
 }

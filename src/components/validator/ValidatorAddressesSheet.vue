@@ -2,29 +2,29 @@
     <v-sheet class="text-caption pa-3 fill-height">
         <v-container>   
             <div class="text-h6 text-center pb-3">{{t('validator.addresses')}}</div>
-            <v-row class="d-flex justify-center align-center">
-                <v-col cols="12" md="6" lg="4">
+            <v-row class="d-flex justify-center align-center" no-gutters style="max-height: 300px; overflow-y: scroll;">
+                <v-col cols="12" lg="4">
                     <div class="d-flex flex-column">
                         <b><div>{{ t('validator.operatorAddress') }}</div></b>
-                        <div class="break-string">{{ props.validator?.operatorAddress }}</div>
+                        <copy-box :text="props.validator?.operatorAddress" />
                     </div>
                 </v-col>
-                <v-col cols="12" md="6" lg="4">
+                <v-col cols="12" lg="4">
                     <div class="d-flex flex-column">
                         <b><div>{{ t('validator.consensusAddress') }}</div></b>
-                        <div class="break-string">{{ props.validator?.consensusAddress }}</div>
+                        <copy-box :text="props.validator?.consensusAddress" />
                     </div>
                 </v-col>
-                <v-col cols="12" md="6" lg="4">
+                <v-col cols="12" lg="4">
                     <div class="d-flex flex-column">
                         <b><div>{{ t('validator.consensusHexAddress') }}</div></b>
-                        <div class="break-string">{{ props.validator?.consensusHexAddress }}</div>
+                        <copy-box :text="props.validator?.consensusHexAddress" />
                     </div>
                 </v-col>
-                <v-col cols="12" md="6" lg="4">
+                <v-col cols="12" lg="4">
                     <div class="d-flex flex-column">
                         <b><div>{{ t('validator.operatorWallet') }}</div></b>
-                        <div class="break-string">{{ props.validator?.operatorWallet }}</div>
+                        <copy-box :text="props.validator?.operatorWallet" />
                     </div>
                 </v-col>
                 <v-col cols="12" md="12" lg="8">
@@ -39,9 +39,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ExtendedValidator } from '@/store/validators';
 import type { PropType } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { ExtendedValidator } from '@/store/validators';
+
+import CopyBox from '../CopyBox.vue';
 
 const { t } = useI18n();
 const props = defineProps({
@@ -50,7 +52,6 @@ const props = defineProps({
         regquired: true,
     },
 })
-
 </script>
 <style>
 </style>
