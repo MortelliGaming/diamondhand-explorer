@@ -12,25 +12,25 @@
                 </v-col>
                 <v-col cols="12" sm="3">
                     <v-sheet elevation="12" color="grey-darken-3" class="d-flex pa-2">
-                        <div class="pr-1">{{ t('proposal.yes') }}:</div>
+                        <div class="pr-1">{{ t('proposal.voteOption.VOTE_OPTION_YES') }}:</div>
                         <div class="flex-grow-1 text-right">{{ getNormalizedAmount(props.proposal.finalTallyResult.yes) }}</div>
                     </v-sheet>
                 </v-col>
                 <v-col cols="12" sm="3">
                     <v-sheet elevation="12" color="grey-darken-3" class="d-flex pa-2">
-                        <div class="pr-1">{{ t('proposal.no') }}:</div>
+                        <div class="pr-1">{{ t('proposal.voteOption.VOTE_OPTION_NO') }}:</div>
                         <div class="flex-grow-1 text-right">{{ getNormalizedAmount(props.proposal.finalTallyResult.no) }}</div>
                     </v-sheet>
                 </v-col>
                 <v-col cols="12" sm="3">
                     <v-sheet elevation="12" color="grey-darken-3" class="d-flex pa-2">
-                        <div class="pr-1">{{ t('proposal.noWithVeto') }}:</div>
+                        <div class="pr-1">{{ t('proposal.voteOption.VOTE_OPTION_NO_WITH_VETO') }}:</div>
                         <div class="flex-grow-1 text-right">{{ getNormalizedAmount(props.proposal.finalTallyResult.noWithVeto) }}</div>
                     </v-sheet>
                 </v-col>
                 <v-col cols="12" sm="3">
                     <v-sheet elevation="12" color="grey-darken-3" class="d-flex pa-2">
-                        <div class="pr-1">{{ t('proposal.abstain') }}:</div>
+                        <div class="pr-1">{{ t('proposal.voteOption.VOTE_OPTION_ABSTAIN') }}:</div>
                         <div class="flex-grow-1 text-right">{{ getNormalizedAmount(props.proposal.finalTallyResult.abstain) }}</div>
                     </v-sheet>
                 </v-col>

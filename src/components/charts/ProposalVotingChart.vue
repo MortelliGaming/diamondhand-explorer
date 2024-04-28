@@ -17,18 +17,19 @@ const props = defineProps({
     },
 })
 const { t } = useI18n()
+
 const series = computed(() => {
     return [{
-        name: t('proposal.yes'),
+        name: t('proposal.voteOption.VOTE_OPTION_YES'),
         data: [Number(BigInt(props.proposal?.finalTallyResult?.yes) / BigInt(Math.pow(10,18)))]
     }, {
-        name: t('proposal.no'),
+        name: t('proposal.voteOption.VOTE_OPTION_NO'),
         data: [Number(BigInt(props.proposal?.finalTallyResult?.no) / BigInt(Math.pow(10,18)))]
     }, {
-        name: t('proposal.noWithVeto'),
+        name: t('proposal.voteOption.VOTE_OPTION_NO_WITH_VETO'),
         data: [Number(BigInt(props.proposal?.finalTallyResult?.noWithVeto) / BigInt(Math.pow(10,18)))]
     }, {
-        name: t('proposal.abstain'),
+        name: t('proposal.voteOption.VOTE_OPTION_ABSTAIN'),
         data: [Number(BigInt(props.proposal?.finalTallyResult?.abstain) / BigInt(Math.pow(10,18)))]
     }]
 })

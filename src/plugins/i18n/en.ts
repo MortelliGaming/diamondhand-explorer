@@ -78,10 +78,6 @@ export const en = {
         },
         voting: 'Voting Results',
         votes: 'Votes',
-        yes: 'Yes',
-        no: 'No',
-        noWithVeto: 'No With Veto',
-        abstain: 'Abstain',
         notVoted: 'Not Voted',
         content: 'Content',
         noVotesFound: 'No votes found'
