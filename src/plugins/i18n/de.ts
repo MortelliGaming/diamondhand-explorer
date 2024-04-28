@@ -40,6 +40,15 @@ export const de = {
         binaries: 'Dateien',
         height: 'Blockhöhe',
         authority: 'Authorität',
+        status: {
+            PROPOSAL_STATUS_DEPOSIT_PERIOD: 'Hinterlegen',
+            PROPOSAL_STATUS_PASSED: 'Angenommen',
+            PROPOSAL_STATUS_VOTING_PERIOD: 'Abstimmung',
+            PROPOSAL_STATUS_FAILED: 'Fehlgeschalagen',
+            PROPOSAL_STATUS_REJECTED: 'Abgelehnt',
+            PROPOSAL_STATUS_UNSPECIFIED: 'Nicht spezifiziert',
+            UNRECOGNIZED: 'Nicht erkannt'
+        },
     },
     time: {
         in: 'In',

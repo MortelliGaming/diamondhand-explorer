@@ -71,11 +71,11 @@ const activeTab = ref(votingProposals.value?.length > 0
 const proposalsToDisplay = computed(() => {
   switch(activeTab.value) {
     case ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD:
-      return depositingProposals.value;
+      return depositingProposals.value?.toSorted((a,b) => Number(b.proposalId - a.proposalId));
     case ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD: 
-      return votingProposals.value;
+      return votingProposals.value?.toSorted((a,b) => Number(b.proposalId - a.proposalId));
     default:
-      return endedProposals.value;
+      return endedProposals.value?.toSorted((a,b) => Number(b.proposalId - a.proposalId));
   }
 })
 

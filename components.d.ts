@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     404: typeof import('./src/components/404.vue')['default']
     ChainContent: typeof import('./src/components/ChainContent.vue')['default']
+    copy: typeof import('./src/components/governance/ProposalInfoSheet copy.vue')['default']
     Home: typeof import('./src/components/Home.vue')['default']
     HumanReadableTime: typeof import('./src/components/HumanReadableTime.vue')['default']
     Loading: typeof import('./src/components/Loading.vue')['default']
@@ -17,6 +18,7 @@ declare module 'vue' {
     MsgUpdateParams: typeof import('./src/components/messages/cosmos/MsgUpdateParams.vue')['default']
     ProposalHeaderRow: typeof import('./src/components/governance/ProposalHeaderRow.vue')['default']
     ProposalInfoSheet: typeof import('./src/components/governance/ProposalInfoSheet.vue')['default']
+    ProposalStatusChip: typeof import('./src/components/governance/ProposalStatusChip.vue')['default']
     ProposalTimelineSheet: typeof import('./src/components/governance/ProposalTimelineSheet.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

@@ -36,6 +36,15 @@ export const en = {
         depositEndTime: 'Deposit Time',
         votingStartTime: 'Voting Start',
         votingEndTime: 'Voting End',
+        status: {
+            PROPOSAL_STATUS_DEPOSIT_PERIOD: 'Deposit',
+            PROPOSAL_STATUS_PASSED: 'Passed',
+            PROPOSAL_STATUS_VOTING_PERIOD: 'Voting',
+            PROPOSAL_STATUS_FAILED: 'Failed',
+            PROPOSAL_STATUS_REJECTED: 'Rejected',
+            PROPOSAL_STATUS_UNSPECIFIED: 'Unspecified',
+            UNRECOGNIZED: 'Unrecognized'
+        },
     },
     time: {
         in: 'in',

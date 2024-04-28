@@ -6,9 +6,7 @@
                     <div class="text-h6 text-left">{{t('proposal.info')}}</div>
                 </v-col>
                 <v-col cols="6"  class="text-caption text-right">
-                    <v-chip :color="statusChipColor">
-                        <div  class="text-caption" >{{ statusText }}</div>
-                    </v-chip>
+                    <proposal-status-chip :proposal="props.proposal" />
                 </v-col>
             </v-row>
 
@@ -30,9 +28,10 @@
 <script lang="ts" setup>
 import { type Component, Ref, computed, ref, type PropType, markRaw } from 'vue';
 import { useI18n } from 'vue-i18n';
-
 import { Proposal } from '@/lib/proto/cosmos/gov/v1beta1/gov';
-import { ProposalStatus } from '@/lib/proto/cosmos/gov/v1beta1/gov';
+
+import ProposalStatusChip from './ProposalStatusChip.vue';
+
 import MsgSoftwareUpgrade from '@/components/messages/cosmos/MsgSoftwareUpgrade.vue';
 import MsgUpdateParams from '@/components/messages/cosmos/MsgUpdateParams.vue';
 import UnkownMessage from '@/components/messages/cosmos/UnkownMessage.vue';
@@ -58,40 +57,6 @@ const messageMapping: Ref<Record<string, Component>> = ref({
 
 const messageComponent = computed(() => {
     return props.proposal?.content ? messageMapping.value[props.proposal?.content.typeUrl] || UnkownMessage : UnkownMessage
-})
-
-const statusChipColor = computed(() => {
-    switch(props.proposal?.status) {
-        case ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD:
-            return 'orange-lighten-1'
-        case ProposalStatus.PROPOSAL_STATUS_PASSED: 
-            return 'green-darken-3'
-        case ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD:
-            return 'green-lighten-1'
-        default: 
-            return 'red-darken-3'
-    }
-})
-
-const statusText = computed(() => {
-    switch(props.proposal?.status) {
-        case ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD:
-            return 'Depositing'
-        case ProposalStatus.PROPOSAL_STATUS_PASSED: 
-            return 'Passed'
-        case ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD:
-            return 'Voting'
-        case ProposalStatus.PROPOSAL_STATUS_FAILED:
-            return 'Failed'
-        case ProposalStatus.PROPOSAL_STATUS_REJECTED:
-            return 'Rejected'
-        case ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED:
-            return 'Unspecified'
-        case ProposalStatus.UNRECOGNIZED:
-            return 'Unrecognized'
-        default: 
-            return 'Unrecognized'
-    }
 })
 
 </script>
