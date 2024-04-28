@@ -26,7 +26,15 @@
             </div>
           </v-col>
         </v-row>
-        <proposal-header-row v-for="proposal in proposalsToDisplay" :key="proposal.proposalId.toString()" :proposal="proposal"  role="button" @click="() => $router.push('proposal/' + proposal.proposalId.toString())"/>
+        <proposal-header-row 
+          v-for="proposal in proposalsToDisplay" :key="proposal.proposalId.toString()"
+          :proposal="proposal" 
+          role="button" @click="() => $router.push('proposal/' + proposal.proposalId.toString())"
+          >
+          <template v-slot:append>
+            <proposal-status-chip :proposal="proposal" />
+          </template>
+        </proposal-header-row>
     </v-container>
   </div>
 </template>
@@ -42,6 +50,7 @@ import { storeToRefs } from 'pinia';
 import { ProposalStatus } from '@/lib/proto/cosmos/gov/v1beta1/gov';
 
 import ProposalHeaderRow from '@/components/governance/ProposalHeaderRow.vue';
+import ProposalStatusChip from '@/components/governance/ProposalStatusChip.vue';
 
 const { t } = useI18n()
 const { loadCosmosProposals } = useProposalsStore()

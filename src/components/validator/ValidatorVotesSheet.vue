@@ -1,24 +1,18 @@
 <template>
     <v-sheet class="text-caption pa-3 fill-height">
         <div class="text-h6 text-center">Votes</div>
-            <v-container style="height: 300px;overflow-y: scroll;">
-                <v-row v-for="proposal in votingAndEndedProposals" :key="proposal?.proposalId.toString()">
-                    <v-col cols="12" class="d-flex  d-flex justify-center align-center" v-if="proposal">
-                        <v-chip>{{ proposal?.proposalId }}</v-chip>
-                        <div class="pl-2 pr-2" style="max-width: 70%;">
-                            <div class="text-caption">
-                                <b>{{ proposal?.content?.typeUrl?.split('.')[proposal?.content?.typeUrl?.split('.').length -1] }}</b>
-                            </div>
-                            <div class="text-caption" style="word-break: break-word;">
-                                {{ JSON.stringify(decodePropsalContent(proposal)) }}
-                            </div>
+            <v-container style="height: 300px;overflow-y: scroll;" class="pa-0">
+                <proposal-header-row 
+                    v-for="proposal in votingAndEndedProposals" :key="proposal?.proposalId.toString()"
+                    :proposal="proposal" 
+                    role="button" @click="() => $router.push('../proposal/' + proposal?.proposalId.toString())"
+                    >
+                    <template v-slot:append>
+                        <div class="text-caption flex-grow-1 d-flex justify-end align-center">
+                            {{  validatorVotes[proposal?.proposalId.toString() || ''] ? validatorVotes[proposal?.proposalId.toString() || ''] : 'did not vote' }}
                         </div>
-                        <div class="text-caption flex-grow-1 d-flex justify-center align-center">
-                            {{  validatorVotes[proposal.proposalId.toString()] ? validatorVotes[proposal.proposalId.toString()] : 'did not vote' }}
-                        </div>
-                    </v-col>
-                    <v-divider />
-                </v-row>
+                    </template>
+                </proposal-header-row>
             </v-container>
     </v-sheet>
 </template>
@@ -31,8 +25,9 @@ import { useProposalsStore } from '@/store/proposals';
 import { useAppStore } from '@/store/app';
 import { storeToRefs } from 'pinia';
 
-import { protoRegistry } from '@/lib/http';
-import { Proposal, ProposalStatus, Vote } from '@/lib/proto/cosmos/gov/v1beta1/gov';
+import { ProposalStatus, Vote } from '@/lib/proto/cosmos/gov/v1beta1/gov';
+
+import ProposalHeaderRow from '../governance/ProposalHeaderRow.vue';
 
 const { availableChains, cosmosHelper } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
@@ -58,16 +53,6 @@ const votingAndEndedProposals = computed(() => {
         .filter(a => a)
         .toSorted((a,b) => Number(b!.proposalId - a!.proposalId))
 })
-
-function decodePropsalContent(proposal: Proposal): any {
-    try {
-        if(proposal.content) {
-            return protoRegistry.decode(proposal.content)
-        }
-    } catch {/** */}
-    return proposal
-}
-
 
 setTimeout(() => {
     loadCosmosProposals(cosmosChainId.value || '').then(async () => {

@@ -1,15 +1,16 @@
 <template>
-    <v-row>
+    <v-container>
+    <v-row class="pa-2">
         <v-col cols="1"  class="d-flex justify-center align-center">
             <v-chip class="justify-center">{{ props.proposal?.proposalId }}</v-chip>
         </v-col>
-        <v-col cols="7" class="d-flex  d-flex justify-center align-center" v-if="props.proposal">
-            <div class="pl-2 pr-2 text-caption" style="width: 100%;">
-                <div class="text-subtitle-2">
+        <v-col cols="6" class="d-flex flex-grow-1 justify-center align-center" v-if="props.proposal">
+            <v-row class="pl-2 pr-2 text-caption" style="width: 100%;">
+                <v-col cols="12" class="text-subtitle-2">
                     <b>{{ props.proposal?.content?.typeUrl?.split('.')[props.proposal?.content?.typeUrl?.split('.').length -1] }}</b>
-                </div>
+                </v-col>
                 <div v-if="props.proposal?.status != ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD">
-                    <div class="d-flex flex-column flex-sm-row">
+                    <v-col cols="12" class="pt-0 pb-0">
                         <div class="pr-2">
                             <b>{{ t('proposal.votingStartTime') }}:</b>
                         </div>
@@ -18,11 +19,11 @@
                                 {{ moment(getTimeFromTimestamp(props.proposal.votingStartTime)).format('DD.MM.YY HH:mm:ss') }}
                             </div>
                             <div v-if="$vuetify.display.smAndUp" class="d-flex flex-row">
-                                (<human-readable-time :time="props.proposal.votingStartTime" />)
+                                <human-readable-time :time="props.proposal.votingStartTime" />
                             </div>
                         </div>
-                    </div>
-                    <div class="d-flex  flex-column flex-sm-row">
+                    </v-col>
+                    <v-col cols="12" class="pt-0">
                         <div class="pr-2">
                             <b>{{ t('proposal.votingEndTime') }}:</b>
                         </div>
@@ -31,13 +32,13 @@
                                 {{ moment(getTimeFromTimestamp(props.proposal.votingEndTime)).format('DD.MM.YY HH:mm:ss') }}
                             </div>
                             <div v-if="$vuetify.display.smAndUp" class="d-flex flex-row">
-                                (<human-readable-time :time="props.proposal.votingEndTime" />)
+                                <human-readable-time :time="props.proposal.votingEndTime" />
                             </div>
                         </div>
-                    </div>
+                    </v-col>
                 </div>
                 <div v-else>
-                    <div class="d-flex  flex-column flex-sm-row">
+                    <v-col class="d-flex  flex-column flex-sm-row">
                         <div class="pr-2">
                             <b>{{ t('proposal.depositEndTime') }}:</b>
                         </div>
@@ -46,24 +47,19 @@
                                 {{ moment(getTimeFromTimestamp(props.proposal.depositEndTime)).format('DD.MM.YY HH:mm:ss') }}
                             </div>
                             <div v-if="$vuetify.display.smAndUp" class="d-flex flex-row">
-                                (<human-readable-time :time="props.proposal.depositEndTime" />)
+                                <human-readable-time :time="props.proposal.depositEndTime" />
                             </div>
                         </div>
-                    </div>
+                    </v-col>
                 </div>
-            </div>
+            </v-row>
         </v-col>
-        <v-col cols="4" class="justify-end d-flex align-center flex-grow-1" v-if="(proposal?.votingEndTime.seconds || 0) <= Date.now()">
-            <proposal-status-chip :proposal="props.proposal" />
+        <v-col cols="5" class="justify-end d-flex align-center">
+            <slot name="append"></slot>
         </v-col>
-        <v-col cols="4" v-else-if="proposal?.status === ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD">
-            {{ proposal.totalDeposit }}
-        </v-col>
-        <v-col cols="4" v-else>
-            {{ 'current turnout' }}
-        </v-col>
-        <v-divider />
     </v-row>
+    <v-divider />
+</v-container>
 </template>
 
 <script lang="ts" setup>
@@ -71,7 +67,6 @@ import { type PropType } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import HumanReadableTime from '@/components/HumanReadableTime.vue';
-import ProposalStatusChip from './ProposalStatusChip.vue';
 
 import type { Proposal } from '@/lib/proto/cosmos/gov/v1beta1/gov';
 import { ProposalStatus } from '@/lib/proto/cosmos/gov/v1beta1/gov';
