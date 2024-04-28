@@ -1,16 +1,23 @@
 <template>
-    <div class="text-caption" v-for="prop in Object.entries(dynamicMessage)" :key="prop[0]">
-        <message-property :property="prop" />
-        <v-divider />
-    </div>
+    <v-row>
+        <v-col cols="12" class="pb-0">
+            <b>{{ 'content:' }}</b>
+        </v-col>
+    </v-row>
+    <v-row>
+        <v-col style="white-space: pre-wrap; overflow-wrap: break-word;" class="pt-0">
+            {{ (JSON.stringify(dynamicMessage, null, '\t').replace(/^\s+/, '')) }}
+        </v-col>
+    </v-row>
+    <v-divider />
 </template>
 
 <script lang="ts" setup>
+import 'vue-json-pretty/lib/styles.css';
 
 import { protoRegistry } from '@/lib/http';
 import type { DecodeObject } from '@cosmjs/proto-signing'
 import { computed, type PropType } from 'vue';
-import MessageProperty from './MessageProperty.vue';
 
 const props = defineProps({
     message: {

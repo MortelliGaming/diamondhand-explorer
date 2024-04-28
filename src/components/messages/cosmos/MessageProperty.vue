@@ -14,7 +14,6 @@
 
             <v-col v-else cols="8" class="d-flex align-center">
                 <div  style="overflow-wrap: anywhere;" >
-                    {{ displayProp[1] }}
                 </div>
             </v-col>
         </v-row>

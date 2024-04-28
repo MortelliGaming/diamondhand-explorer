@@ -26,6 +26,6 @@ import { Timestamp } from '@/lib/proto/google/protobuf/timestamp';
   })
 
   const displayTime = computed(() => {
-    return props.time ? moment(parseInt(props.time?.seconds.toLocaleString() || '0') * 1000) : moment()
+    return props.time ? moment(parseInt(props.time?.seconds.toString() || '0') * 1000) : moment()
   })
   </script>
