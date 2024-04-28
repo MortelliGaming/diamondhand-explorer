@@ -13,7 +13,7 @@ export function formatDuration(timestamp: number): string {
     let output = '';
 
     if (days) {
-        output += `${days} days `;
+        output += `${days} days`;
     } else {
         output = '0 d';
     }

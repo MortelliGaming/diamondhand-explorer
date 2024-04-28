@@ -22,7 +22,7 @@
             </v-row>
             <div class="text-caption"></div>
             <v-divider />
-            <component :is="messageComponent" :message="proposal?.content"/>
+            <component :is="messageComponent" :message="proposal?.content" :chain-id="props.chainId"/>
         </v-container>
     </v-sheet>
 </template>
@@ -38,6 +38,17 @@ import MsgUpdateParams from '@/components/messages/cosmos/MsgUpdateParams.vue';
 import UnkownMessage from '@/components/messages/cosmos/UnkownMessage.vue';
 
 const { t } = useI18n()
+
+const props = defineProps({
+    proposal: {
+        type: Object as PropType<Proposal>,
+        regquired: true,
+    },
+    chainId: {
+        type: String,
+        default: ''
+    },
+})
 
 const messageMapping: Ref<Record<string, Component>> = ref({
     '/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade':  markRaw(MsgSoftwareUpgrade),
@@ -81,13 +92,6 @@ const statusText = computed(() => {
         default: 
             return 'Unrecognized'
     }
-})
-
-const props = defineProps({
-    proposal: {
-        type: Object as PropType<Proposal>,
-        regquired: true,
-    },
 })
 
 </script>

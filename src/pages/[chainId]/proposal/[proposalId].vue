@@ -4,7 +4,7 @@
         <v-container class="mt-3">
             <v-row justify="space-around">
                 <v-col cols="12">
-                    <proposal-info-sheet v-if="proposal" :proposal="proposal" />
+                    <proposal-info-sheet v-if="proposal" :proposal="proposal" :chain-id="cosmosChainId"/>
                 </v-col>
             </v-row>
             <v-row justify="space-around">
@@ -32,7 +32,7 @@ import { storeToRefs } from 'pinia';
 const route = useRoute()
 const { loadCosmosProposals } = useProposalsStore()
 const { proposals } = storeToRefs(useProposalsStore())
-const { availableChains } = storeToRefs(useBlockchainStore())
+const { availableChains, cosmosChaindata } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 
 const proposalId = computed(() => (route.params as {proposalId: string}).proposalId)
@@ -42,6 +42,14 @@ const cosmosChainId = computed(() => {
 })
 const proposal = computed(() => {
     return proposals.value[cosmosChainId.value || '']?.find(p => p.proposalId === BigInt(proposalId.value));
+})
+
+const blockHeight = computed(() => {
+    return cosmosChaindata.value[cosmosChainId.value || '']?.blockchain?.lastHeight
+})
+const blockTime = computed(() => {
+    return (cosmosChaindata.value[cosmosChainId.value || '']?.blockchain?.blockMetas[1]?.header?.time.getMilliseconds() || 0)
+        - (cosmosChaindata.value[cosmosChainId.value || '']?.blockchain?.blockMetas[0]?.header?.time.getMilliseconds() || 0)
 })
 
 setTimeout(() => {

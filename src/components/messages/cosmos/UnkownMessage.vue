@@ -22,6 +22,10 @@ const props = defineProps({
         type: Object as PropType<DecodeObject>,
         regquired: true,
     },
+    chainId: {
+        type: String,
+        required: true,
+    },
 })
 
 const decodedMessage = computed(() => {

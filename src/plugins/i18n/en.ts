@@ -30,9 +30,17 @@ export const en = {
     proposal: {
         info: 'Info',
         dates: 'Dates',
+        type: 'Type',
+        around: 'Around',
         submitTime: 'Submit Time',
         depositEndTime: 'Deposit Time',
         votingStartTime: 'Voting Start',
         votingEndTime: 'Voting End',
+    },
+    time: {
+        in: 'in',
+        ago: 'ago',
+        daysAgo: 'days',
+        daysToGo: 'days'
     }
 }

@@ -29,10 +29,22 @@ export const de = {
     },
     proposal: {
         info: 'Info',
-        dates: 'Dates',
-        submitTime: 'Submit Time',
-        depositEndTime: 'Deposit Time',
-        votingStartTime: 'Voting Start',
-        votingEndTime: 'Voting End',
+        dates: 'Daten',
+        type: 'Typ',
+        around: 'Ungefähr',
+        submitTime: 'Einreichdatum',
+        depositEndTime: 'Ende Einlage',
+        votingStartTime: 'Abstimmungsbeginn',
+        votingEndTime: 'Abstimmungsende',
+        name: 'Name',
+        binaries: 'Dateien',
+        height: 'Blockhöhe',
+        authority: 'Authorität',
+    },
+    time: {
+        in: 'In',
+        ago: 'her',
+        daysAgo: 'Tage',
+        daysToGo: 'Tagen'
     }
 }
