@@ -12,10 +12,17 @@
         <v-divider />
         <v-row>
             <v-col cols="3">
-                Info:
+                Binaries:
             </v-col>
-            <v-col cols="9" style="overflow-wrap: break-word;">
-                {{ decodedMessage?.plan.info }}
+            <v-col cols="9" style="overflow-wrap: break-word;" v-for="binary in Object.entries(JSON.parse(decodedMessage?.plan.info || '{}')?.binaries)" :key="binary[0]">
+                <div class="d-flex flex-column">
+                    <div>
+                        <b>{{ binary[0] }}</b>
+                    </div>
+                    <div>
+                        {{ binary[1] }}
+                    </div>
+                </div>
             </v-col>
         </v-row>
         <v-divider />

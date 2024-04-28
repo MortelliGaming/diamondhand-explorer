@@ -1,9 +1,10 @@
 import { defineStore, storeToRefs } from 'pinia';
 import { Ref, ref } from 'vue';
-import type { Proposal } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
+
+import { protoRegistry } from '@/lib/http';
+import type { Proposal } from '@/lib/proto/cosmos/gov/v1beta1/gov';
 
 import { useBlockchainStore } from '@/store/blockchain';
-import { protoRegistry } from '@/lib/http';
 
 export const useProposalsStore = defineStore('proposals', () => {
 

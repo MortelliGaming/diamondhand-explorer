@@ -26,5 +26,13 @@ export const de = {
         operatorWallet: 'Operator Wallet Addresse',
         consensusPublicKey: 'Consensus Public Key',
         delegate: 'Staken'
+    },
+    proposal: {
+        info: 'Info',
+        dates: 'Dates',
+        submitTime: 'Submit Time',
+        depositEndTime: 'Deposit Time',
+        votingStartTime: 'Voting Start',
+        votingEndTime: 'Voting End',
     }
 }

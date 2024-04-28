@@ -17,10 +17,10 @@
 </template>
 
 <script lang="ts" setup>
-import NotFound from '@/components/404.vue'
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 
+import NotFound from '@/components/404.vue'
 import ProposalTimelineSheet from '@/components/governance/ProposalTimelineSheet.vue';
 import ProposalInfoSheet from '@/components/governance/ProposalInfoSheet.vue';
 
