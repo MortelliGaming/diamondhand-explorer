@@ -46,7 +46,7 @@ import { SoftwareUpgradeProposal, CancelSoftwareUpgradeProposal } from 'cosmjs-t
 import { MsgSoftwareUpgrade, MsgCancelUpgrade } from 'cosmjs-types/cosmos/upgrade/v1beta1/tx';
 import { ParameterChangeProposal } from 'cosmjs-types/cosmos/params/v1beta1/params';
 import { MsgUpdateParams as MsgFeemarketUpdateParams } from '@/lib/proto/ethermint/feemarket/v1/tx'
-import { QueryVoteResponse } from "@/lib/proto/cosmos/gov/v1beta1/query";
+import { QueryVoteResponse, QueryVotesResponse } from "@/lib/proto/cosmos/gov/v1beta1/query";
 import { QueryValidatorDelegationsResponse } from "@/lib/proto/cosmos/staking/v1beta1/query";
 // Map message type strings to decoder functions
 export const protoRegistry = new  Registry(defaultRegistryTypes)
@@ -70,7 +70,8 @@ export type CosmosHelperPublic = {
     GetStakingParams: (chainId: string) => Promise<QueryParamsResponse|undefined>
     GetSlashingParams: (chainId: string) => Promise<SlashingQueryParametersResponse|undefined>
     GetAllProposals: (chainId: string) => Promise<QueryProposalsResponse|undefined>
-    GetProposalVotes: (chainId: string, proposalId: BigInt, operatorAddress: string) => Promise<QueryVoteResponse|undefined>
+    GetProposalValidatorVotes: (chainId: string, proposalId: BigInt, operatorAddress: string) => Promise<QueryVoteResponse|undefined>
+    GetProposalVotes: (chainId: string, proposalId: BigInt) => Promise<QueryVotesResponse|undefined>
     GetValidatorDelegations: (chainId: string, valoperAddress: string) => Promise<QueryValidatorDelegationsResponse|undefined>
     
 } & EventTarget
@@ -326,7 +327,7 @@ export class CosmosHelper extends EventTarget {
         return Promise.resolve(undefined)
     }
 
-    public async GetProposalVotes(chainId: string, proposalId: BigInt, operatorAddress: string) {
+    public async GetProposalValidatorVotes(chainId: string, proposalId: BigInt, operatorAddress: string) {
         if(this.queryClients[chainId]) {
             try {
                 return this.queryClients[chainId].extensions.gov.gov.vote(proposalId.toString(), operatorAddress);
@@ -334,6 +335,30 @@ export class CosmosHelper extends EventTarget {
                 return Promise.resolve(undefined)
             }
         }
+    }
+    public async GetProposalVotes(chainId: string, proposalId: BigInt) {
+        const response = {
+            votes: []
+        } as QueryVotesResponse
+
+        if(this.queryClients[chainId]) {
+            try {
+                const votes = await this.queryClients[chainId].extensions.gov.gov.votes(proposalId.toString());
+                while (votes.pagination && votes.pagination.nextKey.length > 0) {
+                    try {
+                        const nextResult = await this.queryClients[chainId].extensions.gov.gov.votes(proposalId.toString())
+                        votes.votes.push(...nextResult.votes)
+                        votes.pagination = nextResult.pagination
+                    } catch {
+                        votes.pagination = undefined
+                    }
+                }
+                response.votes = votes.votes
+            } catch {
+                return Promise.resolve(undefined)
+            }
+        }
+        return Promise.resolve(response)
     }
 
     public async GetValidatorDelegations(chainId: string, valoperAddress: string) {

@@ -50,12 +50,14 @@ export const de = {
             UNRECOGNIZED: 'Nicht erkannt'
         },
         voting: 'Abstimmung',
+        votes: 'Stimmen',
         yes: 'Ja',
         no: 'Nein',
         noWithVeto: 'Nein mit Veto',
         abstain: 'Enthalten',
         notVoted: 'Nicht abgestimmt',
-        content: 'Inhalt'
+        content: 'Inhalt',
+        noVotesFound: 'Keine Stimmen gefunden'
     },
     time: {
         in: 'In',

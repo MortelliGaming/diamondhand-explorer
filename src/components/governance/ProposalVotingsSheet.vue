@@ -5,9 +5,6 @@
                 <v-col cols="6">
                     <div class="text-h6 text-left">{{t('proposal.voting')}}</div>
                 </v-col>
-                <v-col cols="6" class="text-caption text-right pr-0">
-                    <proposal-status-chip :proposal="props.proposal" />
-                </v-col>
             </v-row>
             <v-row>
                 <v-col cols="12" sm="12">
@@ -49,7 +46,6 @@ import { useI18n } from 'vue-i18n';
 import { Proposal } from '@/lib/proto/cosmos/gov/v1beta1/gov';
 
 import ProposalVotingChart from '../charts/ProposalVotingChart.vue';
-import ProposalStatusChip from './ProposalStatusChip.vue';
 
 const { t } = useI18n()
 const props = defineProps({

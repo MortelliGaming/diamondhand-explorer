@@ -2,8 +2,11 @@
     <v-sheet class="text-caption pa-3 fill-height">
         <v-container class="pt-0">
             <v-row>
-                <v-col cols="12">
+                <v-col cols="7">
                     <div class="text-h6 text-left" style="overflow-wrap: break-word;">{{proposal?.content?.typeUrl?.replace('/','')}}</div>
+                </v-col>
+                <v-col cols="5" class="text-caption text-right pr-0">
+                    <proposal-status-chip :proposal="props.proposal" />
                 </v-col>
             </v-row>
             <v-row class="d-flex align-center">
@@ -29,6 +32,7 @@ import moment from 'moment';
 import { Proposal } from '@/lib/proto/cosmos/gov/v1beta1/gov';
 
 import HumanReadableTime from '../HumanReadableTime.vue';
+import ProposalStatusChip from './ProposalStatusChip.vue';
 import MsgSoftwareUpgrade from '@/components/messages/cosmos/MsgSoftwareUpgrade.vue';
 import MsgUpdateParams from '@/components/messages/cosmos/MsgUpdateParams.vue';
 import UnkownMessage from '@/components/messages/cosmos/UnkownMessage.vue';

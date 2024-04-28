@@ -12,6 +12,11 @@
                     <proposal-votings-sheet v-if="proposal" :proposal="proposal" />
                 </v-col>
             </v-row>
+            <v-row justify="space-around">
+                <v-col cols="12">
+                    <proposal-votes-sheet v-if="proposal" :proposal="proposal" :chain-id="cosmosChainId || ''" />
+                </v-col>
+            </v-row>
         </v-container>
     </div>
 </template>
@@ -23,6 +28,7 @@ import { useRoute } from 'vue-router';
 import NotFound from '@/components/404.vue'
 import ProposalInfoSheet from '@/components/governance/ProposalInfoSheet.vue';
 import ProposalVotingsSheet from '@/components/governance/ProposalVotingsSheet.vue';
+import ProposalVotesSheet from '@/components/governance/ProposalVotesSheet.vue';
 
 import { useBlockchainStore } from '@/store/blockchain';
 import { useProposalsStore } from '@/store/proposals';
