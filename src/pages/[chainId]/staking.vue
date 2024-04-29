@@ -36,17 +36,17 @@
             <div class="pa-3 text-caption">
               <v-btn size="x-small"
                 @click="() => {activeTab = BondStatus[BondStatus.BOND_STATUS_BONDED]}"
-                :active="activeTab == BondStatus[BondStatus.BOND_STATUS_BONDED]">active</v-btn>
+                :active="activeTab == BondStatus[BondStatus.BOND_STATUS_BONDED]">{{(t('validator.bondStatus.BOND_STATUS_BONDED'))}}</v-btn>
             </div>
             <div class="pa-3 text-caption">
               <v-btn size="x-small"
                 @click="() => {activeTab = BondStatus[BondStatus.BOND_STATUS_UNBONDED]}"
-                :active="activeTab == BondStatus[BondStatus.BOND_STATUS_UNBONDED]">inactive</v-btn>
+                :active="activeTab == BondStatus[BondStatus.BOND_STATUS_UNBONDED]">{{(t('validator.bondStatus.BOND_STATUS_UNBONDED'))}}</v-btn>
             </div>
             <div class="pa-3 text-caption">
               <v-btn size="x-small"
                 @click="() => {activeTab = BondStatus[BondStatus.BOND_STATUS_UNBONDING]}"
-                :active="activeTab == BondStatus[BondStatus.BOND_STATUS_UNBONDING]">unbonding</v-btn>
+                :active="activeTab == BondStatus[BondStatus.BOND_STATUS_UNBONDING]">{{(t('validator.bondStatus.BOND_STATUS_UNBONDING'))}}</v-btn>
             </div>
             <div class="flex-grow-1"></div>
           </div>
@@ -84,9 +84,29 @@
                 </div>
               </div>
             </template>
+            <template v-slot:[`header.rank`]="{ column }">
+              <div class="text-left">
+                {{  t('validator.' + column.key) }}
+              </div>
+            </template>
+            <template v-slot:[`header.description`]="{ column }">
+              <div class="text-left">
+                {{  t('validator.' + column.key) }}
+              </div>
+            </template>
+            <template v-slot:[`header.votingPower`]="{ column }">
+              <div class="text-left">
+                {{  t('validator.' + column.key) }}
+              </div>
+            </template>
+            <template v-slot:[`header.commission`]="{ column }">
+              <div class="text-left">
+                {{  t('validator.' + column.key) }}
+              </div>
+            </template>
             <template v-slot:[`header.action`]="{ column }">
-              <div class="d-flex justify-center">
-                {{  column.value }}
+              <div class="text-left">
+                {{  t('validator.' + column.key) }}
               </div>
             </template>
             <template v-slot:[`item.action`]="{ value }">
@@ -119,20 +139,22 @@
 <script lang="ts" setup>
 import numeral from 'numeral'
 import moment from 'moment'
-
 import { storeToRefs } from 'pinia'
+import { Ref, computed, onMounted, onUnmounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import { BondStatus } from "@/lib/proto/cosmos/staking/v1beta1/staking";
 import ChainContent from '@/components/ChainContent.vue'
 import Loading from '@/components/Loading.vue'
-import { useAppStore } from '@/store/app'
-import { Ref, computed, onMounted, onUnmounted, ref } from 'vue';
 import { VLayout, VRow } from 'vuetify/components';
-import { BondStatus } from "cosmjs-types/cosmos/staking/v1beta1/staking";
 
 import { useBlockchainStore } from '@/store/blockchain'
+import { useAppStore } from '@/store/app'
 import { useValidatorsStore } from '@/store/validators'
 
 import { QueryParamsResponse as QuerySlashingParamsResponse } from 'cosmjs-types/cosmos/slashing/v1beta1/query';
 
+const { t } = useI18n()
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 const { availableChains, cosmosChaindata } = storeToRefs(useBlockchainStore())
 const { getValidatorInfo,loadCosmosValidators } = useValidatorsStore()
