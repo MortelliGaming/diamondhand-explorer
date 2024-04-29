@@ -1,5 +1,5 @@
 <template>
-<chain-content class="pl-5 pr-5 fill-height" ref="tableContainer">
+<chain-content>
   <v-row class="pt-3 pl-5 pr-5" v-if="$vuetify.display.mdAndUp">
     <v-col class="text-center">
       <v-alert
@@ -29,38 +29,34 @@
       ></v-alert>
     </v-col>
   </v-row>
-  <v-row>
-    <v-col class="text-center pl-6">
-      <div class="d-flex">
-        <div class="pa-3 text-caption">
-          <v-btn size="x-small"
+  <v-row style="width: 100%">
+    <v-col cols="12" class="text-left pl-6 text-caption">
+      <v-row>
+        <v-col cols="12">
+          <v-btn class="mr-2" size="x-small"
             @click="() => {activeTab = BondStatus[BondStatus.BOND_STATUS_BONDED]}"
             :active="activeTab == BondStatus[BondStatus.BOND_STATUS_BONDED]">{{(t('validator.bondStatus.BOND_STATUS_BONDED'))}}</v-btn>
-        </div>
-        <div class="pa-3 text-caption">
-          <v-btn size="x-small"
+          <v-btn class="mr-2" size="x-small"
             @click="() => {activeTab = BondStatus[BondStatus.BOND_STATUS_UNBONDED]}"
             :active="activeTab == BondStatus[BondStatus.BOND_STATUS_UNBONDED]">{{(t('validator.bondStatus.BOND_STATUS_UNBONDED'))}}</v-btn>
-        </div>
-        <div class="pa-3 text-caption">
-          <v-btn size="x-small"
+          <v-btn class="mr-2" size="x-small"
             @click="() => {activeTab = BondStatus[BondStatus.BOND_STATUS_UNBONDING]}"
             :active="activeTab == BondStatus[BondStatus.BOND_STATUS_UNBONDING]">{{(t('validator.bondStatus.BOND_STATUS_UNBONDING'))}}</v-btn>
-        </div>
-        <div class="flex-grow-1"></div>
-      </div>
+        </v-col>
+      </v-row>
     </v-col>
   </v-row>
-    <v-row class="fill-height pl-2 pr-2" style="max-height:100vh; overflow: scroll;">
-      <v-data-table 
+  <v-row class="pl-2 pr-2" style="overflow-y: scroll;">
+    <v-col cols="12">
+      <v-data-table
+        style="max-height: 70vh;"
         v-if="isTableVisible"
         :items-per-page="tableValidators?.length"
         :no-filter="true"
         :items="tableValidators"
         density="compact" 
         sticky 
-        class="text-caption" 
-        :style="'min-height: 75vh; height: 75vh; width:100%;'" >
+        class="text-caption fill-height"  >
         <template v-slot:[`item.rank`]="{ value }">
           <v-chip class="text-caption">
             {{ value }}
@@ -125,7 +121,8 @@
 
         </template>
         </v-data-table>
-    </v-row>
+    </v-col>
+  </v-row>
 </chain-content>
   <div>
   </div>
@@ -135,13 +132,11 @@
 import numeral from 'numeral'
 import moment from 'moment'
 import { storeToRefs } from 'pinia'
-import { Ref, computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { BondStatus } from "@/lib/proto/cosmos/staking/v1beta1/staking";
 import ChainContent from '@/components/ChainContent.vue'
-import Loading from '@/components/Loading.vue'
-import { VLayout, VRow } from 'vuetify/components';
 
 import { useBlockchainStore } from '@/store/blockchain'
 import { useAppStore } from '@/store/app'
@@ -153,7 +148,7 @@ const { t } = useI18n()
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 const { availableChains, cosmosChaindata } = storeToRefs(useBlockchainStore())
 const { getValidatorInfo,loadCosmosValidators } = useValidatorsStore()
-const { keybaseAvatars, validators, isLoading } = storeToRefs(useValidatorsStore())
+const { keybaseAvatars, validators } = storeToRefs(useValidatorsStore())
 
 const activeTab = ref('BOND_STATUS_BONDED')
 const cosmosChainId = computed(() => {

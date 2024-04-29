@@ -59,6 +59,7 @@ protoRegistry.register(MsgSoftwareUpgrade.typeUrl, MsgSoftwareUpgrade)
 protoRegistry.register(MsgFeemarketUpdateParams.typeUrl, MsgFeemarketUpdateParams as GeneratedType)
 
 export type CosmosHelperPublic = {
+    GetIsConnecting: () => boolean
     ConnectClients: (keplrConfigs: ChainInfo[]) => void
     GetBlock: (chainId: string, height?: number) => Promise<Block|undefined>
     GetlatestEthTxHashes: (chainId: string)  => string[]
@@ -73,7 +74,6 @@ export type CosmosHelperPublic = {
     GetProposalValidatorVotes: (chainId: string, proposalId: BigInt, operatorAddress: string) => Promise<QueryVoteResponse|undefined>
     GetProposalVotes: (chainId: string, proposalId: BigInt) => Promise<QueryVotesResponse|undefined>
     GetValidatorDelegations: (chainId: string, valoperAddress: string) => Promise<QueryValidatorDelegationsResponse|undefined>
-    
 } & EventTarget
 
 export class EvmTxEvent extends Event {
@@ -101,12 +101,15 @@ export class CosmosNewBlockheaderEvent extends Event {
 export class CosmosHelper extends EventTarget {
     constructor(keplrConfigs: ChainInfo[]) {
         super()
+        this.isConnecting = false;
         this.starGateClients = {};
         this.tendermintClients = {};
         this.blockHeaderStreams = {};
         this.queryClients = {};
         this.ConnectClients(keplrConfigs)
     }
+
+    private isConnecting: boolean = false;
 
     private starGateClients: {
         [id: string]: StargateClient
@@ -141,6 +144,11 @@ export class CosmosHelper extends EventTarget {
 
     private latestEthTxHashes: {[chainId: string] : string[]} = {}
     private numEthTxHashesToKeep = 50
+
+
+    public GetIsConnecting() {
+        return this.isConnecting
+    }
 
     public GetlatestEthTxHashes(chainId: string) : string[] {
         return this.latestEthTxHashes[chainId] || [];
@@ -189,14 +197,17 @@ export class CosmosHelper extends EventTarget {
     }
 
     public async ConnectClients(keplrConfigs: ChainInfo[]) {
+        this.isConnecting = true;
         for(const chainInfo of keplrConfigs){
-            await this.starGateClients[chainInfo.chainId]?.disconnect()
-            await this.tendermintClients[chainInfo.chainId]?.disconnect()
-            this.blockHeaderStreams[chainInfo.chainId]?.unsubscribe();
+            try {
+                await this.starGateClients[chainInfo.chainId]?.disconnect()
+                await this.tendermintClients[chainInfo.chainId]?.disconnect()
+                this.blockHeaderStreams[chainInfo.chainId]?.unsubscribe();
+            } catch { /** */}
 
-            Tendermint37Client.connect(chainInfo.rpc.replace('https', 'wss')).then(client => {
-                // create query client with all extensions
-                const queryClient = QueryClient.withExtensions(client)
+            try {
+                const tendermintClient = await Tendermint37Client.connect(chainInfo.rpc.replace('https', 'wss'))
+                const queryClient = QueryClient.withExtensions(tendermintClient)
                 this.queryClients[chainInfo.chainId] = {
                     client: queryClient,
                     extensions: {
@@ -214,7 +225,7 @@ export class CosmosHelper extends EventTarget {
                     }
                 }
                 // store client and open stream
-                this.tendermintClients[chainInfo.chainId] = client
+                this.tendermintClients[chainInfo.chainId] = tendermintClient
                 const newBlockHeaderStream = this.tendermintClients[chainInfo.chainId].subscribeNewBlockHeader()
                 // subscribe new block header
                 const subscription = newBlockHeaderStream.subscribe({
@@ -223,19 +234,21 @@ export class CosmosHelper extends EventTarget {
                     complete: () => this.webSocketClosed(chainInfo.chainId)
                 });
                 this.blockHeaderStreams[chainInfo.chainId] = subscription
-            })
+            } catch(err) {
+                console.error('err subscribe blockheader and create query clients '+ chainInfo.chainId)
+                console.error(err)
+            }
 
             // connect stargate client
-            StargateClient.connect(chainInfo.rpc)
-            .then(async client => {
-                // console.log('stargate connected' + chainInfo.chainId)
-                this.starGateClients[chainInfo.chainId] = client
-            })
-            .catch((err) => {
+            try {
+                const stargateClient = await StargateClient.connect(chainInfo.rpc)
+                this.starGateClients[chainInfo.chainId] = stargateClient
+            } catch(err) {
                 console.error('could not connect stargate client for '+ chainInfo.chainId)
                 console.error(err)
-            })
+            }
         }
+        this.isConnecting = false;
     }
 
     public async GetBlock(chainId: string, height?: number) {
