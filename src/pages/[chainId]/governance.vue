@@ -86,9 +86,7 @@ const proposalsToDisplay = computed(() => {
   }
 })
 
-setTimeout(() => {
-  loadCosmosProposals(cosmosChainId.value || '')
-}, 500);
+loadCosmosProposals(cosmosChainId.value || '')
 
 </script>
 <style>

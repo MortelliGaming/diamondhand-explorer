@@ -11,6 +11,8 @@ import { fetchAvatar } from '@/lib/http/keybase';
 import { useBlockchainStore } from '@/store/blockchain';
 import { fromBech32, toBech32, toHex, fromBase64 } from '@cosmjs/encoding';
 import { DelegationResponse } from '@/lib/proto/cosmos/staking/v1beta1/staking';
+import { BondStatusString } from '@cosmjs/stargate/build/modules/staking/queries';
+import { QueryValidatorDelegationsResponse, QueryValidatorsResponse } from '@/lib/proto/cosmos/staking/v1beta1/query';
 
 // Augmented Data For Validators
 interface ValidatorExtension {
@@ -27,24 +29,90 @@ export interface ExtendedValidator extends Validator, ValidatorExtension {}
 
 export const useValidatorsStore = defineStore('validators', () => {
 
+    const { cosmosClients } = storeToRefs(useBlockchainStore())
+
     const validators: Ref<Record<string, Validator[]>> = ref({})
     const validatorDelegations: Ref<Record<string, Record<string, DelegationResponse[]>>> = ref({})
 
     const keybaseAvatars: Ref<Record<string, string>> = ref({})
     
-    const isLoading: Ref<string[]> = ref([])
-
+    const isLoadingValidators: Ref<string[]> = ref([])
+    const isLoadingValidatorDelegations: Ref<string[]> = ref([])
+    
     async function loadCosmosValidators(chainId: string) {
-        if(isLoading.value.includes(chainId)) {
+        if(isLoadingValidators.value.includes(chainId)) {
             return Promise.resolve(true)
         }
-        isLoading.value.push(chainId)
-        const { cosmosHelper } = storeToRefs(useBlockchainStore())
-        validators.value[chainId] =  ((await cosmosHelper.value.GetAllValidators(chainId))?.validators || [])
+        isLoadingValidators.value.push(chainId)
+
+        const response = {
+            validators: []
+        } as QueryValidatorsResponse
+        if(cosmosClients.value[chainId]?.queryClient) {
+            for(const bondStatus of ['BOND_STATUS_BONDED','BOND_STATUS_UNBONDED', 'BOND_STATUS_UNBONDING']) {
+                try {
+                    const validators = await cosmosClients.value[chainId]?.queryClient.extensions.staking.staking.validators(bondStatus as BondStatusString)
+                    while (validators.pagination && validators.pagination.nextKey.length > 0) {
+                        try {
+                            const nextResult = await cosmosClients.value[chainId]?.queryClient.extensions.staking.staking.validators(bondStatus as BondStatusString, validators.pagination.nextKey)
+                            validators.validators.push(...nextResult.validators)
+                            validators.pagination = nextResult.pagination
+                        } catch {
+                            validators.pagination = undefined
+                        }
+                    }
+                    response.validators.push(...validators.validators)
+                } catch(err) { 
+                    console.error('error fetching validator infos: ', err)
+                }
+            }
+        }
+        validators.value[chainId] = response.validators
         // dont wait for the avatars
         loadAvatars(chainId);
-        const isLoadingIndex = isLoading.value.indexOf(chainId)
-        isLoading.value.splice(isLoadingIndex, 1)
+        // remove chainId from loading
+        const isLoadingIndex = isLoadingValidators.value.indexOf(chainId)
+        isLoadingValidators.value.splice(isLoadingIndex, 1)
+        return Promise.resolve(true)
+    }
+
+    async function loadValidatorDelegations(chainId: string, valoperAddress: string) {
+        if(isLoadingValidatorDelegations.value.includes(chainId)) {
+            return Promise.resolve(true)
+        }
+        isLoadingValidatorDelegations.value.push(chainId)
+
+        const allDelegations = {
+            delegationResponses: []
+        } as QueryValidatorDelegationsResponse
+
+        if(cosmosClients.value[chainId]?.queryClient) {
+            try {
+                const delegations = await cosmosClients.value[chainId]?.queryClient.extensions.staking.staking.validatorDelegations(valoperAddress)
+                while (delegations.pagination && delegations.pagination.nextKey.length > 0) {
+                    try {
+                        const nextResult = await cosmosClients.value[chainId]?.queryClient.extensions.staking.staking.validatorDelegations(valoperAddress, delegations.pagination.nextKey)
+                        delegations.delegationResponses.push(...nextResult.delegationResponses)
+                        delegations.pagination = nextResult.pagination
+                    } catch {
+                        delegations.pagination = undefined
+                    }
+                }
+                allDelegations.delegationResponses.push(...delegations.delegationResponses)
+            } catch(err) { 
+                console.error('error fetching validator infos: ', err)
+            }
+        }
+        if(!validatorDelegations.value[chainId]) {
+            validatorDelegations.value[chainId] = {}
+        }
+        if(!validatorDelegations.value[chainId][valoperAddress]) {
+            validatorDelegations.value[chainId][valoperAddress] = []
+        }
+        validatorDelegations.value[chainId][valoperAddress] = allDelegations.delegationResponses
+        
+        const isLoadingIndex = isLoadingValidatorDelegations.value.indexOf(chainId)
+        isLoadingValidatorDelegations.value.splice(isLoadingIndex, 1)
         return Promise.resolve(true)
     }
 
@@ -85,26 +153,9 @@ export const useValidatorsStore = defineStore('validators', () => {
         }
     }
 
-    async function loadValidatorDelegations(chainId: string, valoperAddress: string) {
-        if(isLoading.value.includes(chainId)) {
-            return Promise.resolve(true)
-        }
-        isLoading.value.push(chainId)
-        const { cosmosHelper } = storeToRefs(useBlockchainStore())
-        if(!validatorDelegations.value[chainId]) {
-            validatorDelegations.value[chainId] = {}
-        }
-        if(!validatorDelegations.value[chainId][valoperAddress]) {
-            validatorDelegations.value[chainId][valoperAddress] = []
-        }
-        validatorDelegations.value[chainId][valoperAddress] =  ((await cosmosHelper.value.GetValidatorDelegations(chainId, valoperAddress))?.delegationResponses || [])
-        const isLoadingIndex = isLoading.value.indexOf(chainId)
-        isLoading.value.splice(isLoadingIndex, 1)
-        return Promise.resolve(true)
-    }
-
     return {
-        isLoading,
+        isLoadingValidators,
+        isLoadingValidatorDelegations,
         validators,
         keybaseAvatars,
         validatorDelegations,

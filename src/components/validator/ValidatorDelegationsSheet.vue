@@ -48,7 +48,6 @@ const { t } = useI18n()
 const { availableChains } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 
-const { loadValidatorDelegations } = useValidatorsStore()
 const { validatorDelegations } = storeToRefs(useValidatorsStore())
 
 const cosmosChainId = computed(() => {
@@ -93,10 +92,6 @@ function getElements<T>(arr: T[], x: number, y: number): T[] {
         return arr.slice(y, y + x);
     }
 }
-
-setTimeout(() => {
-    loadValidatorDelegations(cosmosChainId.value || '', props.validator?.operatorAddress || '')
-}, 1500);
 
 </script>
 <style>

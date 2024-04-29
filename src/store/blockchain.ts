@@ -1,40 +1,61 @@
 import { defineStore, storeToRefs } from 'pinia';
 import { type Ref, computed, ref, ComputedRef } from 'vue';
 
-import { blockchainConfigs, type Mainnets, type Testnets } from '@/lib/chains'
+import { blockchainConfigs } from '@/lib/chains'
 
-import { PublicClient, createPublicClient, http } from 'viem';
 import { ExplorerChainInfo } from '@/types';
 import { useAppStore } from './app';
-import { CosmosHelper, CosmosNewBlockheaderEvent, EVMHelper, EVMHelperHelperPublic, type CosmosHelperPublic } from '@/lib/http';
-import { type BlockchainResponse} from '@cosmjs/tendermint-rpc';
+import { NewBlockHeaderEvent, Tendermint37Client } from '@cosmjs/tendermint-rpc';
+import { 
+    AuthExtension,
+    BankExtension,
+    DistributionExtension,
+    GovExtension,
+    IbcExtension,
+    MintExtension,
+    QueryClient,
+    StakingExtension,
+    StargateClient,
+    TxExtension } from '@cosmjs/stargate';
 
-import { QueryParamsResponse as QueryStakingParamsResponse } from 'cosmjs-types/cosmos/staking/v1beta1/query';
-import { QueryParamsResponse as QuerySlashingParamsResponse } from 'cosmjs-types/cosmos/slashing/v1beta1/query';
+import { FeegrantExtension, SlashingExtension, setupAuthExtension, setupBankExtension, setupDistributionExtension, setupFeegrantExtension, setupGovExtension, setupIbcExtension, setupMintExtension, setupSlashingExtension, setupStakingExtension, setupTxExtension } from '@cosmjs/stargate/build/modules';
+import { AuthzExtension, setupAuthzExtension } from '@cosmjs/stargate/build/modules/authz/queries';
+import { Subscription } from 'xstream';
+import { Block } from '@cosmjs/stargate';
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
 };
 
+export type ComosClients = {
+    queryClient: {
+        client: QueryClient,
+        extensions: {
+            staking: StakingExtension,
+            auth: AuthExtension,
+            authZ: AuthzExtension,
+            bank: BankExtension,
+            distribution: DistributionExtension
+            feeGrant: FeegrantExtension,
+            gov: GovExtension,
+            ibc: IbcExtension,
+            mint: MintExtension,
+            slashing: SlashingExtension,
+            tx: TxExtension
+        }
+    },
+    tendermintClient: Tendermint37Client,
+    stargateClient: StargateClient,
+    blockHeaderSubscription: Subscription
+}
+
 export const useBlockchainStore = defineStore('blockchain', () => {
-    const isLoading: Ref<string[]> = ref([])
-    const selectedChainName: Ref<Mainnets|Testnets|null> = ref(null)
-    // viem public client without signer
-    const publicEVMClient: Ref<null|PublicClient> = ref(null);
+    const isConnecting = ref(false)
 
-    const cosmosHelper: Ref<CosmosHelperPublic> = ref(new CosmosHelper([]))
-    const evmHelper: Ref<EVMHelperHelperPublic> = ref(new EVMHelper([]))
+    const latestBlocks: Ref<Record<string, Block[]>> = ref({})
 
-    const cosmosChaindata: Ref<Record<string, { 
-        blockchain?: BlockchainResponse|undefined,
-        stakingParams?: QueryStakingParamsResponse|undefined,
-        slashingParams?: QuerySlashingParamsResponse|undefined
-    }>> = ref({} as Record<string, { 
-        blockchain?: BlockchainResponse|undefined,
-        stakingParams?: QueryStakingParamsResponse|undefined,
-        slashingParams?: QuerySlashingParamsResponse|undefined
-    }>);
-    
+    const cosmosClients: Ref<Record<string, ComosClients>> = ref({})
+
     const availableChainNames = computed(() => {
         return availableChains.value.map(c => c.name)
     })
@@ -51,108 +72,93 @@ export const useBlockchainStore = defineStore('blockchain', () => {
         return availableChains.value.map(chain => chain.keplr?.chainId).filter(v => v != undefined) as string[]
     })
 
-    const selectedChain: Ref<null|ExplorerChainInfo> = computed(() => {
-        return Object.values(availableChains.value).find(x => x.name == selectedChainName.value) || null
-    })
-
-    const latestEVMTransactionHashes = computed(() => {
-        return availableCosmosChainIds.value.reduce((acc: {[id: string]: Ref<string[]>}, item) => {
-            acc[item] = computed(() => cosmosHelper.value.GetlatestEthTxHashes(item));
-            return acc;
-        }, {});
-    })
-
-    function connectCosmosClients() {
-        const allCosmosChains = []
-        for(const chain of availableChains.value) {
-            if(chain.keplr) {
-                allCosmosChains.push(chain.keplr)
-            }
-        }
-        cosmosHelper.value = new CosmosHelper(allCosmosChains)
-
-        // update latest blockheight
-        cosmosHelper.value.addEventListener('cosmosNewBlock', (event) => {
-            const newBlockEvent = event as CosmosNewBlockheaderEvent
-            if(!cosmosChaindata.value[newBlockEvent.chainId]) {
-                cosmosChaindata.value[newBlockEvent.chainId] = {}
-            }
-            if(!cosmosChaindata.value[newBlockEvent.chainId]?.blockchain) {
-                cosmosChaindata.value[newBlockEvent.chainId].blockchain = {
-                    lastHeight: newBlockEvent.blockHeight,
-                    blockMetas: []
-                }
-            }
-            (cosmosChaindata.value[newBlockEvent.chainId]!.blockchain! as any).lastHeight = newBlockEvent.blockHeight
-        })
-        setTimeout(loadBlockchaindata, 2000)
+    function webSocketClosed(chainId: string) {
+        console.log('websocket closed ' + chainId)
     }
 
-    function connectEVMClients() {
-        const allEVMChains = []
-        for(const chain of availableChains.value) {
-            if(chain.evm) {
-                allEVMChains.push(chain.evm)
+    function webSocketError(chainId: string, err: any) {
+        console.log('websocket error ' + chainId + ': ' + err)
+    }
+
+    function NewBlockHeaderEventHandler(chainId: string, blockInfo: NewBlockHeaderEvent) {
+        cosmosClients.value[chainId]?.stargateClient.getBlock(blockInfo.height)
+            .then((newBlockInfo) => {
+                if(!latestBlocks.value[chainId]) {
+                    latestBlocks.value[chainId] = []
+                }
+                // keep 100 blocks
+                if (latestBlocks.value[chainId].length >= 100) {
+                    latestBlocks.value[chainId].pop();
+                }
+                // Add the new item at position 0 (beginning of the array)
+                latestBlocks.value[chainId].unshift(newBlockInfo);
+            })
+    }
+
+    function setupExtenstions(queryClient: QueryClient) {
+        return {
+            staking: setupStakingExtension(queryClient),
+            auth: setupAuthExtension(queryClient),
+            authZ: setupAuthzExtension(queryClient),
+            bank: setupBankExtension(queryClient),
+            distribution: setupDistributionExtension(queryClient),
+            feeGrant: setupFeegrantExtension(queryClient),
+            gov: setupGovExtension(queryClient),
+            ibc: setupIbcExtension(queryClient),
+            mint: setupMintExtension(queryClient),
+            slashing: setupSlashingExtension(queryClient),
+            tx: setupTxExtension(queryClient),
+        }
+    }
+
+    async function connectCosmosClients() {
+        isConnecting.value = true
+        const allCosmosChains = availableChains.value.filter(c => c.keplr != null).map(c => c.keplr!)
+        for(const chainInfo of allCosmosChains){
+            if(cosmosClients.value[chainInfo.chainId]) {
+                try {
+                    cosmosClients.value[chainInfo.chainId].blockHeaderSubscription.unsubscribe()
+                    cosmosClients.value[chainInfo.chainId].stargateClient?.disconnect()
+                    cosmosClients.value[chainInfo.chainId].tendermintClient?.disconnect()
+                } catch { /** */}
+            }
+            
+            const stargateClient = await StargateClient.connect(chainInfo.rpc)
+            const tendermintClient = await Tendermint37Client.connect(chainInfo.rpc.replace('https', 'wss'))
+            const queryClient = QueryClient.withExtensions(tendermintClient)
+            const newBlockHeaderStream = tendermintClient.subscribeNewBlockHeader()
+            // subscribe new block header
+            const subscription = newBlockHeaderStream.subscribe({
+                next: (event: NewBlockHeaderEvent) => NewBlockHeaderEventHandler(chainInfo.chainId, event),
+                error: (error) => webSocketError(chainInfo.chainId, error),
+                complete: () => webSocketClosed(chainInfo.chainId)
+            });
+
+            cosmosClients.value[chainInfo.chainId] = {
+                tendermintClient,
+                queryClient: {
+                    client: queryClient,
+                    extensions: setupExtenstions(queryClient)
+                },
+                stargateClient,
+                blockHeaderSubscription: subscription
             }
         }
-        evmHelper.value = new EVMHelper(allEVMChains)
+        isConnecting.value = false
+        return Promise.resolve(true)
     }
 
     function connectClients() {
-        connectCosmosClients()
-        connectEVMClients();
-    }
-
-    function selectChain(chainName: Mainnets|Testnets) {
-        if(availableChains.value.map(c => c.name).includes(chainName)) {
-            selectedChainName.value = chainName as typeof chainName
-            if(selectedChainName.value) {
-                connectClient()
-            }
-        }
-    }
-
-    function connectClient() {
-        if(selectedChain.value?.evm) {
-            if(publicEVMClient.value !== null) {
-                publicEVMClient.value = null;
-            }
-            publicEVMClient.value = createPublicClient({
-                chain: selectedChain.value.evm,
-                transport: http()
-            })
-        } else {
-            publicEVMClient.value = null
-        }
-    }
-
-    async function loadBlockchaindata() {
-        for(const chain of availableChains.value) {
-            if(chain.keplr) {
-                isLoading.value.push(chain.name)
-                if(!cosmosChaindata.value[chain.keplr.chainId]) {
-                    cosmosChaindata.value[chain.keplr.chainId] = {}
-                }
-                cosmosChaindata.value[chain.keplr.chainId].blockchain = await cosmosHelper.value.GetChainInfo(chain.keplr.chainId)
-                cosmosChaindata.value[chain.keplr.chainId].stakingParams = await cosmosHelper.value.GetStakingParams(chain.keplr.chainId)
-                cosmosChaindata.value[chain.keplr.chainId].slashingParams = await cosmosHelper.value.GetSlashingParams(chain.keplr.chainId)
-                const index = isLoading.value.indexOf(chain.name)
-                isLoading.value.splice(index, 1)
-            }
-        }
+        return connectCosmosClients()
     }
 
     return { 
-        isLoading,
-        cosmosHelper,
+        isConnecting,
+        cosmosClients,
+        latestBlocks,
         availableCosmosChainIds,
         availableChains,
         availableChainNames,
-        selectedChain,
-        selectedChainName,
-        latestEVMTransactionHashes,
-        cosmosChaindata,
         connectClients,
-        selectChain,
     }
 })

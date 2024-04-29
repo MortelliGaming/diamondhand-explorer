@@ -70,7 +70,7 @@ import type { DecodeObject } from '@cosmjs/proto-signing'
 import CopyBox from '@/components/CopyBox.vue';
 
 import { useBlockchainStore } from '@/store/blockchain';
-import { protoRegistry } from '@/lib/http';
+import { protoRegistry } from '@/lib/protoRegistry';
 import { MsgSoftwareUpgrade } from '@/lib/proto/cosmos/upgrade/v1beta1/tx';
 
 import HumanReadableTime from '@/components/HumanReadableTime.vue';
@@ -88,7 +88,7 @@ const props = defineProps({
     },
 })
 const { t } = useI18n();
-const { cosmosHelper } = storeToRefs(useBlockchainStore())
+const { cosmosClients } = storeToRefs(useBlockchainStore())
 
 const decodedMessage = computed(() => {
     try {
@@ -123,9 +123,9 @@ const last3Blocks: Ref<(Block|undefined)[]> = ref([])
 
 onMounted(async () => {
     try {
-        last3Blocks.value.push(await cosmosHelper.value.GetBlock(props.chainId))
-        last3Blocks.value.push(await cosmosHelper.value.GetBlock(props.chainId, (last3Blocks.value[0]?.header.height || 0)-1))
-        last3Blocks.value.push(await cosmosHelper.value.GetBlock(props.chainId, (last3Blocks.value[0]?.header.height || 0)-2))
+        last3Blocks.value.push(await cosmosClients.value[props.chainId].stargateClient.getBlock())
+        last3Blocks.value.push(await cosmosClients.value[props.chainId].stargateClient.getBlock((last3Blocks.value[0]?.header.height || 0)-1))
+        last3Blocks.value.push(await cosmosClients.value[props.chainId].stargateClient.getBlock((last3Blocks.value[0]?.header.height || 0)-2))
     } catch {
     // 
     }

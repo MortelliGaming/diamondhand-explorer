@@ -81,7 +81,7 @@ import { computed, type PropType } from 'vue';
 import type { DecodeObject } from '@cosmjs/proto-signing'
 
 import CopyBox from '@/components/CopyBox.vue';
-import { protoRegistry } from '@/lib/http';
+import { protoRegistry } from '@/lib/protoRegistry';
 import { MsgUpdateParams } from '@/lib/proto/ethermint/feemarket/v1/tx';
 
 const props = defineProps({

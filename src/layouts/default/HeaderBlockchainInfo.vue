@@ -6,7 +6,7 @@
     <div>
       <div class="pl-2 text-caption d-flex direction-row">
         <div>{{ selectedChain?.keplr?.chainId}}</div>
-        <b class="pl-2">#{{ chainData?.blockchain?.lastHeight }}</b>
+        <b class="pl-2">#{{ latestBlockHeight }}</b>
       </div>
       <div class="text-caption pl-2">
         {{ selectedChain?.keplr?.rpc }}
@@ -22,14 +22,16 @@ import { useBlockchainStore } from '@/store/blockchain';
 import { computed } from 'vue';
 
 const { chainIdFromRoute } = storeToRefs(useAppStore())
-const { availableChains, cosmosChaindata } = storeToRefs(useBlockchainStore())
+const { availableChains, latestBlocks } = storeToRefs(useBlockchainStore())
 
 const selectedChain = computed(() => {
   return availableChains.value.find(c => c.name == chainIdFromRoute.value)
 })
 
-const chainData = computed(() => {
-  return cosmosChaindata.value[selectedChain.value?.keplr?.chainId || '']
+const latestBlockHeight = computed(() => {
+  return latestBlocks.value[selectedChain.value?.keplr?.chainId || '']?.length > 0
+    ? latestBlocks.value[selectedChain.value?.keplr?.chainId || ''][0].header.height
+    : 0
 })
 
 </script>

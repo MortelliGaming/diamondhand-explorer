@@ -46,13 +46,14 @@ const proposalId = computed(() => (route.params as {proposalId: string}).proposa
 const cosmosChainId = computed(() => {
     return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.chainId
 })
+
 const proposal = computed(() => {
     return proposals.value[cosmosChainId.value || '']?.find(p => p.proposalId === BigInt(proposalId.value));
 })
 
-setTimeout(() => {
+if(!proposal.value) {
     loadCosmosProposals(cosmosChainId.value || '')
-}, 500);
+}
 
 </script>
 <style>

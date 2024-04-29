@@ -1,38 +1,9 @@
 <template>
-<chain-content>
-  <v-row class="pt-3 pl-5 pr-5" v-if="$vuetify.display.mdAndUp">
-    <v-col class="text-center">
-      <v-alert
-        class="d-flex justify-center"
-        :text="moment(Number(BigInt(chainData?.stakingParams?.params.unbondingTime.seconds || 0n) * BigInt(1000))).format('HH:mm:ss')"
-        title="Unbond"
-        :icon="'mdi-clock-outline'"
-        type="success"
-      ></v-alert>
-    </v-col>
-    <v-col class="text-center">
-      <v-alert
-        class="d-flex justify-center"
-        :text="Number(BigInt(slashingParams?.slashFractionDowntime || 0n) / BigInt(Math.pow(10, 18) * 100)).toString() + '%'"
-        title="Downtime"
-        :icon="'mdi-arrow-down'"
-        type="warning"
-      ></v-alert>
-    </v-col>
-    <v-col class="text-center">
-      <v-alert
-        class="d-flex justify-center"
-        :text="(BigInt(slashingParams?.slashFractionDoubleSign || 0n) / BigInt(Math.pow(10, 18) * 100)).toString() + '%'"
-        title="Double Sign"
-        :icon="'mdi-chevron-double-up'"
-        type="error"
-      ></v-alert>
-    </v-col>
-  </v-row>
+<chain-content :isLoading="isLoadingValidators?.includes(cosmosChainId || '-')">
   <v-row style="width: 100%">
     <v-col cols="12" class="text-left pl-6 text-caption">
       <v-row>
-        <v-col cols="12">
+        <v-col cols="12" class="pb-0">
           <v-btn class="mr-2" size="x-small"
             @click="() => {activeTab = BondStatus[BondStatus.BOND_STATUS_BONDED]}"
             :active="activeTab == BondStatus[BondStatus.BOND_STATUS_BONDED]">{{(t('validator.bondStatus.BOND_STATUS_BONDED'))}}</v-btn>
@@ -46,10 +17,10 @@
       </v-row>
     </v-col>
   </v-row>
-  <v-row class="pl-2 pr-2" style="overflow-y: scroll;">
+  <v-row class="pa-0 pl-2 pr-2" style="overflow-y: scroll;">
     <v-col cols="12">
       <v-data-table
-        style="max-height: 70vh;"
+        style="max-height: 75vh;"
         v-if="isTableVisible"
         :items-per-page="tableValidators?.length"
         :no-filter="true"
@@ -130,7 +101,6 @@
 
 <script lang="ts" setup>
 import numeral from 'numeral'
-import moment from 'moment'
 import { storeToRefs } from 'pinia'
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -142,54 +112,15 @@ import { useBlockchainStore } from '@/store/blockchain'
 import { useAppStore } from '@/store/app'
 import { useValidatorsStore } from '@/store/validators'
 
-import { QueryParamsResponse as QuerySlashingParamsResponse } from 'cosmjs-types/cosmos/slashing/v1beta1/query';
-
 const { t } = useI18n()
 const { chainIdFromRoute } = storeToRefs(useAppStore())
-const { availableChains, cosmosChaindata } = storeToRefs(useBlockchainStore())
-const { getValidatorInfo,loadCosmosValidators } = useValidatorsStore()
-const { keybaseAvatars, validators } = storeToRefs(useValidatorsStore())
+const { availableChains } = storeToRefs(useBlockchainStore())
+const { getValidatorInfo, loadCosmosValidators } = useValidatorsStore()
+const { keybaseAvatars, validators, isLoadingValidators } = storeToRefs(useValidatorsStore())
 
 const activeTab = ref('BOND_STATUS_BONDED')
 const cosmosChainId = computed(() => {
   return availableChains.value.find(c => c.name === chainIdFromRoute.value)?.keplr?.chainId
-})
-/*
-const evmChainId = computed(() => {
-  return availableChains.value.find(c => c.name === chainIdFromRoute.value)?.evm?.id
-})
-*/
-
-const chainData = computed(() => {
-  return cosmosChaindata.value[cosmosChainId.value || '']
-})
-
-
-const slashingParams = computed(() => {
-  const parsed = QuerySlashingParamsResponse.toJSON(chainData.value?.slashingParams || {} as any) as {
-    params: {
-      signedBlocksWindow: string, 
-      minSignedPerWindow: string, 
-      downtimeJailDuration: { 
-        seconds: string, nanos: number
-      }, 
-      slashFractionDoubleSign: string,
-      slashFractionDowntime: string
-    }
-  }
-  if(!parsed.params) {
-    return {}
-  }
-  return { 
-    signedBlocksWindow: BigInt(parsed.params.signedBlocksWindow), 
-    minSignedPerWindow: BigInt(window.atob(parsed.params.minSignedPerWindow)), 
-    downtimeJailDuration: { 
-      seconds: BigInt(parsed.params.downtimeJailDuration.seconds), 
-      nanos: BigInt(parsed.params.downtimeJailDuration.nanos)
-    }, 
-    slashFractionDoubleSign: BigInt(window.atob(parsed.params.slashFractionDoubleSign)), 
-    slashFractionDowntime: BigInt(window.atob(parsed.params.slashFractionDowntime))
-  }
 })
 
 const tableValidators = computed(() => {
@@ -213,8 +144,8 @@ const validatorsToShow = computed(() => {
 const isTableVisible = ref(false)
 
 onMounted(() => {
-  setTimeout(() => loadCosmosValidators(cosmosChainId.value || ''), 300);
   isTableVisible.value = true;
+  loadCosmosValidators(cosmosChainId.value || '')
 })
 
 onUnmounted(() => {

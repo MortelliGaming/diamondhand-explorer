@@ -36,10 +36,10 @@ const props = defineProps({
     }
 })
 
-const { cosmosHelper } = storeToRefs(useBlockchainStore())
+const { cosmosClients } = storeToRefs(useBlockchainStore())
 const votes: Ref<Vote[]> = ref([])
 
-cosmosHelper.value.GetProposalVotes(props.chainId, props.proposal.proposalId).then((res) => {
+cosmosClients.value[props.chainId]?.queryClient.extensions.gov.gov.votes(props.proposal.proposalId.toString()).then((res) => {
     votes.value = res?.votes || []
 })
 

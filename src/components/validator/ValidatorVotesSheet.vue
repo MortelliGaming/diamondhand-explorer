@@ -38,7 +38,7 @@ const props = defineProps({
     },
 })
 const { t } = useI18n()
-const { availableChains, cosmosHelper } = storeToRefs(useBlockchainStore())
+const { availableChains, cosmosClients } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 
 const { loadCosmosProposals, getProposalInfo } = useProposalsStore()
@@ -65,7 +65,9 @@ setTimeout(() => {
     loadCosmosProposals(cosmosChainId.value || '').then(async () => {
         for(const proposal of proposals.value[cosmosChainId.value || '']) {
             try {
-                validatorVotes.value[proposal.proposalId.toString()] = (await cosmosHelper.value.GetProposalValidatorVotes(cosmosChainId.value || '', proposal.proposalId, props.validator?.operatorWallet || ''))?.vote
+                validatorVotes.value[proposal.proposalId.toString()] = (await 
+                    cosmosClients.value[cosmosChainId.value || ''].queryClient.extensions.gov.gov.vote(proposal.proposalId.toString(), props.validator?.operatorWallet || '')
+                )?.vote
             } catch {
                 validatorVotes.value[proposal.proposalId.toString()] = undefined;
             }

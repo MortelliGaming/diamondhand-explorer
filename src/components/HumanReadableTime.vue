@@ -7,7 +7,7 @@
     import { onUnmounted, ref, type PropType } from 'vue';
     import { useI18n } from 'vue-i18n';
     import { Timestamp } from '@/lib/proto/google/protobuf/timestamp';
-    import { formatDuration } from '@/lib/utils';
+    import { formatDuration } from '@/lib/timeUtils';
 
     const props = defineProps({
         time: {

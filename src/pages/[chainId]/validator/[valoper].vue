@@ -1,7 +1,7 @@
 <template>
     <not-found v-if="!valoper"/>
-    <div v-else>
-        <v-container class="mt-3">
+    <div v-else class="fill-height">
+        <chain-content :is-loading="isLoadingValidators.includes(cosmosChainId || '') || isLoadingValidatorDelegations.includes(cosmosChainId || '')">
             <v-row justify="space-around">
                 <v-col cols="12" sm="6" lg="4">
                     <validator-info-sheet
@@ -24,27 +24,29 @@
                         :validator="validator" />
                 </v-col>
             </v-row>
-            <v-row class="mt-5">
-                <v-col>
+            <v-row class="mt-5" style="width: 100%">
+                <v-col cols="12">
                     <validator-votes-sheet
                         v-if="validator"
                         :validator="validator" />
                 </v-col>
             </v-row>
-            <v-row class="mt-5">
-                <v-col>
+            <v-row class="mt-5" style="width: 100%">
+                <v-col cols="12">
                     <validator-delegations-sheet
                         v-if="validator"
                         :validator="validator" />
                 </v-col>
             </v-row>
-        </v-container>
+        </chain-content>
     </div>
 </template>
 
 <script lang="ts" setup>
 import NotFound from '@/components/404.vue'
-import { computed } from 'vue';
+import ChainContent from '@/components/ChainContent.vue';
+
+import { computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
 import ValidatorInfoSheet from '@/components/validator/ValidatorInfoSheet.vue'
@@ -60,8 +62,8 @@ import { useAppStore } from '@/store/app';
 import { storeToRefs } from 'pinia';
 
 const route = useRoute()
-const { getValidatorInfo, loadCosmosValidators } = useValidatorsStore()
-const { validators } = storeToRefs(useValidatorsStore())
+const { getValidatorInfo, loadCosmosValidators, loadValidatorDelegations } = useValidatorsStore()
+const { validators, isLoadingValidators, isLoadingValidatorDelegations } = storeToRefs(useValidatorsStore())
 const { availableChains } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 
@@ -74,9 +76,12 @@ const basicValidator = computed(() => {
 })
 const validator = computed(() => { return (basicValidator.value != undefined ? getValidatorInfo(cosmosChainId.value || '', basicValidator.value) : null)})
 
-setTimeout(() => {
-    loadCosmosValidators(cosmosChainId.value || '')
-}, 500);
+onMounted(() => {
+    if(!validator.value) {
+        loadCosmosValidators(cosmosChainId.value || '')
+    }
+    loadValidatorDelegations(cosmosChainId.value || '', valoper.value)
+})
 
 </script>
 <style>

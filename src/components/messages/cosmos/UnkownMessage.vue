@@ -14,7 +14,7 @@
 
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n';
-import { protoRegistry } from '@/lib/http';
+import { protoRegistry } from '@/lib/protoRegistry';
 import type { DecodeObject } from '@cosmjs/proto-signing'
 import { computed, type PropType } from 'vue';
 
