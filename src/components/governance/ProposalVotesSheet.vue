@@ -1,30 +1,24 @@
 <template>
-    <v-sheet elevation="12" color="" class="text-caption pa-3 fill-heigh2">
-        <v-container class="pt-0">
-            <v-row>
-                <v-col cols="6">
-                    <div class="text-h6 text-left">{{t('proposal.votes')}}</div>
-                </v-col>
-            </v-row>
-            <v-row v-for="vote in votes" :key="vote.voter">
-                <v-col cols="12">
-                    {{ vote.voter }}
-                    {{ vote.options }}
-                </v-col>
-            </v-row>
-            <v-row v-if="votes.length == 0">
-                <v-col>
-                    {{ t('proposal.noVotesFound') }}
-                </v-col>
-            </v-row>
-        </v-container>
-    </v-sheet>
+    <base-sheet :title="t('proposal.votes')">
+        <v-row v-for="vote in votes" :key="vote.voter">
+            <v-col cols="12">
+                {{ vote.voter }}
+                {{ vote.options }}
+            </v-col>
+        </v-row>
+        <v-row v-if="votes.length == 0">
+            <v-col>
+                {{ t('proposal.noVotesFound') }}
+            </v-col>
+        </v-row>
+    </base-sheet>
 </template>
 
 <script lang="ts" setup>
 import { Ref, ref, type PropType } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BaseSheet from '../BaseSheet.vue';
 import { Proposal, Vote } from '@/lib/proto/cosmos/gov/v1beta1/gov';
 
 import { useBlockchainStore } from '@/store/blockchain';

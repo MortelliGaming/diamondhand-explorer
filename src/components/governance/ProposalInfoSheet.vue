@@ -1,28 +1,21 @@
 <template>
-    <v-sheet class="text-caption pa-3 fill-height">
-        <v-container class="pt-0">
-            <v-row>
-                <v-col cols="7">
-                    <div class="text-h6 text-left" style="overflow-wrap: break-word;">{{proposal?.content?.typeUrl?.replace('/','')}}</div>
-                </v-col>
-                <v-col cols="5" class="text-caption text-right pr-0">
-                    <proposal-status-chip :proposal="props.proposal" />
-                </v-col>
-            </v-row>
-            <v-row class="d-flex align-center">
-                <v-col cols="3" class="pt-0 pb-0" style="overflow-wrap: break-word;">
-                    {{ t('proposal.votingEndTime') }}:
-                </v-col>
-                <v-col cols="9" class="d-flex flex-sm-row pt-0 pb-0">
-                    <div class="mr-sm-2">
-                        {{ moment(Number(proposal?.votingEndTime.seconds) * 1000).format('DD.MM.YY HH:mm:ss') }}
-                    </div>
-                    <human-readable-time :time="proposal?.votingEndTime" />
-                </v-col>
-            </v-row>
-            <component :is="messageComponent" :message="proposal?.content" :chain-id="props.chainId"/>
-        </v-container>
-    </v-sheet>
+    <base-sheet :title="proposal?.content?.typeUrl?.replace('/','')">
+        <template v-slot:appendTitle>
+            <proposal-status-chip :proposal="props.proposal" />
+        </template>
+        <v-row class="d-flex align-center">
+            <v-col cols="3" class="pb-0" style="overflow-wrap: break-word;">
+                {{ t('proposal.votingEndTime') }}:
+            </v-col>
+            <v-col cols="9" class="d-flex flex-sm-row pb-0">
+                <div class="mr-sm-2">
+                    {{ moment(Number(proposal?.votingEndTime.seconds) * 1000).format('DD.MM.YY HH:mm:ss') }}
+                </div>
+                <human-readable-time :time="proposal?.votingEndTime" />
+            </v-col>
+        </v-row>
+        <component :is="messageComponent" :message="proposal?.content" :chain-id="props.chainId"/>
+    </base-sheet>
 </template>
 
 <script lang="ts" setup>
@@ -31,6 +24,7 @@ import { useI18n } from 'vue-i18n';
 import moment from 'moment';
 import { Proposal } from '@/lib/proto/cosmos/gov/v1beta1/gov';
 
+import BaseSheet from '../BaseSheet.vue';
 import HumanReadableTime from '../HumanReadableTime.vue';
 import ProposalStatusChip from './ProposalStatusChip.vue';
 import MsgSoftwareUpgrade from '@/components/messages/cosmos/MsgSoftwareUpgrade.vue';

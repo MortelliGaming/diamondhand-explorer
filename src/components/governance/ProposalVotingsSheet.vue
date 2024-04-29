@@ -1,42 +1,35 @@
 <template>
-    <v-sheet elevation="12" color="" class="text-caption pa-3 fill-heigh2">
-        <v-container class="pt-0">
-            <v-row>
-                <v-col cols="6">
-                    <div class="text-h6 text-left">{{t('proposal.voting')}}</div>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col cols="12">
-                    <proposal-voting-chart :proposal="props.proposal" />
-                </v-col>
-                <v-col cols="12" sm="3">
-                    <v-sheet elevation="12" color="grey-darken-3" class="d-flex pa-2">
-                        <div class="pr-1">{{ t('proposal.voteOption.VOTE_OPTION_YES') }}:</div>
-                        <div class="flex-grow-1 text-right">{{ getNormalizedAmount(props.proposal.finalTallyResult.yes) }}</div>
-                    </v-sheet>
-                </v-col>
-                <v-col cols="12" sm="3">
-                    <v-sheet elevation="12" color="grey-darken-3" class="d-flex pa-2">
-                        <div class="pr-1">{{ t('proposal.voteOption.VOTE_OPTION_NO') }}:</div>
-                        <div class="flex-grow-1 text-right">{{ getNormalizedAmount(props.proposal.finalTallyResult.no) }}</div>
-                    </v-sheet>
-                </v-col>
-                <v-col cols="12" sm="3">
-                    <v-sheet elevation="12" color="grey-darken-3" class="d-flex pa-2">
-                        <div class="pr-1">{{ t('proposal.voteOption.VOTE_OPTION_NO_WITH_VETO') }}:</div>
-                        <div class="flex-grow-1 text-right">{{ getNormalizedAmount(props.proposal.finalTallyResult.noWithVeto) }}</div>
-                    </v-sheet>
-                </v-col>
-                <v-col cols="12" sm="3">
-                    <v-sheet elevation="12" color="grey-darken-3" class="d-flex pa-2">
-                        <div class="pr-1">{{ t('proposal.voteOption.VOTE_OPTION_ABSTAIN') }}:</div>
-                        <div class="flex-grow-1 text-right">{{ getNormalizedAmount(props.proposal.finalTallyResult.abstain) }}</div>
-                    </v-sheet>
-                </v-col>
-            </v-row>
-        </v-container>
-    </v-sheet>
+    <base-sheet :title="t('proposal.voting')">
+        <v-row>
+            <v-col cols="12">
+                <proposal-voting-chart :proposal="props.proposal" />
+            </v-col>
+            <v-col cols="12" sm="3">
+                <v-sheet elevation="12" color="grey-darken-3" class="d-flex pa-2">
+                    <div class="pr-1">{{ t('proposal.voteOption.VOTE_OPTION_YES') }}:</div>
+                    <div class="flex-grow-1 text-right">{{ getNormalizedAmount(props.proposal.finalTallyResult.yes) }}</div>
+                </v-sheet>
+            </v-col>
+            <v-col cols="12" sm="3">
+                <v-sheet elevation="12" color="grey-darken-3" class="d-flex pa-2">
+                    <div class="pr-1">{{ t('proposal.voteOption.VOTE_OPTION_NO') }}:</div>
+                    <div class="flex-grow-1 text-right">{{ getNormalizedAmount(props.proposal.finalTallyResult.no) }}</div>
+                </v-sheet>
+            </v-col>
+            <v-col cols="12" sm="3">
+                <v-sheet elevation="12" color="grey-darken-3" class="d-flex pa-2">
+                    <div class="pr-1">{{ t('proposal.voteOption.VOTE_OPTION_NO_WITH_VETO') }}:</div>
+                    <div class="flex-grow-1 text-right">{{ getNormalizedAmount(props.proposal.finalTallyResult.noWithVeto) }}</div>
+                </v-sheet>
+            </v-col>
+            <v-col cols="12" sm="3">
+                <v-sheet elevation="12" color="grey-darken-3" class="d-flex pa-2">
+                    <div class="pr-1">{{ t('proposal.voteOption.VOTE_OPTION_ABSTAIN') }}:</div>
+                    <div class="flex-grow-1 text-right">{{ getNormalizedAmount(props.proposal.finalTallyResult.abstain) }}</div>
+                </v-sheet>
+            </v-col>
+        </v-row>
+    </base-sheet>
 </template>
 
 <script lang="ts" setup>
@@ -45,6 +38,7 @@ import { useI18n } from 'vue-i18n';
 
 import { Proposal } from '@/lib/proto/cosmos/gov/v1beta1/gov';
 
+import BaseSheet from '../BaseSheet.vue';
 import ProposalVotingChart from '../charts/ProposalVotingChart.vue';
 
 const { t } = useI18n()

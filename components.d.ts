@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     404: typeof import('./src/components/404.vue')['default']
+    BaseSheet: typeof import('./src/components/BaseSheet.vue')['default']
     ChainContent: typeof import('./src/components/ChainContent.vue')['default']
     copy: typeof import('./src/components/404 copy.vue')['default']
     CopyBox: typeof import('./src/components/CopyBox.vue')['default']

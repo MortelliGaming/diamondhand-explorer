@@ -1,20 +1,19 @@
 <template>
-    <v-sheet class="text-caption pa-3 fill-height">
-        <div class="text-h6 text-center">{{t('validator.votes')}}</div>
-            <v-container style="height: 300px;overflow-y: scroll;" class="pa-0">
-                <proposal-header-row 
-                    v-for="proposal in votingAndEndedProposals" :key="proposal?.proposalId.toString()"
-                    :proposal="proposal" 
-                    @click="() => $router.push('../proposal/' + proposal?.proposalId.toString())"
-                    >
-                    <template v-slot:append>
-                        <div class="text-caption flex-grow-1 d-flex justify-end align-center">
-                            {{  validatorVote(proposal?.proposalId.toString() || '0') }}
-                        </div>
-                    </template>
-                </proposal-header-row>
-            </v-container>
-    </v-sheet>
+    <base-sheet :title="t('validator.votes')">
+        <v-container style="height: 300px;overflow-y: scroll;" class="pa-0 mt-5">
+            <proposal-header-row 
+                v-for="proposal in votingAndEndedProposals" :key="proposal?.proposalId.toString()"
+                :proposal="proposal" 
+                @click="() => $router.push('../proposal/' + proposal?.proposalId.toString())"
+                >
+                <template v-slot:append>
+                    <div class="text-caption flex-grow-1 d-flex justify-end align-center">
+                        {{  validatorVote(proposal?.proposalId.toString() || '0') }}
+                    </div>
+                </template>
+            </proposal-header-row>
+        </v-container>
+    </base-sheet>
 </template>
 
 <script lang="ts" setup>
@@ -30,6 +29,7 @@ import { useAppStore } from '@/store/app';
 import { ProposalStatus, Vote, VoteOption } from '@/lib/proto/cosmos/gov/v1beta1/gov';
 
 import ProposalHeaderRow from '../governance/ProposalHeaderRow.vue';
+import BaseSheet from '../BaseSheet.vue';
 
 const props = defineProps({
     validator: {

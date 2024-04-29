@@ -1,34 +1,31 @@
 <template>
-    <v-sheet class="text-caption pa-3 fill-height">
-        <div class="text-h6 text-center">{{t('validator.delegations')}} ({{ (validatorDelegations[cosmosChainId || ''] ? (validatorDelegations[cosmosChainId || ''][validator?.operatorAddress || ''])?.length : '')}})</div>
-            <v-container style="height: 300px;overflow-y: scroll;" v-if="validatorDelegations[cosmosChainId || '']">
-                <v-row v-for="(delegation, i) in delegationsToShow" :key="delegation.delegation.delegatorAddress">
-                    <v-col cols="12" class="d-flex  d-flex align-center" v-if="delegation">
-                        <v-chip class="justify-center">{{ ((page-1) * numDelegationPerPage) + 1 + i }}</v-chip>
-                        <div class="pl-2 pr-2" style="max-width: 65%; overflow-wrap: break-word;">
-                            <div class="text-caption">
-                                <copy-box :text="delegation.delegation.delegatorAddress" />
-                            </div>
+    <base-sheet :title="t('validator.delegations') + '('+ (validatorDelegations[cosmosChainId || ''] ? (validatorDelegations[cosmosChainId || ''][validator?.operatorAddress || ''])?.length : '') +')'">
+        <v-container style="height: 300px;overflow-y: scroll;" v-if="validatorDelegations[cosmosChainId || '']" class="pa-0 mt-5">
+            <v-row v-for="(delegation, i) in delegationsToShow" :key="delegation.delegation.delegatorAddress">
+                <v-col cols="12" class="d-flex  d-flex align-center" v-if="delegation">
+                    <v-chip class="justify-center">{{ ((page-1) * numDelegationPerPage) + 1 + i }}</v-chip>
+                    <div class="pl-2" style="max-width: 65%; overflow-wrap: break-word;">
+                        <div class="text-caption">
+                            <copy-box :text="delegation.delegation.delegatorAddress" />
                         </div>
-                        <div class="text-caption text-right d-flex align-end justify-end flex-grow-1" style="word-break: break-word;">
-                            {{ Number(BigInt(delegation.balance.amount) / BigInt(Math.pow(10,18))).toFixed(2) }} {{ delegation.balance.denom }}
-                        </div>
-                    </v-col>
-                    <v-divider />
-                </v-row>
-            </v-container>
-            <v-container class="pt-0 pb-0">
-                <v-row>
-                    <v-col>
-                        <v-pagination
-                            v-model="page"
-                            :length="numPages"
-                            rounded="circle"
-                        ></v-pagination>
-                    </v-col>
-                </v-row>
-            </v-container>
-    </v-sheet>
+                    </div>
+                    <div class="text-caption text-right d-flex align-end justify-end flex-grow-1" style="word-break: break-word;">
+                        {{ Number(BigInt(delegation.balance.amount) / BigInt(Math.pow(10,18))).toFixed(2) }} {{ delegation.balance.denom }}
+                    </div>
+                </v-col>
+                <v-divider />
+            </v-row>
+        </v-container>
+        <v-row>
+            <v-col>
+                <v-pagination
+                    v-model="page"
+                    :length="numPages"
+                    rounded="circle"
+                ></v-pagination>
+            </v-col>
+        </v-row>
+    </base-sheet>
 </template>
 
 <script lang="ts" setup>
@@ -39,7 +36,7 @@ import { useI18n } from 'vue-i18n';
 import { ExtendedValidator, useValidatorsStore } from '@/store/validators';
 import { useBlockchainStore } from '@/store/blockchain';
 import { useAppStore } from '@/store/app';
-
+import BaseSheet from '../BaseSheet.vue';
 
 const props = defineProps({
     validator: {
