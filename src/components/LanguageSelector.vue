@@ -1,6 +1,7 @@
 <template>
   <div class="locale-changer">
     <v-select
+      density="compact"
       v-model="locale"
       :label="t('message.language')"
       :items="langs.map(l => ({
