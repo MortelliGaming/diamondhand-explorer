@@ -6,25 +6,30 @@
                 <v-col cols="12" lg="4">
                     <div class="d-flex flex-column">
                         <b><div>{{ t('validator.operatorAddress') }}</div></b>
-                        <copy-box :text="props.validator?.operatorAddress" />
+                        <copy-box
+                            :text="props.validator?.operatorAddress" />
                     </div>
                 </v-col>
                 <v-col cols="12" lg="4">
                     <div class="d-flex flex-column">
                         <b><div>{{ t('validator.consensusAddress') }}</div></b>
-                        <copy-box :text="props.validator?.consensusAddress" />
+                        <copy-box
+                            :text="props.validator?.consensusAddress" />
                     </div>
                 </v-col>
                 <v-col cols="12" lg="4">
                     <div class="d-flex flex-column">
                         <b><div>{{ t('validator.consensusHexAddress') }}</div></b>
-                        <copy-box :text="props.validator?.consensusHexAddress" />
+                        <copy-box
+                            :text="props.validator?.consensusHexAddress" />
                     </div>
                 </v-col>
                 <v-col cols="12" lg="4">
                     <div class="d-flex flex-column">
                         <b><div>{{ t('validator.operatorWallet') }}</div></b>
-                        <copy-box :text="props.validator?.operatorWallet" />
+                        <copy-box
+                            @click="$router.push('../account/' + props.validator?.operatorWallet)"
+                            :text="props.validator?.operatorWallet" />
                     </div>
                 </v-col>
                 <v-col cols="12" md="12" lg="8">

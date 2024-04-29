@@ -19,13 +19,36 @@ export const ko = {
         twitter: 'X (트위터)',
     },
     validator: {
+        status: '상태',
         addresses: '주소',
-        operatorAddress: '운영자 주소',
+        operatorAddress: '오퍼레이터 주소',
         consensusAddress: '합의 주소',
         consensusHexAddress: '합의 주소 16진수',
-        operatorWallet: '운영자 지갑 주소',
+        operatorWallet: '오퍼레이터 월렛 주소',
         consensusPublicKey: '합의 공개 키',
-        delegate: '스테이크'
+        delegate: '스테이크',
+        bonding: '결합',
+        bondedTokens: '결합된 토큰',
+        delegators: '대표자',
+        minSelfDelegation: '최소 자체 위임',
+        unbondingHeight: '언바운딩 높이',
+        unbondingTime: '언바운딩 시간',
+        commission: '수수료',
+        rate: '율',
+        max: '최대',
+        updated: '최신 업데이트',
+        delegations: '위임',
+        votes: '투표',
+        didNotVote: '투표하지 않음',
+        validator: '검증자',
+        jailed: '구금됨',
+        bondStatus: {
+            BOND_STATUS_BONDED: '결합됨',
+            BOND_STATUS_UNBONDED: '결합되지 않음',
+            BOND_STATUS_UNBONDING: '언바운딩',
+            BOND_STATUS_UNSPECIFIED: '지정되지 않음',
+            UNRECOGNIZED: '인식되지 않음',
+        }
     },
     proposal: {
         info: '정보',
@@ -45,13 +68,17 @@ export const ko = {
             PROPOSAL_STATUS_UNSPECIFIED: '지정되지 않음',
             UNRECOGNIZED: '인식되지 않음'
         },
+        voteOption: {
+            UNRECOGNIZED: '인식되지 않음',
+            VOTE_OPTION_ABSTAIN: '기권',
+            VOTE_OPTION_NO: '아니오',
+            VOTE_OPTION_NO_WITH_VETO: '부정',
+            VOTE_OPTION_UNSPECIFIED: '지정되지 않음',
+            VOTE_OPTION_YES: '예',
+        },
         voting: '투표 결과',
-        votes: '투표 수',
-        yes: '예',
-        no: '아니오',
-        noWithVeto: '부정',
-        abstain: '기권',
-        notVoted: '미투표',
+        votes: '투표',
+        notVoted: '투표하지 않음',
         content: '내용',
         noVotesFound: '투표가 없습니다'
     },
@@ -62,6 +89,8 @@ export const ko = {
         daysToGo: '일 후'
     },
     message: {
-        copied: '클립보드에 복사되었습니다'
-    }
+        copied: '클립보드에 복사되었습니다',
+        yes: '예',
+        no: '아니오',
+    },
 }

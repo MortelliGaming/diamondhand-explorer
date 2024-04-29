@@ -42,6 +42,7 @@ declare module 'vue-router/auto/routes' {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
     '/[...all]': RouteRecordInfo<'/[...all]', '/:all(.*)', { all: ParamValue<true> }, { all: ParamValue<false> }>,
     '/[chainId]/[...all]': RouteRecordInfo<'/[chainId]/[...all]', '/:chainId/:all(.*)', { chainId: ParamValue<true>, all: ParamValue<true> }, { chainId: ParamValue<false>, all: ParamValue<false> }>,
+    '/[chainId]/account/[address]': RouteRecordInfo<'/[chainId]/account/[address]', '/:chainId/account/:address', { chainId: ParamValue<true>, address: ParamValue<true> }, { chainId: ParamValue<false>, address: ParamValue<false> }>,
     '/[chainId]/blocks': RouteRecordInfo<'/[chainId]/blocks', '/:chainId/blocks', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,
     '/[chainId]/consensus': RouteRecordInfo<'/[chainId]/consensus', '/:chainId/consensus', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,
     '/[chainId]/dashboard': RouteRecordInfo<'/[chainId]/dashboard', '/:chainId/dashboard', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,

@@ -9,8 +9,8 @@ export const id = {
         staking: 'Staking',
         collectables: 'Koleksi',
         parameters: 'Parameter',
-        governance: 'Pemerintahan',
-        supply: 'Pasokan',
+        governance: 'Gubernur',
+        supply: 'Persediaan',
         ibc: 'IBC',
         uptime: 'Waktu Aktif',
         consensus: 'Konsensus',
@@ -19,21 +19,44 @@ export const id = {
         twitter: 'X (Twitter)',
     },
     validator: {
+        status: 'Status',
         addresses: 'Alamat',
         operatorAddress: 'Alamat Operator',
         consensusAddress: 'Alamat Konsensus',
-        consensusHexAddress: 'Alamat Konsensus Heksadesimal',
+        consensusHexAddress: 'Alamat Konsensus Heks',
         operatorWallet: 'Alamat Dompet Operator',
         consensusPublicKey: 'Kunci Publik Konsensus',
-        delegate: 'Stake'
+        delegate: 'Stake',
+        bonding: 'Pemasangan',
+        bondedTokens: 'Token Terpemasang',
+        delegators: 'Delegator',
+        minSelfDelegation: 'Delegasi Sendiri Min',
+        unbondingHeight: 'Tinggi Pembongkaran',
+        unbondingTime: 'Waktu Pembongkaran',
+        commission: 'Komisi',
+        rate: 'Tarif',
+        max: 'Maksimum',
+        updated: 'Terakhir Diperbarui',
+        delegations: 'Delegasi',
+        votes: 'Suara',
+        didNotVote: 'Tidak Memilih',
+        validator: 'Validator',
+        jailed: 'Masuk Penjara',
+        bondStatus: {
+            BOND_STATUS_BONDED: 'Terikat',
+            BOND_STATUS_UNBONDED: 'Tidak Terikat',
+            BOND_STATUS_UNBONDING: 'Pembongkaran',
+            BOND_STATUS_UNSPECIFIED: 'Tidak Spesifik',
+            UNRECOGNIZED: 'Tidak Dikenali',
+        }
     },
     proposal: {
-        info: 'Informasi',
+        info: 'Info',
         dates: 'Tanggal',
         type: 'Tipe',
         around: 'Sekitar',
         submitTime: 'Waktu Pengajuan',
-        depositEndTime: 'Waktu Deposit Berakhir',
+        depositEndTime: 'Waktu Selesai Deposit',
         votingStartTime: 'Waktu Mulai Voting',
         votingEndTime: 'Waktu Selesai Voting',
         status: {
@@ -45,12 +68,16 @@ export const id = {
             PROPOSAL_STATUS_UNSPECIFIED: 'Tidak Spesifik',
             UNRECOGNIZED: 'Tidak Dikenali'
         },
+        voteOption: {
+            UNRECOGNIZED: 'Tidak Dikenali',
+            VOTE_OPTION_ABSTAIN: 'Menahan Diri',
+            VOTE_OPTION_NO: 'Tidak',
+            VOTE_OPTION_NO_WITH_VETO: 'Tidak Dengan Veto',
+            VOTE_OPTION_UNSPECIFIED: 'Tidak Spesifik',
+            VOTE_OPTION_YES: 'Ya',
+        },
         voting: 'Hasil Voting',
         votes: 'Suara',
-        yes: 'Ya',
-        no: 'Tidak',
-        noWithVeto: 'Tidak dengan Veto',
-        abstain: 'Abstain',
         notVoted: 'Belum Memilih',
         content: 'Konten',
         noVotesFound: 'Tidak ada suara ditemukan'
@@ -59,9 +86,11 @@ export const id = {
         in: 'dalam',
         ago: 'yang lalu',
         daysAgo: 'hari',
-        daysToGo: 'hari lagi'
+        daysToGo: 'hari'
     },
     message: {
-        copied: 'Disalin ke papan klip'
-    }
+        copied: 'Disalin ke clipboard',
+        yes: 'Ya',
+        no: 'Tidak',
+    },
 }
