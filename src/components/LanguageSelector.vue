@@ -31,6 +31,7 @@ const languageFlag: Ref<{[language: string]: string}> = ref({
   'pt': '🇵🇹',
   'es': '🇪🇸',
   'pt_BR': '🇧🇷',
+  'hr': '🇭🇷'
 })
 
 function getLanguageName(language: string) {

@@ -4,16 +4,17 @@ export const de = {
     },
     language: {
         de: 'Deutsch',
-        en: 'Englisch',
-        it: 'Italienisch',
-        zh: 'Chinesisch',
-        ko: 'Koreanisch',
-        id: 'Indonesisch',
-        fr: 'Französisch',
-        pt: 'Portugiesisch',
-        es: 'Spanisch',
-        pt_BR: 'Brasilianisches Portugiesisch'
-    },
+        en: 'English',
+        it: 'Italiano',
+        zh: '中文',
+        ko: '한국어',
+        id: 'Bahasa Indonesia',
+        fr: 'Français',
+        pt: 'Português',
+        es: 'Español',
+        pt_BR: 'Português do Brasil',
+        hr: 'Hrvatski'
+    },  
     module: {
         blocks: 'Blocks',
         dashboard: 'Dashboard',

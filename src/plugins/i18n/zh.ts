@@ -3,17 +3,18 @@ export const zh = {
         title: 'Diamondhand'
     },
     language: {
-        de: '德语',
-        en: '英语',
-        it: '意大利语',
+        de: 'Deutsch',
+        en: 'English',
+        it: 'Italiano',
         zh: '中文',
-        ko: '韩语',
-        id: '印度尼西亚语',
-        fr: '法语',
-        pt: '葡萄牙语',
-        es: '西班牙语',
-        pt_BR: '巴西葡萄牙语'
-    },
+        ko: '한국어',
+        id: 'Bahasa Indonesia',
+        fr: 'Français',
+        pt: 'Português',
+        es: 'Español',
+        pt_BR: 'Português do Brasil',
+        hr: 'Hrvatski'
+    },  
     module: {
         blocks: '区块',
         dashboard: '仪表盘',

@@ -3,17 +3,18 @@ export const it = {
         title: 'Diamondhand'
     },
     language: {
-        de: 'Tedesco',
-        en: 'Inglese',
+        de: 'Deutsch',
+        en: 'English',
         it: 'Italiano',
-        zh: 'Cinese',
-        ko: 'Coreano',
-        id: 'Indonesiano',
-        fr: 'Francese',
-        pt: 'Portoghese',
-        es: 'Spagnolo',
-        pt_BR: 'Portoghese brasiliano'
-    },
+        zh: '中文',
+        ko: '한국어',
+        id: 'Bahasa Indonesia',
+        fr: 'Français',
+        pt: 'Português',
+        es: 'Español',
+        pt_BR: 'Português do Brasil',
+        hr: 'Hrvatski'
+    },  
     module: {
         blocks: 'Blocchi',
         dashboard: 'Dashboard',

@@ -2,6 +2,7 @@ import { de } from './de';
 import { en } from './en';
 import { es } from './es';
 import { fr } from './fr';
+import { hr } from './hr'
 import { id } from './id';
 import { it } from './it';
 import { ko } from './ko';
@@ -14,6 +15,7 @@ export const messages = {
   en,
   es,
   fr,
+  hr,
   id,
   it,
   ko,
