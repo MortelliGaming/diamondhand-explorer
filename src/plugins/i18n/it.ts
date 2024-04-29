@@ -2,6 +2,18 @@ export const it = {
     appheader: {
         title: 'Diamondhand'
     },
+    language: {
+        de: 'Tedesco',
+        en: 'Inglese',
+        it: 'Italiano',
+        zh: 'Cinese',
+        ko: 'Coreano',
+        id: 'Indonesiano',
+        fr: 'Francese',
+        pt: 'Portoghese',
+        es: 'Spagnolo',
+        pt_BR: 'Portoghese brasiliano'
+    },
     module: {
         blocks: 'Blocchi',
         dashboard: 'Dashboard',

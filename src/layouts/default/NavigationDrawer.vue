@@ -142,16 +142,21 @@
           </a>
         </v-list-item>
       </v-list-group>
+      <v-list-item>
+        <language-selector />
+      </v-list-item>
     </v-list>
   </v-navigation-drawer>
 </template>
 
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
-import { useAppStore } from '@/store/app'
-import { useBlockchainStore } from '@/store/blockchain';
 import { useRouter } from 'vue-router'
 import { ref } from 'vue';
+
+import { useAppStore } from '@/store/app'
+import { useBlockchainStore } from '@/store/blockchain';
+import LanguageSelector from '@/components/LanguageSelector.vue';
 
 const router = useRouter();
 

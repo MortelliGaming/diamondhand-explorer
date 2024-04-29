@@ -2,6 +2,18 @@ export const zh = {
     appheader: {
         title: 'Diamondhand'
     },
+    language: {
+        de: '德语',
+        en: '英语',
+        it: '意大利语',
+        zh: '中文',
+        ko: '韩语',
+        id: '印度尼西亚语',
+        fr: '法语',
+        pt: '葡萄牙语',
+        es: '西班牙语',
+        pt_BR: '巴西葡萄牙语'
+    },
     module: {
         blocks: '区块',
         dashboard: '仪表盘',

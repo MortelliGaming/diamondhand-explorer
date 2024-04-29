@@ -25,9 +25,16 @@ export const messages = {
 export const availableLanguages = Object.keys(messages)
 
 import { createI18n } from 'vue-i18n'
+
+
+let lang = localStorage.getItem('language')
+if(!lang) {
+  lang = navigator.language.startsWith('pt') ? navigator.language.replace('-', '_') : navigator.language.substring(0,2)
+  localStorage.setItem('language', lang)
+}
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createI18n({
-  locale: navigator.language.startsWith('pt') ? navigator.language.replace('-', '_') : navigator.language.substring(0,2), // set locale
+  locale: lang,
   fallbackLocale: 'en', // set fallback locale
   legacy: false,
   messages,
