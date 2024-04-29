@@ -2,7 +2,12 @@
 <!-- Shows 404 if invalid chainId -->
 <template>
   <div v-if="isChainValid" class="fill-height">
-    <slot></slot>
+    <div v-if="isLoading.length > 0">
+      <loading />
+    </div>
+    <div v-else>
+      <slot></slot>
+    </div>
   </div>
   <not-found v-else />
 </template>
@@ -17,10 +22,11 @@ import { useBlockchainStore } from '@/store/blockchain';
 
 // Components
 import NotFound from '@/components/404.vue'
+import Loading from './Loading.vue';
 import { computed } from 'vue';
 
 const { chainIdFromRoute } = storeToRefs(useAppStore())
-const { availableChains } = storeToRefs(useBlockchainStore())
+const { availableChains, isLoading } = storeToRefs(useBlockchainStore())
 
 const availabeChainNames = computed(() => {
   return availableChains.value.map(c => c.name)
