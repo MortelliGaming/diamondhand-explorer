@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref, computed, ref, type PropType } from 'vue';
+import { Ref, computed, ref, watch, type PropType } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 
@@ -42,7 +42,7 @@ const { availableChains, cosmosClients } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 
 const { loadCosmosProposals, getProposalInfo } = useProposalsStore()
-const { proposals } = storeToRefs(useProposalsStore())
+const { proposals, isLoadingProposals } = storeToRefs(useProposalsStore())
 
 const validatorVotes: Ref<Record<string, Vote|undefined>> = ref({})
 
@@ -61,19 +61,28 @@ function validatorVote(proposalId: string) {
     return validatorVotes.value[proposalId] ? t('proposal.voteOption.'+ VoteOption[validatorVotes.value[proposalId]?.options[0].option || 0]) : t('validator.didNotVote')
 }
 
-setTimeout(() => {
-    loadCosmosProposals(cosmosChainId.value || '').then(async () => {
-        for(const proposal of proposals.value[cosmosChainId.value || '']) {
-            try {
-                validatorVotes.value[proposal.proposalId.toString()] = (await 
-                    cosmosClients.value[cosmosChainId.value || ''].queryClient.extensions.gov.gov.vote(proposal.proposalId.toString(), props.validator?.operatorWallet || '')
-                )?.vote
-            } catch {
-                validatorVotes.value[proposal.proposalId.toString()] = undefined;
-            }
-        }
-    })
-}, 500);
+function loadValidatorVotes() {
+    for(const proposal of proposals.value[cosmosChainId.value || ''] || []) {
+        cosmosClients.value[cosmosChainId.value || ''].queryClient.extensions.gov.gov.vote(proposal.proposalId.toString(), props.validator?.operatorWallet || '')
+        .then((vote) => {
+            validatorVotes.value[proposal.proposalId.toString()] = vote.vote
+        }).catch(() => {
+            validatorVotes.value[proposal.proposalId.toString()] = undefined;
+        })
+    }
+}
+
+const isLoading = computed(() => {
+    return isLoadingProposals.value.includes(cosmosChainId.value || '')
+})
+
+if(!votingAndEndedProposals.value?.length) {
+    loadCosmosProposals(cosmosChainId.value || '')
+} else {
+    loadValidatorVotes()
+}
+
+watch(isLoading, () => loadValidatorVotes() )
 
 </script>
 <style>
