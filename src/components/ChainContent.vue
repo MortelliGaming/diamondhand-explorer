@@ -5,7 +5,7 @@
     <div v-if="props.isLoading" style="height: 100%;">
       <loading />
     </div>
-    <v-container class="fill-height" v-else>
+    <v-container class="fill-height align-start" v-else>
       <slot></slot>
     </v-container>
   </div>

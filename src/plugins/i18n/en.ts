@@ -115,4 +115,8 @@ export const en = {
         no: 'No',
         language: 'Language'
     },
+    blocks: {
+        blocks: 'Blocks',
+        txs: 'Txs'
+    }
 }

@@ -30,7 +30,7 @@ const selectedChain = computed(() => {
 
 const latestBlockHeight = computed(() => {
   return latestBlocks.value[selectedChain.value?.keplr?.chainId || '']?.length > 0
-    ? latestBlocks.value[selectedChain.value?.keplr?.chainId || ''][0].header.height
+    ? latestBlocks.value[selectedChain.value?.keplr?.chainId || ''][0]?.header.height
     : 0
 })
 

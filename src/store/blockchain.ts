@@ -1,11 +1,10 @@
 import { defineStore, storeToRefs } from 'pinia';
 import { type Ref, computed, ref, ComputedRef } from 'vue';
-
 import { blockchainConfigs } from '@/lib/chains'
 
 import { ExplorerChainInfo } from '@/types';
 import { useAppStore } from './app';
-import { NewBlockHeaderEvent, Tendermint37Client } from '@cosmjs/tendermint-rpc';
+import { NewBlockEvent, Tendermint37Client } from '@cosmjs/tendermint-rpc';
 import { 
     AuthExtension,
     BankExtension,
@@ -21,7 +20,6 @@ import {
 import { FeegrantExtension, SlashingExtension, setupAuthExtension, setupBankExtension, setupDistributionExtension, setupFeegrantExtension, setupGovExtension, setupIbcExtension, setupMintExtension, setupSlashingExtension, setupStakingExtension, setupTxExtension } from '@cosmjs/stargate/build/modules';
 import { AuthzExtension, setupAuthzExtension } from '@cosmjs/stargate/build/modules/authz/queries';
 import { Subscription } from 'xstream';
-import { Block } from '@cosmjs/stargate';
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
@@ -52,7 +50,7 @@ export type ComosClients = {
 export const useBlockchainStore = defineStore('blockchain', () => {
     const isConnecting = ref(false)
 
-    const latestBlocks: Ref<Record<string, Block[]>> = ref({})
+    const latestBlocks: Ref<Record<string, NewBlockEvent[]>> = ref({})
 
     const cosmosClients: Ref<Record<string, ComosClients>> = ref({})
 
@@ -80,19 +78,17 @@ export const useBlockchainStore = defineStore('blockchain', () => {
         console.log('websocket error ' + chainId + ': ' + err)
     }
 
-    function NewBlockHeaderEventHandler(chainId: string, blockInfo: NewBlockHeaderEvent) {
-        cosmosClients.value[chainId]?.stargateClient.getBlock(blockInfo.height)
-            .then((newBlockInfo) => {
-                if(!latestBlocks.value[chainId]) {
-                    latestBlocks.value[chainId] = []
-                }
-                // keep 100 blocks
-                if (latestBlocks.value[chainId].length >= 100) {
-                    latestBlocks.value[chainId].pop();
-                }
-                // Add the new item at position 0 (beginning of the array)
-                latestBlocks.value[chainId].unshift(newBlockInfo);
-            })
+    async function NewBlockHeaderEventHandler(chainId: string, block: NewBlockEvent) {
+        if(!latestBlocks.value[chainId]) {
+            latestBlocks.value[chainId] = []
+        }
+        // keep 100 blocks
+        if (latestBlocks.value[chainId].length >= 100) {
+            latestBlocks.value[chainId].pop();
+        }
+        // Add the new item at position 0 (beginning of the array)
+        // console.log(Buffer.from(block.header.proposerAddress).toString('hex'))
+        latestBlocks.value[chainId].unshift(block);
     }
 
     function setupExtenstions(queryClient: QueryClient) {
@@ -126,10 +122,10 @@ export const useBlockchainStore = defineStore('blockchain', () => {
             const stargateClient = await StargateClient.connect(chainInfo.rpc)
             const tendermintClient = await Tendermint37Client.connect(chainInfo.rpc.replace('https', 'wss'))
             const queryClient = QueryClient.withExtensions(tendermintClient)
-            const newBlockHeaderStream = tendermintClient.subscribeNewBlockHeader()
+            const newBlockHeaderStream = tendermintClient.subscribeNewBlock()
             // subscribe new block header
             const subscription = newBlockHeaderStream.subscribe({
-                next: (event: NewBlockHeaderEvent) => NewBlockHeaderEventHandler(chainInfo.chainId, event),
+                next: (event: NewBlockEvent) => NewBlockHeaderEventHandler(chainInfo.chainId, event),
                 error: (error) => webSocketError(chainInfo.chainId, error),
                 complete: () => webSocketClosed(chainInfo.chainId)
             });
