@@ -12,7 +12,7 @@
                     <v-col class="d-flex justify-center" cols="12"><b>#{{  block.header.height  }}</b></v-col>
                     <v-col cols="6" style="min-height:40px;">{{  getValidator(block.header.proposerAddress)  }}</v-col>
                     <v-col cols="6" class="text-right pl-2"> {{ t('blocks.txs')}}: {{ block.txs.length }}</v-col>
-                    <v-col cols="12">{{  moment(block.header.time.toString()).format('DD.MM.YY HH:mm:ss')  }}</v-col>
+                    <v-col cols="12">{{  moment(block.header.time.toISOString()).format('DD.MM.YY HH:mm:ss')  }}</v-col>
                     <v-col class="d-flex justify-center" cols="12"><b></b></v-col>
                   </v-row>
               </v-sheet>
