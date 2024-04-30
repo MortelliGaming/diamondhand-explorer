@@ -2,7 +2,7 @@
     <not-found v-if="!valoper"/>
     <div v-else class="fill-height">
         <chain-content :is-loading="isLoadingValidators.includes(cosmosChainId || '') || isLoadingValidatorDelegations.includes(cosmosChainId || '')">
-            <v-row justify="space-around">
+            <v-row style="width: 100%;">
                 <v-col cols="12" sm="6" lg="4">
                     <validator-info-sheet
                         v-if="validator"
