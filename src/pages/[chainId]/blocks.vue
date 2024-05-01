@@ -6,7 +6,12 @@
           <v-col cols="6" sm="4" md="3" v-for="block in latestChainBlocks" :key="block.header.appHash.toString()" >
             <v-sheet
               @click="$router.push('./block/'+block.header.height)"
-              role="button" color="blue-grey-darken-4" rounded elevation="12" class="pa-2 fill-height" style="min-height: 96px;">
+              role="button"
+              color="blue-grey-darken-4" 
+              rounded 
+              elevation="12" 
+              class="pa-2 fill-height" 
+              style="min-height: 96px;">
                 <v-row no-gutters class="d-flex flex-row">
                   <v-col cols="12"  class="d-flex flex-row">
                     <div class="d-flex justify-center" >
