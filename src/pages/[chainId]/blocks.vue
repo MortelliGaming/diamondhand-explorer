@@ -1,26 +1,22 @@
 <template>
   <chain-content>
-    <v-container class="pa-0 text-caption" style="height: 100%;">
-      <base-sheet :title="t('blocks.blocks')">
-        <div :style="{maxHeight: $vuetify.display.mdAndUp ? '65vh' : '62vh', overflowY: 'scroll'}" class="mt-6">
-          <v-row>
-            <v-col cols="6" sm="4" md="3" v-for="block in latestChainBlocks" :key="block.header.appHash.toString()" >
-              <v-sheet
-                @click="$router.push('./block/'+block.header.height)"
-                role="button" color="blue-grey-darken-4" rounded elevation="12" class="pa-2 fill-height" style="min-height: 96px">
-                  <v-row no-gutters class="d-flex flex-row">
-                    <v-col class="d-flex justify-center" cols="12"><b>#{{  block.header.height  }}</b></v-col>
-                    <v-col cols="6" style="min-height:40px;">{{  getValidator(block.header.proposerAddress)  }}</v-col>
-                    <v-col cols="6" class="text-right pl-2"> {{ t('blocks.txs')}}: {{ block.txs.length }}</v-col>
-                    <v-col cols="12">{{  moment(block.header.time.toISOString()).format('DD.MM.YY HH:mm:ss')  }}</v-col>
-                    <v-col class="d-flex justify-center" cols="12"><b></b></v-col>
-                  </v-row>
-              </v-sheet>
-            </v-col>
-          </v-row>
-        </div>
+    <base-sheet :title="t('blocks.blocks')"  style="max-height: 80vh; overflow-y: scroll; width: 100%;">
+      <v-row  style="overflow-y: scroll;">
+        <v-col cols="6" sm="4" md="3" v-for="block in latestChainBlocks" :key="block.header.appHash.toString()" >
+          <v-sheet
+            @click="$router.push('./block/'+block.header.height)"
+            role="button" color="blue-grey-darken-4" rounded elevation="12" class="pa-2 fill-height" style="min-height: 96px;">
+              <v-row no-gutters class="d-flex flex-row">
+                <v-col class="d-flex justify-center" cols="12"><b>#{{  block.header.height  }}</b></v-col>
+                <v-col cols="6" style="min-height:40px;">{{  getValidator(block.header.proposerAddress)  }}</v-col>
+                <v-col cols="6" class="text-right pl-2"> {{ t('blocks.txs')}}: {{ block.txs.length }}</v-col>
+                <v-col cols="12">{{  moment(block.header.time.toISOString()).format('DD.MM.YY HH:mm:ss')  }}</v-col>
+                <v-col class="d-flex justify-center" cols="12"><b></b></v-col>
+              </v-row>
+          </v-sheet>
+        </v-col>
+      </v-row>
       </base-sheet>
-    </v-container>
   </chain-content>
 </template>
 
@@ -61,7 +57,7 @@ function getValidator(proposerAddressBytes: Uint8Array) {
   return validators.value[cosmosChainId.value || '']?.map(v => getValidatorInfo(cosmosChainId.value || '', v))?.find(v => v.consensusHexAddress.toLowerCase() == hexAddress.toLowerCase())?.description.moniker
 }
 if(!validators.value[cosmosChainId.value || '']) {
-  loadCosmosValidators(cosmosChainId.value || '')
+  await loadCosmosValidators(cosmosChainId.value || '')
 }
 
 </script>
