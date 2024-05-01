@@ -9,10 +9,18 @@
               role="button" color="blue-grey-darken-4" rounded elevation="12" class="pa-2 fill-height" style="min-height: 96px;">
                 <v-row no-gutters class="d-flex flex-row">
                   <v-col class="d-flex justify-center" cols="12"><b>#{{  block.header.height  }}</b></v-col>
-                  <v-col cols="6" style="min-height:40px;">{{  getValidator(block.header.proposerAddress)  }}</v-col>
-                  <v-col cols="6" class="text-right pl-2"> {{ t('blocks.txs')}}: {{ block.txs.length }}</v-col>
-                  <v-col cols="12">{{  moment(block.header.time.toISOString()).format('DD.MM.YY HH:mm:ss')  }}</v-col>
-                  <v-col class="d-flex justify-center" cols="12"><b></b></v-col>
+                  <v-col cols="12" class="d-flex align-center justify-center" style="min-height:40px;">
+                    <v-avatar v-if="getValidator(block.header.proposerAddress)" class="mr-2" size="x-small">
+                          <v-img 
+                              v-if="keybaseAvatars[getValidator(block.header.proposerAddress)!.description.identity]"
+                              :src="keybaseAvatars[getValidator(block.header.proposerAddress)!.description.identity]" />
+                          <v-icon v-else icon="mdi-account" />
+                      </v-avatar>
+                  </v-col>
+                  <v-col cols="12" class="text-center">
+                      <b>{{ getValidator(block.header.proposerAddress)?.description.moniker  }}</b>
+                  </v-col>
+                  <v-col cols="12" class="text-center">{{  moment(block.header.time.toISOString()).format('DD.MM.YY HH:mm:ss')  }}</v-col>
                 </v-row>
             </v-sheet>
           </v-col>
@@ -43,7 +51,7 @@ const { t } = useI18n()
 
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 const { availableChains, latestBlocks } = storeToRefs(useBlockchainStore())
-const { validators } = storeToRefs(useValidatorsStore())
+const { validators, keybaseAvatars } = storeToRefs(useValidatorsStore())
 const { getValidatorInfo, loadCosmosValidators } = useValidatorsStore()
 
 const cosmosChainId = computed(() => {
@@ -56,7 +64,7 @@ const latestChainBlocks= computed(() => {
 
 function getValidator(proposerAddressBytes: Uint8Array) {
   const hexAddress = '0x' + Buffer.from(proposerAddressBytes).toString('hex')
-  return validators.value[cosmosChainId.value || '']?.map(v => getValidatorInfo(cosmosChainId.value || '', v))?.find(v => v.consensusHexAddress.toLowerCase() == hexAddress.toLowerCase())?.description.moniker
+  return validators.value[cosmosChainId.value || '']?.map(v => getValidatorInfo(cosmosChainId.value || '', v))?.find(v => v.consensusHexAddress.toLowerCase() == hexAddress.toLowerCase())
 }
 if(!validators.value[cosmosChainId.value || '']) {
   await loadCosmosValidators(cosmosChainId.value || '')
