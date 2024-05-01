@@ -2,10 +2,7 @@
 <!-- Shows 404 if invalid chainId -->
 <template>
   <div v-if="isChainValid" class="fill-height">
-    <div v-if="props.isLoading" style="height: 100%;">
-      <loading />
-    </div>
-    <v-container class="fill-height align-start" v-else>
+    <v-container class="fill-height align-start">
       <slot></slot>
     </v-container>
   </div>
@@ -22,12 +19,7 @@ import { useBlockchainStore } from '@/store/blockchain';
 
 // Components
 import NotFound from '@/components/404.vue'
-import Loading from './Loading.vue';
 import { computed } from 'vue';
-
-const props = defineProps({
-  isLoading: Boolean
-})
 
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 const { availableChains } = storeToRefs(useBlockchainStore())

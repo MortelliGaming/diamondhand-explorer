@@ -1,42 +1,43 @@
 <template>
-  <v-container>
-      <v-container class="pt-5">
-          <v-row>
-              <v-col cols="12" class="text-center pt-0">
-                <div class="d-flex">
-                  <div class="text-caption" v-if="votingProposals?.length > 0">
-                    <v-btn size="x-small"
-                      @click="() => {activeTab = ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD}"
-                      :active="activeTab == ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD">Voting</v-btn>
-                  </div>
-                  <div class="text-caption"  v-if="depositingProposals?.length > 0">
-                    <v-btn size="x-small"
-                      @click="() => {activeTab = ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD}"
-                      :active="activeTab == ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD">Depositing</v-btn>
-                  </div>
-                  <div class="text-caption">
-                    <v-btn size="x-small"
-                      @click="() => {activeTab = ProposalStatus.PROPOSAL_STATUS_PASSED}"
-                      :active="activeTab == ProposalStatus.PROPOSAL_STATUS_PASSED">Ended</v-btn>
-                  </div>
-                  <div class="flex-grow-1"></div>
-                </div>
-            </v-col>
-          </v-row>
-
-          <v-sheet elevation="12" color="" class="text-caption pa-3 mt-2 fill-heigh2">
-            <proposal-header-row 
-              v-for="proposal in proposalsToDisplay" :key="proposal.proposalId.toString()"
-              :proposal="proposal" 
-              @click="() => $router.push('proposal/' + proposal.proposalId.toString())"
-              >
-              <template v-slot:append>
-                <proposal-status-chip :proposal="proposal" />
-              </template>
-            </proposal-header-row>
-        </v-sheet>
-        </v-container>
-  </v-container>
+  <chain-content>
+    <v-row class="pb-3 pt-2" style="width: 100%;">
+      <v-col cols="12" class="text-center pt-0">
+        <div class="d-flex">
+          <div class="text-caption" v-if="votingProposals?.length > 0">
+            <v-btn size="x-small"
+              @click="() => {activeTab = ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD}"
+              :active="activeTab == ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD">Voting</v-btn>
+          </div>
+          <div class="text-caption"  v-if="depositingProposals?.length > 0">
+            <v-btn size="x-small"
+              @click="() => {activeTab = ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD}"
+              :active="activeTab == ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD">Depositing</v-btn>
+          </div>
+          <div class="text-caption">
+            <v-btn size="x-small"
+              @click="() => {activeTab = ProposalStatus.PROPOSAL_STATUS_PASSED}"
+              :active="activeTab == ProposalStatus.PROPOSAL_STATUS_PASSED">Ended</v-btn>
+          </div>
+          <div class="flex-grow-1"></div>
+        </div>
+    </v-col>
+  </v-row>
+  <v-row style="width: 100%;" no-gutters class="fill-height">
+    <v-col>
+      <base-sheet :title="$t('proposal.proposals')" style="max-height:90%; overflow-y: scroll;">
+        <proposal-header-row 
+          v-for="proposal in proposalsToDisplay" :key="proposal.proposalId.toString()"
+          :proposal="proposal" 
+          @click="() => $router.push('proposal/' + proposal.proposalId.toString())"
+          >
+          <template v-slot:append>
+            <proposal-status-chip :proposal="proposal" />
+          </template>
+        </proposal-header-row>
+      </base-sheet>
+    </v-col>
+  </v-row>
+</chain-content>
 </template>
 
 <script lang="ts" setup>
@@ -48,6 +49,8 @@ import { useAppStore } from '@/store/app';
 import { storeToRefs } from 'pinia';
 import { ProposalStatus } from '@/lib/proto/cosmos/gov/v1beta1/gov';
 
+import ChainContent from '@/components/ChainContent.vue';
+import BaseSheet from '@/components/BaseSheet.vue';
 import ProposalHeaderRow from '@/components/governance/ProposalHeaderRow.vue';
 import ProposalStatusChip from '@/components/governance/ProposalStatusChip.vue';
 
@@ -85,8 +88,7 @@ const proposalsToDisplay = computed(() => {
       return endedProposals.value?.toSorted((a,b) => Number(b.proposalId - a.proposalId));
   }
 })
-
-loadCosmosProposals(cosmosChainId.value || '')
+await loadCosmosProposals(cosmosChainId.value || '')
 
 </script>
 <style>

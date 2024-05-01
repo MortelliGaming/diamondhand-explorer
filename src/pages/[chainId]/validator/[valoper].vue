@@ -1,7 +1,7 @@
 <template>
     <not-found v-if="!valoper"/>
     <div v-else class="fill-height">
-        <chain-content :is-loading="isLoadingValidators.includes(cosmosChainId || '') || isLoadingValidatorDelegations.includes(cosmosChainId || '')">
+        <chain-content>
             <v-row style="width: 100%;">
                 <v-col cols="12" sm="6" lg="4">
                     <validator-info-sheet
@@ -46,7 +46,7 @@
 import NotFound from '@/components/404.vue'
 import ChainContent from '@/components/ChainContent.vue';
 
-import { computed, onMounted } from 'vue';
+import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 import ValidatorInfoSheet from '@/components/validator/ValidatorInfoSheet.vue'
@@ -63,7 +63,7 @@ import { storeToRefs } from 'pinia';
 
 const route = useRoute()
 const { getValidatorInfo, loadCosmosValidators, loadValidatorDelegations } = useValidatorsStore()
-const { validators, isLoadingValidators, isLoadingValidatorDelegations } = storeToRefs(useValidatorsStore())
+const { validators } = storeToRefs(useValidatorsStore())
 const { availableChains } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 
@@ -76,12 +76,10 @@ const basicValidator = computed(() => {
 })
 const validator = computed(() => { return (basicValidator.value != undefined ? getValidatorInfo(cosmosChainId.value || '', basicValidator.value) : null)})
 
-onMounted(() => {
-    if(!validator.value) {
-        loadCosmosValidators(cosmosChainId.value || '')
-    }
-    loadValidatorDelegations(cosmosChainId.value || '', valoper.value)
-})
+if(!validator.value) {
+    await loadCosmosValidators(cosmosChainId.value || '')
+}
+await loadValidatorDelegations(cosmosChainId.value || '', valoper.value)
 
 </script>
 <style>

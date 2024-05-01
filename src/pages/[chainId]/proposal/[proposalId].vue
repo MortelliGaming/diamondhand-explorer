@@ -1,7 +1,7 @@
 <template>
     <not-found v-if="!proposalId"/>
     <div v-else>
-        <v-container class="mt-3">
+        <chain-content>
             <v-row justify="space-around">
                 <v-col cols="12">
                     <proposal-info-sheet v-if="proposal" :proposal="proposal" :chain-id="cosmosChainId"/>
@@ -17,7 +17,7 @@
                     <proposal-votes-sheet v-if="proposal" :proposal="proposal" :chain-id="cosmosChainId || ''" />
                 </v-col>
             </v-row>
-        </v-container>
+        </chain-content>
     </div>
 </template>
 
@@ -26,6 +26,7 @@ import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 import NotFound from '@/components/404.vue'
+import ChainContent from '@/components/ChainContent.vue';
 import ProposalInfoSheet from '@/components/governance/ProposalInfoSheet.vue';
 import ProposalVotingsSheet from '@/components/governance/ProposalVotingsSheet.vue';
 import ProposalVotesSheet from '@/components/governance/ProposalVotesSheet.vue';
@@ -52,7 +53,7 @@ const proposal = computed(() => {
 })
 
 if(!proposal.value) {
-    loadCosmosProposals(cosmosChainId.value || '')
+    await loadCosmosProposals(cosmosChainId.value || '')
 }
 
 </script>

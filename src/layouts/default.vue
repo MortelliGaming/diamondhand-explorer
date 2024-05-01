@@ -1,7 +1,12 @@
 <template>
   <v-app>
     <default-bar />
-    <default-view />
+    <suspense>
+      <default-view />
+      <template #fallback>
+        <loading />
+      </template>
+    </suspense>
     <default-footer />
     <default-navigation-drawer />
   </v-app>
@@ -12,4 +17,5 @@
   import DefaultView from './default/View.vue'
   import DefaultFooter from './default/AppFooter.vue'
   import DefaultNavigationDrawer from './default/NavigationDrawer.vue'
+  import Loading from '@/components/Loading.vue'
 </script>

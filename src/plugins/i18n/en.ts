@@ -68,6 +68,7 @@ export const en = {
         }
     },
     proposal: {
+        proposals: 'Proposals',
         info: 'Info',
         dates: 'Dates',
         type: 'Type',

@@ -1,5 +1,5 @@
 <template>
-<chain-content :isLoading="isLoadingValidators?.includes(cosmosChainId || '-')">
+<chain-content>
   <v-row style="width: 100%">
     <v-col cols="12" class="text-left pl-6 text-caption">
       <v-row>
@@ -95,14 +95,12 @@
     </v-col>
   </v-row>
 </chain-content>
-  <div>
-  </div>
 </template>
 
 <script lang="ts" setup>
 import numeral from 'numeral'
 import { storeToRefs } from 'pinia'
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { BondStatus } from "@/lib/proto/cosmos/staking/v1beta1/staking";
@@ -116,7 +114,7 @@ const { t } = useI18n()
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 const { availableChains } = storeToRefs(useBlockchainStore())
 const { getValidatorInfo, loadCosmosValidators } = useValidatorsStore()
-const { keybaseAvatars, validators, isLoadingValidators } = storeToRefs(useValidatorsStore())
+const { keybaseAvatars, validators } = storeToRefs(useValidatorsStore())
 
 const activeTab = ref('BOND_STATUS_BONDED')
 const cosmosChainId = computed(() => {
@@ -143,10 +141,9 @@ const validatorsToShow = computed(() => {
 // make sure table isnt too big when data is there before mount
 const isTableVisible = ref(false)
 
-onMounted(() => {
-  isTableVisible.value = true;
-  loadCosmosValidators(cosmosChainId.value || '')
-})
+
+isTableVisible.value = true;
+await loadCosmosValidators(cosmosChainId.value || '')
 
 onUnmounted(() => {
   isTableVisible.value = false;

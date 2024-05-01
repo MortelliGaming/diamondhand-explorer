@@ -15,7 +15,7 @@ export const useProposalsStore = defineStore('proposals', () => {
     const isLoadingProposals: Ref<string[]> = ref([])
 
     async function loadCosmosProposals(chainId: string) {
-        if(!cosmosClients.value[chainId].queryClient) {
+        if(!cosmosClients.value[chainId]?.queryClient) {
             return Promise.resolve(false)
         }
         if(isLoadingProposals.value.includes(chainId)) {
