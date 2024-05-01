@@ -2,19 +2,21 @@
   <chain-content>
     <base-sheet :title="t('blocks.blocks')"  style="max-height: 80vh; overflow-y: scroll; width: 100%;">
       <v-row  style="overflow-y: scroll;">
-        <v-col cols="6" sm="4" md="3" v-for="block in latestChainBlocks" :key="block.header.appHash.toString()" >
-          <v-sheet
-            @click="$router.push('./block/'+block.header.height)"
-            role="button" color="blue-grey-darken-4" rounded elevation="12" class="pa-2 fill-height" style="min-height: 96px;">
-              <v-row no-gutters class="d-flex flex-row">
-                <v-col class="d-flex justify-center" cols="12"><b>#{{  block.header.height  }}</b></v-col>
-                <v-col cols="6" style="min-height:40px;">{{  getValidator(block.header.proposerAddress)  }}</v-col>
-                <v-col cols="6" class="text-right pl-2"> {{ t('blocks.txs')}}: {{ block.txs.length }}</v-col>
-                <v-col cols="12">{{  moment(block.header.time.toISOString()).format('DD.MM.YY HH:mm:ss')  }}</v-col>
-                <v-col class="d-flex justify-center" cols="12"><b></b></v-col>
-              </v-row>
-          </v-sheet>
-        </v-col>
+        <transition-group name="list">
+          <v-col cols="6" sm="4" md="3" v-for="block in latestChainBlocks" :key="block.header.appHash.toString()" >
+            <v-sheet
+              @click="$router.push('./block/'+block.header.height)"
+              role="button" color="blue-grey-darken-4" rounded elevation="12" class="pa-2 fill-height" style="min-height: 96px;">
+                <v-row no-gutters class="d-flex flex-row">
+                  <v-col class="d-flex justify-center" cols="12"><b>#{{  block.header.height  }}</b></v-col>
+                  <v-col cols="6" style="min-height:40px;">{{  getValidator(block.header.proposerAddress)  }}</v-col>
+                  <v-col cols="6" class="text-right pl-2"> {{ t('blocks.txs')}}: {{ block.txs.length }}</v-col>
+                  <v-col cols="12">{{  moment(block.header.time.toISOString()).format('DD.MM.YY HH:mm:ss')  }}</v-col>
+                  <v-col class="d-flex justify-center" cols="12"><b></b></v-col>
+                </v-row>
+            </v-sheet>
+          </v-col>
+        </transition-group>
       </v-row>
       </base-sheet>
   </chain-content>
@@ -61,3 +63,22 @@ if(!validators.value[cosmosChainId.value || '']) {
 }
 
 </script>
+<style lang="scss" scoped>
+  .list-move, /* apply transition to moving elements */
+  .list-enter-active,
+  .list-leave-active {
+    transition: all 0.5s ease;
+  }
+
+  .list-enter-from,
+  .list-leave-to {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+
+  /* ensure leaving items are taken out of layout flow so that moving
+    animations can be calculated correctly. */
+  .list-leave-active {
+    position: absolute;
+  }
+</style>

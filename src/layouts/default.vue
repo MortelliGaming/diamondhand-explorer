@@ -4,7 +4,9 @@
     <suspense>
       <default-view />
       <template #fallback>
-        <loading />
+        <v-main>
+          <loading />
+        </v-main>
       </template>
     </suspense>
     <default-footer />

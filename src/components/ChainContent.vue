@@ -2,7 +2,7 @@
 <!-- Shows 404 if invalid chainId -->
 <template>
   <div v-if="isChainValid" class="fill-height">
-    <v-container class="fill-height align-start">
+    <v-container class="fill-height align-start" style="width: 100%;">
       <slot></slot>
     </v-container>
   </div>

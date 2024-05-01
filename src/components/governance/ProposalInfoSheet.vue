@@ -7,7 +7,7 @@
             <v-col cols="3" class="pb-0" style="overflow-wrap: break-word;">
                 {{ t('proposal.votingEndTime') }}:
             </v-col>
-            <v-col cols="9" class="d-flex flex-sm-row pb-0">
+            <v-col cols="9" class="d-flex flex-column flex-sm-row pb-0">
                 <div class="mr-sm-2">
                     {{ moment(Number(proposal?.votingEndTime.seconds) * 1000).format('DD.MM.YY HH:mm:ss') }}
                 </div>

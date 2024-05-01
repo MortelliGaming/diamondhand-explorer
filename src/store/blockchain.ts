@@ -148,6 +148,15 @@ export const useBlockchainStore = defineStore('blockchain', () => {
         return connectCosmosClients()
     }
 
+    async function getTendermintClient(chainId: string) {
+        const chainInfo = availableChains.value.find(c => c.keplr?.chainId == chainId)
+        if(chainInfo) {
+            return Tendermint37Client.connect(chainInfo.keplr!.rpc.replace('https', 'wss'))
+        } else {
+            return Promise.resolve(undefined)
+        }
+    }
+
     return { 
         isConnecting,
         cosmosClients,
@@ -155,6 +164,7 @@ export const useBlockchainStore = defineStore('blockchain', () => {
         availableCosmosChainIds,
         availableChains,
         availableChainNames,
+        getTendermintClient,
         connectClients,
     }
 })

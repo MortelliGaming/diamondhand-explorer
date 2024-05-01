@@ -2,17 +2,17 @@
     <not-found v-if="!proposalId"/>
     <div v-else>
         <chain-content>
-            <v-row justify="space-around">
+            <v-row justify="space-around" style="width: 100%;">
                 <v-col cols="12">
                     <proposal-info-sheet v-if="proposal" :proposal="proposal" :chain-id="cosmosChainId"/>
                 </v-col>
             </v-row>
-            <v-row justify="space-around">
+            <v-row justify="space-around" style="width: 100%;">
                 <v-col cols="12">
                     <proposal-votings-sheet v-if="proposal" :proposal="proposal" />
                 </v-col>
             </v-row>
-            <v-row justify="space-around">
+            <v-row justify="space-around" style="width: 100%;">
                 <v-col cols="12">
                     <proposal-votes-sheet v-if="proposal" :proposal="proposal" :chain-id="cosmosChainId || ''" />
                 </v-col>

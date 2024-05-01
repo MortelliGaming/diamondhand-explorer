@@ -1,12 +1,14 @@
 <template>
     <v-sheet class="text-caption pa-3 fill-height">
-        <v-container class="pt-0">
+        <v-container class="pt-0 pb-0">
             <v-row>
-                <v-col cols="8" class="pb-0" style="overflow-wrap: break-word;">
-                    <div class="text-h6 text-left">{{ props.title }}</div>
-                </v-col>
-                <v-col cols="4" class="pb-0 text-right" style="overflow-wrap: break-word;">
-                    <slot name="appendTitle"></slot>
+                <v-col cols="12">
+                    <div class="d-flex flex-row">
+                        <div class="text-h6 text-left" style="overflow-wrap: break-word; max-width: 75%;">{{ props.title }}</div>
+                        <div class="text-right flex-grow-1">
+                            <slot name="appendTitle"></slot>
+                        </div>
+                    </div>
                 </v-col>
             </v-row>
             <slot></slot>

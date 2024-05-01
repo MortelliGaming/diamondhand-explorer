@@ -118,6 +118,11 @@ export const en = {
     },
     blocks: {
         blocks: 'Blocks',
-        txs: 'Txs'
+        txs: 'Txs',
+        block: 'Block',
+        hash: 'Hash',
+        time: 'Time',
+        proposer: 'Proposer',
+        lastBlockSignatures: 'Last Block Signatures'
     }
 }
