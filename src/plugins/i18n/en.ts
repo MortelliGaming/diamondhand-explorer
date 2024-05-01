@@ -126,6 +126,7 @@ export const en = {
         proposer: 'Proposer',
         blockSignatures: 'Signatures',
         messages: 'Messages',
-        transactions: 'Transactions'
+        transactions: 'Transactions',
+        noTxInBlock: 'No Transasctions in this Block'
     }
 }

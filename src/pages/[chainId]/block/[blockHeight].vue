@@ -38,8 +38,11 @@
                     </base-sheet>
                     <div class="pt-3" style="height: 100%">
                         <base-sheet :title="$t('blocks.transactions')" class="pt-5" style="height:100%;">
-                            <v-container class="pa-0 mt-2" style="max-height: 350px; overflow-y: scroll;">
+                            <v-container class="pa-0 mt-2" :style="'max-height: 350px; overflow-y: '+(block.block.txs.length == 0 ? 'hidden;' : 'scroll;')">
                                 <v-row class="pt-3">
+                                    <v-col v-if="block.block.txs.length == 0">
+                                        {{ $t('blocks.noTxInBlock') }}
+                                    </v-col>
                                     <v-col cols="12" sm="6" md="4" class="pb-2" v-for="tx in block.block.txs" :key="tx.toString()">
                                         <v-sheet
                                             color="blue-grey-darken-4" 
