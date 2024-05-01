@@ -8,7 +8,16 @@
               @click="$router.push('./block/'+block.header.height)"
               role="button" color="blue-grey-darken-4" rounded elevation="12" class="pa-2 fill-height" style="min-height: 96px;">
                 <v-row no-gutters class="d-flex flex-row">
-                  <v-col class="d-flex justify-center" cols="12"><b>#{{  block.header.height  }}</b></v-col>
+                  <v-col cols="12"  class="d-flex flex-row">
+                    <div class="d-flex justify-center" >
+                      <b>#{{  block.header.height  }}</b>
+                    </div>
+                    <div class="text-right d-flex flex-grow-1 justify-end">
+                      <v-chip size="x-small" color="success">
+                        {{ block.txs.length }}
+                      </v-chip>
+                    </div>
+                  </v-col>
                   <v-col cols="12" class="d-flex align-center justify-center" style="min-height:40px;">
                     <v-avatar v-if="getValidator(block.header.proposerAddress)" class="mr-2" size="x-small">
                           <v-img 
