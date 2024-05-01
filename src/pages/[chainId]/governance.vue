@@ -24,7 +24,7 @@
   </v-row>
   <v-row style="width: 100%;" no-gutters class="fill-height">
     <v-col>
-      <base-sheet :title="$t('proposal.proposals')" style="max-height:90%; overflow-y: scroll;">
+      <base-sheet :title="$t('proposal.proposals')" style="max-height:90%; overflow-y: scroll; overflow-x:hidden;">
         <proposal-header-row 
           v-for="proposal in proposalsToDisplay" :key="proposal.proposalId.toString()"
           :proposal="proposal" 

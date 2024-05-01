@@ -6,7 +6,8 @@
 
 // Plugins
 import { registerPlugins } from '@/plugins'
-
+import { Buffer } from 'buffer';
+window.Buffer = Buffer
 // Components
 import App from './App.vue'
 

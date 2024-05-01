@@ -1,6 +1,6 @@
 <template>
     <base-sheet :title="t('validator.votes')">
-        <v-container style="height: 300px;overflow-y: scroll;" class="pa-0 mt-5">
+        <v-container style="height: 300px;overflow-y: scroll; overflow-x:hidden;" class="pa-0 mt-5">
             <proposal-header-row 
                 v-for="proposal in votingAndEndedProposals" :key="proposal?.proposalId.toString()"
                 :proposal="proposal" 

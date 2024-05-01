@@ -1,6 +1,6 @@
 <template>
     <base-sheet :title="t('validator.addresses')">
-        <v-row class="d-flex justify-center align-center mt-5" no-gutters style="max-height: 220px; overflow-y: scroll;">
+        <v-row class="d-flex justify-center align-center mt-5" no-gutters style="max-height: 220px; overflow-y: scroll; overflow-x:hidden;">
             <v-col cols="12" lg="4">
                 <div class="d-flex flex-column">
                     <b><div>{{ t('validator.operatorAddress') }}</div></b>

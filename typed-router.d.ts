@@ -53,6 +53,7 @@ declare module 'vue-router/auto/routes' {
     '/[chainId]/proposal/[proposalId]': RouteRecordInfo<'/[chainId]/proposal/[proposalId]', '/:chainId/proposal/:proposalId', { chainId: ParamValue<true>, proposalId: ParamValue<true> }, { chainId: ParamValue<false>, proposalId: ParamValue<false> }>,
     '/[chainId]/staking': RouteRecordInfo<'/[chainId]/staking', '/:chainId/staking', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,
     '/[chainId]/supply': RouteRecordInfo<'/[chainId]/supply', '/:chainId/supply', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,
+    '/[chainId]/transaction/[txHash]': RouteRecordInfo<'/[chainId]/transaction/[txHash]', '/:chainId/transaction/:txHash', { chainId: ParamValue<true>, txHash: ParamValue<true> }, { chainId: ParamValue<false>, txHash: ParamValue<false> }>,
     '/[chainId]/transactions': RouteRecordInfo<'/[chainId]/transactions', '/:chainId/transactions', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,
     '/[chainId]/uptime': RouteRecordInfo<'/[chainId]/uptime', '/:chainId/uptime', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,
     '/[chainId]/validator/[valoper]': RouteRecordInfo<'/[chainId]/validator/[valoper]', '/:chainId/validator/:valoper', { chainId: ParamValue<true>, valoper: ParamValue<true> }, { chainId: ParamValue<false>, valoper: ParamValue<false> }>,

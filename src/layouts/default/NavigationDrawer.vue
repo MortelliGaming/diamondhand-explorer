@@ -54,6 +54,7 @@
           ></v-list-item>
         </template>
 
+        <!-- 
         <v-list-item class="link-item" role="button" :active="'/' + chainName + '/dashboard' === router.currentRoute.value.fullPath" style="padding-left: 25px !important; font-size: small;" prepend-icon="mdi-home">
           <router-link class="routerlink" :to="'/' + chainName + '/dashboard'">
             {{ $t('module.dashboard')}}
@@ -64,6 +65,7 @@
             {{ $t('module.parameters')}}
           </router-link>
         </v-list-item>
+        -->
         <v-list-item class="link-item" role="button" :active="'/' + chainName + '/staking' === router.currentRoute.value.fullPath" style="padding-left: 25px !important; font-size: small;" prepend-icon="mdi-piggy-bank">
           <router-link class="routerlink" :to="'/' + chainName + '/staking'">
             {{ $t('module.staking')}}
@@ -85,6 +87,8 @@
           </router-link>
         </v-list-item>
         <v-divider />
+      </v-list-group>
+        <!--
         <v-list-item class="link-item" role="button" :active="'/' + chainName + '/supply' === router.currentRoute.value.fullPath" style="padding-left: 25px !important; font-size: small;" prepend-icon="mdi-hand-coin">
           <router-link class="routerlink" :to="'/' + chainName + '/supply'">
             {{ $t('module.supply')}}
@@ -123,6 +127,7 @@
         </v-list-item>
       </v-list-group>
       <v-divider />
+      -->
       <v-list-group :value="'links'">
         <template v-slot:activator="{ props }">
           <v-list-item

@@ -38,13 +38,15 @@
                     </base-sheet>
                     <div class="pt-3" style="height: 100%">
                         <base-sheet :title="$t('blocks.transactions')" class="pt-5" style="height:100%;">
-                            <v-container class="pa-0 mt-2" :style="'max-height: 350px; overflow-y: '+(block.block.txs.length == 0 ? 'hidden;' : 'scroll;')">
+                            <v-container class="pa-0 mt-2" :style="'max-height: 350px; overflow-y: '+(block.block.txs.length == 0 ? 'hidden;' : 'scroll;'+ 'overflow-x: hidden;')">
                                 <v-row class="pt-3">
                                     <v-col v-if="block.block.txs.length == 0">
                                         {{ $t('blocks.noTxInBlock') }}
                                     </v-col>
                                     <v-col cols="12" sm="6" md="4" class="pb-2" v-for="tx in block.block.txs" :key="tx.toString()">
                                         <v-sheet
+                                            role="button"
+                                            @click="$router.push('../transaction/' + getTxHash(tx))"
                                             color="blue-grey-darken-4" 
                                             elevation="12"
                                             class="pa-2">
@@ -84,7 +86,7 @@
                     </div>
                     <div class="pt-3" style="height: 100%">
                         <base-sheet :title="$t('blocks.blockSignatures')" class="pt-5" style="height:100%;">
-                            <v-container class="pa-0 mt-2" style="height: 160px; overflow-y: scroll;">
+                            <v-container class="pa-0 mt-2" style="height: 160px; overflow-y: scroll; overflow-x:hidden;">
                                 <v-row class="pt-3">
                                     <v-col cols="12" sm="4" md="3" v-for="signature in nextBlock?.block.lastCommit?.signatures" :key="signature.validatorAddress?.toString()">
                                         <v-sheet

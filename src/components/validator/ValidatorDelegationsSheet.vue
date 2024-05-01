@@ -1,6 +1,6 @@
 <template>
     <base-sheet :title="t('validator.delegations') + '('+ (validatorDelegations[cosmosChainId || ''] ? (validatorDelegations[cosmosChainId || ''][validator?.operatorAddress || ''])?.length : '') +')'">
-        <v-container style="height: 300px;overflow-y: scroll;" v-if="validatorDelegations[cosmosChainId || '']" class="pa-0 mt-5">
+        <v-container style="height: 300px;overflow-y: scroll; overflow-x:hidden;" v-if="validatorDelegations[cosmosChainId || '']" class="pa-0 mt-5">
             <v-row v-for="(delegation, i) in delegationsToShow" :key="delegation.delegation.delegatorAddress">
                 <v-col cols="12" class="d-flex  d-flex align-center" v-if="delegation">
                     <v-chip class="justify-center">{{ ((page-1) * numDelegationPerPage) + 1 + i }}</v-chip>

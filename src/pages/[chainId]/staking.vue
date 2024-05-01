@@ -17,7 +17,7 @@
       </v-row>
     </v-col>
   </v-row>
-  <v-row class="pa-0 pl-2 pr-2" style="overflow-y: scroll;">
+  <v-row class="pa-0 pl-2 pr-2" style="overflow-y: scroll; overflow-x:hidden;">
     <v-col cols="12">
       <v-data-table
         style="max-height: 75vh;"

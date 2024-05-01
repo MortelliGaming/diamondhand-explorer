@@ -1,7 +1,7 @@
 <template>
   <chain-content>
     <base-sheet :title="t('blocks.blocks')"  style="max-height: 80vh; overflow-y: scroll; width: 100%;">
-      <v-row  style="overflow-y: scroll;">
+      <v-row  style="overflow-y: scroll; overflow-x:hidden;">
         <transition-group name="list">
           <v-col cols="6" sm="4" md="3" v-for="block in latestChainBlocks" :key="block.header.appHash.toString()" >
             <v-sheet
