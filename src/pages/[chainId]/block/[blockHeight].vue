@@ -136,7 +136,7 @@ import { BlockIdFlag } from '@cosmjs/tendermint-rpc';
 import { sha256 } from '@cosmjs/crypto';
 
 const route = useRoute()
-const { availableChains, latestBlocks } = storeToRefs(useBlockchainStore())
+const { latestBlocks } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 const { blocks } = storeToRefs(useBlocksStore())
 const { validators, keybaseAvatars } = storeToRefs(useValidatorsStore())
@@ -144,18 +144,15 @@ const { getValidatorInfo, loadCosmosValidators } = useValidatorsStore()
 const { loadCosmosBlock } = useBlocksStore()
 
 const blockHeight = computed(() => parseInt((route.params as {blockHeight: string}).blockHeight))
-const cosmosChainId = computed(() => {
-    return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.chainId
-})
 
 const latestBlockHeight = computed(() => {
-    return latestBlocks.value[cosmosChainId.value || '']?.length > 0 ? latestBlocks.value[cosmosChainId.value || ''][0]?.header.height : 0;
+    return latestBlocks.value[chainIdFromRoute.value || '']?.length > 0 ? latestBlocks.value[chainIdFromRoute.value || ''][0]?.header.height : 0;
 })
 const block = computed(() => {
-    return blocks.value[cosmosChainId.value || '']?.find(b => b.block.header.height === blockHeight.value);
+    return blocks.value[chainIdFromRoute.value || '']?.find(b => b.block.header.height === blockHeight.value);
 })
 const nextBlock = computed(() => {
-    return blocks.value[cosmosChainId.value || '']?.find(b => b.block.header.height === blockHeight.value + 1);
+    return blocks.value[chainIdFromRoute.value || '']?.find(b => b.block.header.height === blockHeight.value + 1);
 })
 
 const blockHash = computed(() => {
@@ -170,8 +167,8 @@ const blockProposer = computed(() => {
 
 function getValidator(validatorAddress: Uint8Array) {
     const proposerAddressHex = '0x' + Buffer.from(validatorAddress).toString('hex')
-    return validators.value[cosmosChainId.value || '']?.find(
-            v => getValidatorInfo(cosmosChainId.value || '', v)?.consensusHexAddress.toLowerCase() === proposerAddressHex.toLowerCase())
+    return validators.value[chainIdFromRoute.value || '']?.find(
+            v => getValidatorInfo(chainIdFromRoute.value || '', v)?.consensusHexAddress.toLowerCase() === proposerAddressHex.toLowerCase())
 }
 
 function decodeTx(transaction: Uint8Array) {
@@ -182,12 +179,12 @@ function getTxHash(tx: Uint8Array) {
     return Buffer.from(sha256(tx)).toString('hex').toUpperCase()
 }
 
-if(!validators.value[cosmosChainId.value || '']) {
-    await loadCosmosValidators(cosmosChainId.value || '');
+if(!validators.value[chainIdFromRoute.value || '']) {
+    await loadCosmosValidators(chainIdFromRoute.value || '');
 }
 
-await loadCosmosBlock(cosmosChainId.value || '', blockHeight.value)
-loadCosmosBlock(cosmosChainId.value || '', blockHeight.value + 1)
+await loadCosmosBlock(chainIdFromRoute.value || '', blockHeight.value)
+loadCosmosBlock(chainIdFromRoute.value || '', blockHeight.value + 1)
 </script>
 <style>
 .break-string {
