@@ -1,6 +1,6 @@
 <template>
-    <base-sheet :title="t('validator.delegations') + '('+ (validatorDelegations[cosmosChainId || ''] ? (validatorDelegations[cosmosChainId || ''][validator?.operatorAddress || ''])?.length : '') +')'">
-        <v-container style="height: 300px;overflow-y: scroll; overflow-x:hidden;" v-if="validatorDelegations[cosmosChainId || '']" class="pa-0 mt-5">
+    <base-sheet :title="t('validator.delegations') + '('+ (validatorDelegations[chainIdFromRoute || ''] ? (validatorDelegations[chainIdFromRoute || ''][validator?.operatorAddress || ''])?.length : '') +')'">
+        <v-container style="height: 300px;overflow-y: scroll; overflow-x:hidden;" v-if="validatorDelegations[chainIdFromRoute || '']" class="pa-0 mt-5">
             <v-row v-for="(delegation, i) in delegationsToShow" :key="delegation.delegation.delegatorAddress">
                 <v-col cols="12" class="d-flex  d-flex align-center" v-if="delegation">
                     <v-chip class="justify-center">{{ ((page-1) * numDelegationPerPage) + 1 + i }}</v-chip>
@@ -34,7 +34,6 @@ import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 
 import { ExtendedValidator, useValidatorsStore } from '@/store/validators';
-import { useBlockchainStore } from '@/store/blockchain';
 import { useAppStore } from '@/store/app';
 import BaseSheet from '../BaseSheet.vue';
 
@@ -45,14 +44,9 @@ const props = defineProps({
     },
 })
 const { t } = useI18n()
-const { availableChains } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 
 const { validatorDelegations } = storeToRefs(useValidatorsStore())
-
-const cosmosChainId = computed(() => {
-    return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.chainId
-})
 
 const page=ref(1)
 const numDelegationPerPage = ref(50)
@@ -69,15 +63,15 @@ const numPages = computed(() => {
 })
 
 const allDelegations = computed(() => {
-    if(validatorDelegations.value[cosmosChainId.value || '']) {
-        return (validatorDelegations.value[cosmosChainId.value || ''][props.validator?.operatorAddress || ''])?.toSorted((a,b) => Number(BigInt(b.balance.amount) - BigInt(a.balance.amount) / BigInt(Math.pow(10,18)))) || []
+    if(validatorDelegations.value[chainIdFromRoute.value || '']) {
+        return (validatorDelegations.value[chainIdFromRoute.value || ''][props.validator?.operatorAddress || ''])?.toSorted((a,b) => Number(BigInt(b.balance.amount) - BigInt(a.balance.amount) / BigInt(Math.pow(10,18)))) || []
     } else {
         return []
     }
 })
 
 const delegationsToShow = computed(() => {
-    if(validatorDelegations.value[cosmosChainId.value || '']) {
+    if(validatorDelegations.value[chainIdFromRoute.value || '']) {
         return getElements(allDelegations.value, numDelegationPerPage.value, (page.value - 1) * numDelegationPerPage.value)
     } else {
         return []

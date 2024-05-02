@@ -4,7 +4,7 @@
         <chain-content>
             <v-row justify="space-around" style="width: 100%;">
                 <v-col cols="12">
-                    <proposal-info-sheet v-if="proposal" :proposal="proposal" :chain-id="cosmosChainId"/>
+                    <proposal-info-sheet v-if="proposal" :proposal="proposal" :chain-id="chainIdFromRoute"/>
                 </v-col>
             </v-row>
             <v-row justify="space-around" style="width: 100%;">
@@ -14,7 +14,7 @@
             </v-row>
             <v-row justify="space-around" style="width: 100%;">
                 <v-col cols="12">
-                    <proposal-votes-sheet v-if="proposal" :proposal="proposal" :chain-id="cosmosChainId || ''" />
+                    <proposal-votes-sheet v-if="proposal" :proposal="proposal" :chain-name="chainIdFromRoute || ''" />
                 </v-col>
             </v-row>
         </chain-content>
@@ -31,7 +31,6 @@ import ProposalInfoSheet from '@/components/governance/ProposalInfoSheet.vue';
 import ProposalVotingsSheet from '@/components/governance/ProposalVotingsSheet.vue';
 import ProposalVotesSheet from '@/components/governance/ProposalVotesSheet.vue';
 
-import { useBlockchainStore } from '@/store/blockchain';
 import { useProposalsStore } from '@/store/proposals';
 import { useAppStore } from '@/store/app';
 import { storeToRefs } from 'pinia';
@@ -39,21 +38,16 @@ import { storeToRefs } from 'pinia';
 const route = useRoute()
 const { loadCosmosProposals } = useProposalsStore()
 const { proposals } = storeToRefs(useProposalsStore())
-const { availableChains } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 
 const proposalId = computed(() => (route.params as {proposalId: string}).proposalId)
 
-const cosmosChainId = computed(() => {
-    return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.chainId
-})
-
 const proposal = computed(() => {
-    return proposals.value[cosmosChainId.value || '']?.find(p => p.proposalId === BigInt(proposalId.value));
+    return proposals.value[chainIdFromRoute.value || '']?.find(p => p.proposalId === BigInt(proposalId.value));
 })
 
 if(!proposal.value) {
-    await loadCosmosProposals(cosmosChainId.value || '')
+    await loadCosmosProposals(chainIdFromRoute.value || '')
 }
 
 </script>

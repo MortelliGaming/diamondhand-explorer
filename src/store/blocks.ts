@@ -6,39 +6,39 @@ import { BlockResponse } from '@cosmjs/tendermint-rpc';
 
 export const useBlocksStore = defineStore('blocks', () => {
 
-    const { cosmosClients } = storeToRefs(useBlockchainStore())
+    const { chainClients } = storeToRefs(useBlockchainStore())
     const { getTendermintClient } = useBlockchainStore()
     const blocks: Ref<Record<string, BlockResponse[]>> = ref({})
     
     const isLoadingBlocks: Ref<string[]> = ref([])
 
-    async function loadCosmosBlock(chainId: string, block: number) {
-        if(!cosmosClients.value[chainId]?.queryClient) {
+    async function loadCosmosBlock(chainName: string, block: number) {
+        if(!chainClients.value[chainName]?.cosmosClients?.queryClient) {
             return Promise.resolve(false)
         }
-        if(isLoadingBlocks.value.includes(chainId)) {
+        if(isLoadingBlocks.value.includes(chainName)) {
             return Promise.resolve(true)
         }
-        if(blocks.value[chainId]?.find(b => b.block.header.height == block)) {
+        if(blocks.value[chainName]?.find(b => b.block.header.height == block)) {
             return Promise.resolve(true)
         }
-        isLoadingBlocks.value.push(chainId)
+        isLoadingBlocks.value.push(chainName)
         // const { cosmosHelper } = storeToRefs(useBlockchainStore())
         try {
-            const tendermintClient = await getTendermintClient(chainId);
-            const blockResult = await (await getTendermintClient(chainId))?.block(block)
+            const tendermintClient = await getTendermintClient(chainName);
+            const blockResult = await (await getTendermintClient(chainName))?.block(block)
             tendermintClient?.disconnect();
             if(blockResult) {
-                if(!blocks.value[chainId]) {
-                    blocks.value[chainId] = []
+                if(!blocks.value[chainName]) {
+                    blocks.value[chainName] = []
                 }
-                blocks.value[chainId].push(blockResult)
+                blocks.value[chainName].push(blockResult)
             }
         } catch(err) { 
             console.error('error fetching validator infos: ', err)
         }
         // dont wait for the avatars
-        const isLoadingIndex = isLoadingBlocks.value.indexOf(chainId)
+        const isLoadingIndex = isLoadingBlocks.value.indexOf(chainName)
         isLoadingBlocks.value.splice(isLoadingIndex, 1)
         return Promise.resolve(true)
     }

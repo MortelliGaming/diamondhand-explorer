@@ -1,18 +1,18 @@
 import { defineStore, storeToRefs } from 'pinia';
 import { Ref, ref } from 'vue';
 import { Pubkey } from '@cosmjs/amino';
-import { decodePubkey } from '@cosmjs/proto-signing';
-import { sha256 } from '@cosmjs/crypto';
 import { BondStatus } from "cosmjs-types/cosmos/staking/v1beta1/staking";
 import type { Validator } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
 
 
 import { fetchAvatar } from '@/lib/http/keybase';
 import { useBlockchainStore } from '@/store/blockchain';
-import { fromBech32, toBech32, toHex, fromBase64 } from '@cosmjs/encoding';
+import { fromBech32, toBech32 } from '@cosmjs/encoding';
 import { DelegationResponse } from '@/lib/proto/cosmos/staking/v1beta1/staking';
 import { BondStatusString } from '@cosmjs/stargate/build/modules/staking/queries';
 import { QueryValidatorDelegationsResponse, QueryValidatorsResponse } from '@/lib/proto/cosmos/staking/v1beta1/query';
+import { protoRegistry } from '@/lib/protoRegistry';
+import { getAddressForPublicKey } from '@/lib/keyhelper';
 
 // Augmented Data For Validators
 interface ValidatorExtension {
@@ -29,7 +29,7 @@ export interface ExtendedValidator extends Validator, ValidatorExtension {}
 
 export const useValidatorsStore = defineStore('validators', () => {
 
-    const { cosmosClients } = storeToRefs(useBlockchainStore())
+    const { chainClients, availableChains } = storeToRefs(useBlockchainStore())
 
     const validators: Ref<Record<string, Validator[]>> = ref({})
     const validatorDelegations: Ref<Record<string, Record<string, DelegationResponse[]>>> = ref({})
@@ -39,22 +39,22 @@ export const useValidatorsStore = defineStore('validators', () => {
     const isLoadingValidators: Ref<string[]> = ref([])
     const isLoadingValidatorDelegations: Ref<string[]> = ref([])
     
-    async function loadCosmosValidators(chainId: string) {
-        if(isLoadingValidators.value.includes(chainId)) {
+    async function loadCosmosValidators(chainName: string) {
+        if(isLoadingValidators.value.includes(chainName)) {
             return Promise.resolve(true)
         }
-        isLoadingValidators.value.push(chainId)
+        isLoadingValidators.value.push(chainName)
 
         const response = {
             validators: []
         } as QueryValidatorsResponse
-        if(cosmosClients.value[chainId]?.queryClient) {
+        if(chainClients.value[chainName]?.cosmosClients?.queryClient) {
             for(const bondStatus of ['BOND_STATUS_BONDED','BOND_STATUS_UNBONDED', 'BOND_STATUS_UNBONDING']) {
                 try {
-                    const validators = await cosmosClients.value[chainId]?.queryClient.extensions.staking.staking.validators(bondStatus as BondStatusString)
+                    const validators = await chainClients.value[chainName].cosmosClients!.queryClient.extensions.staking.staking.validators(bondStatus as BondStatusString)
                     while (validators.pagination && validators.pagination.nextKey.length > 0) {
                         try {
-                            const nextResult = await cosmosClients.value[chainId]?.queryClient.extensions.staking.staking.validators(bondStatus as BondStatusString, validators.pagination.nextKey)
+                            const nextResult = await chainClients.value[chainName].cosmosClients!.queryClient.extensions.staking.staking.validators(bondStatus as BondStatusString, validators.pagination.nextKey)
                             validators.validators.push(...nextResult.validators)
                             validators.pagination = nextResult.pagination
                         } catch {
@@ -67,31 +67,31 @@ export const useValidatorsStore = defineStore('validators', () => {
                 }
             }
         }
-        validators.value[chainId] = response.validators
+        validators.value[chainName] = response.validators
         // dont wait for the avatars
-        loadAvatars(chainId);
+        loadAvatars(chainName);
         // remove chainId from loading
-        const isLoadingIndex = isLoadingValidators.value.indexOf(chainId)
+        const isLoadingIndex = isLoadingValidators.value.indexOf(chainName)
         isLoadingValidators.value.splice(isLoadingIndex, 1)
         return Promise.resolve(true)
     }
 
-    async function loadValidatorDelegations(chainId: string, valoperAddress: string) {
-        if(isLoadingValidatorDelegations.value.includes(chainId)) {
+    async function loadValidatorDelegations(chainName: string, valoperAddress: string) {
+        if(isLoadingValidatorDelegations.value.includes(chainName)) {
             return Promise.resolve(true)
         }
-        isLoadingValidatorDelegations.value.push(chainId)
+        isLoadingValidatorDelegations.value.push(chainName)
 
         const allDelegations = {
             delegationResponses: []
         } as QueryValidatorDelegationsResponse
 
-        if(cosmosClients.value[chainId]?.queryClient) {
+        if(chainClients.value[chainName]?.cosmosClients?.queryClient) {
             try {
-                const delegations = await cosmosClients.value[chainId]?.queryClient.extensions.staking.staking.validatorDelegations(valoperAddress)
+                const delegations = await chainClients.value[chainName].cosmosClients!.queryClient.extensions.staking.staking.validatorDelegations(valoperAddress)
                 while (delegations.pagination && delegations.pagination.nextKey.length > 0) {
                     try {
-                        const nextResult = await cosmosClients.value[chainId]?.queryClient.extensions.staking.staking.validatorDelegations(valoperAddress, delegations.pagination.nextKey)
+                        const nextResult = await chainClients.value[chainName].cosmosClients!.queryClient.extensions.staking.staking.validatorDelegations(valoperAddress, delegations.pagination.nextKey)
                         delegations.delegationResponses.push(...nextResult.delegationResponses)
                         delegations.pagination = nextResult.pagination
                     } catch {
@@ -103,26 +103,26 @@ export const useValidatorsStore = defineStore('validators', () => {
                 console.error('error fetching validator infos: ', err)
             }
         }
-        if(!validatorDelegations.value[chainId]) {
-            validatorDelegations.value[chainId] = {}
+        if(!validatorDelegations.value[chainName]) {
+            validatorDelegations.value[chainName] = {}
         }
-        if(!validatorDelegations.value[chainId][valoperAddress]) {
-            validatorDelegations.value[chainId][valoperAddress] = []
+        if(!validatorDelegations.value[chainName][valoperAddress]) {
+            validatorDelegations.value[chainName][valoperAddress] = []
         }
-        validatorDelegations.value[chainId][valoperAddress] = allDelegations.delegationResponses
+        validatorDelegations.value[chainName][valoperAddress] = allDelegations.delegationResponses
         
-        const isLoadingIndex = isLoadingValidatorDelegations.value.indexOf(chainId)
+        const isLoadingIndex = isLoadingValidatorDelegations.value.indexOf(chainName)
         isLoadingValidatorDelegations.value.splice(isLoadingIndex, 1)
         return Promise.resolve(true)
     }
 
-    async function loadAvatars(chainId: string) {
+    async function loadAvatars(chainName: string) {
         if(Object.keys(keybaseAvatars.value).length == 0) {
             try {
                 keybaseAvatars.value = JSON.parse(localStorage.getItem('validator-avatars') || '')
             } catch { /* */ }
         }
-        for(const val of validators.value[chainId] || []) {
+        for(const val of validators.value[chainName] || []) {
             if(keybaseAvatars.value[val.description.identity] || !val.description.identity) {
                 continue;
             }
@@ -135,20 +135,23 @@ export const useValidatorsStore = defineStore('validators', () => {
         return Promise.resolve(true)
     }
 
-    function getValidatorInfo(chainId: string, v: Validator): ExtendedValidator {
+    function getValidatorInfo(chainName: string, v: Validator): ExtendedValidator {
         if(!v?.consensusPubkey) {
             return v as ExtendedValidator
         } else {
-            const { availableChains } = storeToRefs(useBlockchainStore())
-            const blockChainConfig = availableChains.value.find(c => c.keplr?.chainId === chainId)
-            const consensusPubkey = decodePubkey(v.consensusPubkey)
+            const blockChainConfig = availableChains.value.find(c => c.name === chainName)
+            const consensusPubkey = protoRegistry.decode(v.consensusPubkey)
+            const consensusAddresses = getAddressForPublicKey(v.consensusPubkey)
             return Object.assign(v,{
                 bondStatus: BondStatus[v.status],
                 operatorAddress: v.operatorAddress,
                 operatorWallet: toBech32(blockChainConfig?.keplr?.bech32Config.bech32PrefixAccAddr || 'cosmos',fromBech32(v.operatorAddress).data),
-                consensusPublicKey: consensusPubkey,
-                consensusAddress: toBech32(blockChainConfig?.keplr?.bech32Config.bech32PrefixConsAddr || 'cosmosvalcons', sha256(fromBase64(consensusPubkey.value)).slice(0,20)),
-                consensusHexAddress: '0x' + toHex(sha256(fromBase64(consensusPubkey.value)).slice(0,20)).toUpperCase(),
+                consensusPublicKey: {
+                    type: v.consensusPubkey.typeUrl,
+                    value: Buffer.from(consensusPubkey.key).toString('base64')
+                },
+                consensusAddress: toBech32(blockChainConfig?.keplr?.bech32Config.bech32PrefixConsAddr || 'cosmosvalcons', consensusAddresses.rawAddress!),
+                consensusHexAddress: consensusAddresses.hex,
             })  as ExtendedValidator
         }
     }

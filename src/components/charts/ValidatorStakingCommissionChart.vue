@@ -15,7 +15,7 @@ const { validators } = storeToRefs(useValidatorsStore())
 
 
 const props = defineProps({
-    chainId: {
+    chainName: {
         type: String,
         required: true,
     },
@@ -27,10 +27,10 @@ const props = defineProps({
 
 const valoper = computed(() => props.valoperAddress)
 const basicValidator = computed(() => {
-    return validators.value[props.chainId]?.find(v => v.operatorAddress === valoper.value);
+    return validators.value[props.chainName]?.find(v => v.operatorAddress === valoper.value);
 })
 
-const validator = computed(() => { return (basicValidator.value != undefined ? getValidatorInfo(props.chainId, basicValidator.value) : null)})
+const validator = computed(() => { return (basicValidator.value != undefined ? getValidatorInfo(props.chainName, basicValidator.value) : null)})
 
 const series = computed(() => {
     // [min, step, current, step, max]

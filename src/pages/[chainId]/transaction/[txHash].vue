@@ -108,7 +108,7 @@ import { toBech32} from '@cosmjs/encoding';
 import { getAddressForPublicKey } from '@/lib/keyhelper';
 
 const route = useRoute()
-const { availableChains, cosmosClients } = storeToRefs(useBlockchainStore())
+const { availableChains, chainClients } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 
 const messageMapper = {
@@ -121,14 +121,9 @@ const txEthHash = computed(() => {
     return tx.value?.txResponse?.logs?.map(l => l.events.map(e => e.attributes.find(a => a.key === 'ethereumTxHash'))?.filter(e => e))[0][0]?.value
 })
 
-const cosmosChainId = computed(() => {
-    return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.chainId
-})
-
 const cosmosChainConfig = computed(() => {
     return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr
 })
-
 const evmChainConfig = computed(() => {
     return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.evm
 })
@@ -165,7 +160,7 @@ function decodeMessage(message: {typeUrl: string, value: Uint8Array}) {
 }
 
 function loadTransaction() {
-    cosmosClients.value[cosmosChainId.value||'']?.queryClient.extensions.tx.tx.getTx(txHash.value).then(txResponse => {
+    chainClients.value[chainIdFromRoute.value||'']?.cosmosClients?.queryClient.extensions.tx.tx.getTx(txHash.value).then(txResponse => {
         tx.value= txResponse 
     })
 }

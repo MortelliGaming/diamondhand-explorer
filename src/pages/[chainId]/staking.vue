@@ -106,24 +106,19 @@ import { useI18n } from 'vue-i18n';
 import { BondStatus } from "@/lib/proto/cosmos/staking/v1beta1/staking";
 import ChainContent from '@/components/ChainContent.vue'
 
-import { useBlockchainStore } from '@/store/blockchain'
 import { useAppStore } from '@/store/app'
 import { useValidatorsStore } from '@/store/validators'
 
 const { t } = useI18n()
 const { chainIdFromRoute } = storeToRefs(useAppStore())
-const { availableChains } = storeToRefs(useBlockchainStore())
 const { getValidatorInfo, loadCosmosValidators } = useValidatorsStore()
 const { keybaseAvatars, validators } = storeToRefs(useValidatorsStore())
 
 const activeTab = ref('BOND_STATUS_BONDED')
-const cosmosChainId = computed(() => {
-  return availableChains.value.find(c => c.name === chainIdFromRoute.value)?.keplr?.chainId
-})
 
 const tableValidators = computed(() => {
   return validatorsToShow.value?.toSorted((a,b) => Number(BigInt(b?.tokens || 0n) - BigInt(a?.tokens || 0n)))
-    .map(v => getValidatorInfo(cosmosChainId.value || '',v))
+    .map(v => getValidatorInfo(chainIdFromRoute.value || '',v))
     .map((v, i) => {
     return {
         rank: i + 1,
@@ -136,14 +131,14 @@ const tableValidators = computed(() => {
 })
 
 const validatorsToShow = computed(() => {
-  return validators.value[cosmosChainId.value || '']?.filter(v => (BondStatus[v?.status]) === activeTab.value)
+  return validators.value[chainIdFromRoute.value || '']?.filter(v => (BondStatus[v?.status]) === activeTab.value)
 })
 // make sure table isnt too big when data is there before mount
 const isTableVisible = ref(false)
 
 
 isTableVisible.value = true;
-await loadCosmosValidators(cosmosChainId.value || '')
+await loadCosmosValidators(chainIdFromRoute.value || '')
 
 onUnmounted(() => {
   isTableVisible.value = false;

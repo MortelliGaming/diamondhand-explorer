@@ -42,8 +42,6 @@
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
-
-import { useBlockchainStore } from '@/store/blockchain';
 import { useProposalsStore } from '@/store/proposals';
 import { useAppStore } from '@/store/app';
 import { storeToRefs } from 'pinia';
@@ -56,22 +54,16 @@ import ProposalStatusChip from '@/components/governance/ProposalStatusChip.vue';
 
 const { loadCosmosProposals } = useProposalsStore()
 const { proposals } = storeToRefs(useProposalsStore())
-const { availableChains } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 
-
-const cosmosChainId = computed(() => {
-  return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.chainId
-})
-
 const depositingProposals = computed(() => {
-  return proposals.value[cosmosChainId.value || '']?.filter(p => p.status === ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD)
+  return proposals.value[chainIdFromRoute.value || '']?.filter(p => p.status === ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD)
 })
 const votingProposals = computed(() => {
-  return proposals.value[cosmosChainId.value || '']?.filter(p => p.status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD)
+  return proposals.value[chainIdFromRoute.value || '']?.filter(p => p.status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD)
 })
 const endedProposals = computed(() => {
-  return proposals.value[cosmosChainId.value || '']?.filter(p => [ProposalStatus.PROPOSAL_STATUS_PASSED, ProposalStatus.PROPOSAL_STATUS_FAILED, ProposalStatus.PROPOSAL_STATUS_REJECTED].includes(p.status))
+  return proposals.value[chainIdFromRoute.value || '']?.filter(p => [ProposalStatus.PROPOSAL_STATUS_PASSED, ProposalStatus.PROPOSAL_STATUS_FAILED, ProposalStatus.PROPOSAL_STATUS_REJECTED].includes(p.status))
 })
 
 const activeTab = ref(votingProposals.value?.length > 0 
@@ -88,7 +80,7 @@ const proposalsToDisplay = computed(() => {
       return endedProposals.value?.toSorted((a,b) => Number(b.proposalId - a.proposalId));
   }
 })
-await loadCosmosProposals(cosmosChainId.value || '')
+await loadCosmosProposals(chainIdFromRoute.value || '')
 
 </script>
 <style>

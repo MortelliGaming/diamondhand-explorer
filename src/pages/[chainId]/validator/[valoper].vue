@@ -56,7 +56,6 @@ import ValidatorAddressesSheet from '@/components/validator/ValidatorAddressesSh
 import ValidatorVotesSheet from '@/components/validator/ValidatorVotesSheet.vue';
 import ValidatorDelegationsSheet from '@/components/validator/ValidatorDelegationsSheet.vue';
 
-import { useBlockchainStore } from '@/store/blockchain';
 import { useValidatorsStore } from '@/store/validators';
 import { useAppStore } from '@/store/app';
 import { storeToRefs } from 'pinia';
@@ -64,22 +63,19 @@ import { storeToRefs } from 'pinia';
 const route = useRoute()
 const { getValidatorInfo, loadCosmosValidators, loadValidatorDelegations } = useValidatorsStore()
 const { validators } = storeToRefs(useValidatorsStore())
-const { availableChains } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 
 const valoper = computed(() => (route.params as {valoper: string}).valoper)
-const cosmosChainId = computed(() => {
-    return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.chainId
-})
+
 const basicValidator = computed(() => {
-    return validators.value[cosmosChainId.value || '']?.find(v => v.operatorAddress === valoper.value);
+    return validators.value[chainIdFromRoute.value || '']?.find(v => v.operatorAddress === valoper.value);
 })
-const validator = computed(() => { return (basicValidator.value != undefined ? getValidatorInfo(cosmosChainId.value || '', basicValidator.value) : null)})
+const validator = computed(() => { return (basicValidator.value != undefined ? getValidatorInfo(chainIdFromRoute.value || '', basicValidator.value) : null)})
 
 if(!validator.value) {
-    await loadCosmosValidators(cosmosChainId.value || '')
+    await loadCosmosValidators(chainIdFromRoute.value || '')
 }
-await loadValidatorDelegations(cosmosChainId.value || '', valoper.value)
+await loadValidatorDelegations(chainIdFromRoute.value || '', valoper.value)
 
 </script>
 <style>

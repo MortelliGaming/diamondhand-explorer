@@ -38,7 +38,7 @@ const props = defineProps({
     },
 })
 const { t } = useI18n()
-const { availableChains, cosmosClients } = storeToRefs(useBlockchainStore())
+const { chainClients } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 
 const { loadCosmosProposals, getProposalInfo } = useProposalsStore()
@@ -46,13 +46,9 @@ const { proposals, isLoadingProposals } = storeToRefs(useProposalsStore())
 
 const validatorVotes: Ref<Record<string, Vote|undefined>> = ref({})
 
-const cosmosChainId = computed(() => {
-    return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.chainId
-})
-
 const votingAndEndedProposals = computed(() => {
-    return proposals.value[cosmosChainId.value || '']?.filter(p => [ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD, ProposalStatus.PROPOSAL_STATUS_PASSED].includes(p.status))
-        .map(p => getProposalInfo(cosmosChainId.value || '', p.proposalId))
+    return proposals.value[chainIdFromRoute.value || '']?.filter(p => [ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD, ProposalStatus.PROPOSAL_STATUS_PASSED].includes(p.status))
+        .map(p => getProposalInfo(chainIdFromRoute.value || '', p.proposalId))
         .filter(a => a)
         .toSorted((a,b) => Number(b!.proposalId - a!.proposalId))
 })
@@ -62,8 +58,8 @@ function validatorVote(proposalId: string) {
 }
 
 function loadValidatorVotes() {
-    for(const proposal of proposals.value[cosmosChainId.value || ''] || []) {
-        cosmosClients.value[cosmosChainId.value || ''].queryClient.extensions.gov.gov.vote(proposal.proposalId.toString(), props.validator?.operatorWallet || '')
+    for(const proposal of proposals.value[chainIdFromRoute.value || ''] || []) {
+        chainClients.value[chainIdFromRoute.value || '']?.cosmosClients?.queryClient.extensions.gov.gov.vote(proposal.proposalId.toString(), props.validator?.operatorWallet || '')
         .then((vote) => {
             validatorVotes.value[proposal.proposalId.toString()] = vote.vote
         }).catch(() => {
@@ -73,11 +69,11 @@ function loadValidatorVotes() {
 }
 
 const isLoading = computed(() => {
-    return isLoadingProposals.value.includes(cosmosChainId.value || '')
+    return isLoadingProposals.value.includes(chainIdFromRoute.value || '')
 })
 
 if(!votingAndEndedProposals.value?.length) {
-    loadCosmosProposals(cosmosChainId.value || '')
+    loadCosmosProposals(chainIdFromRoute.value || '')
 } else {
     loadValidatorVotes()
 }

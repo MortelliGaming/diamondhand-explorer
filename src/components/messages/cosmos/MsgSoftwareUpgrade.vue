@@ -82,13 +82,13 @@ const props = defineProps({
         type: Object as PropType<DecodeObject>,
         required: true,
     },
-    chainId: {
+    chainName: {
         type: String,
         required: true,
     },
 })
 const { t } = useI18n();
-const { cosmosClients } = storeToRefs(useBlockchainStore())
+const { chainClients } = storeToRefs(useBlockchainStore())
 
 const decodedMessage = computed(() => {
     try {
@@ -123,9 +123,10 @@ const last3Blocks: Ref<(Block|undefined)[]> = ref([])
 
 onMounted(async () => {
     try {
-        last3Blocks.value.push(await cosmosClients.value[props.chainId].stargateClient.getBlock())
-        last3Blocks.value.push(await cosmosClients.value[props.chainId].stargateClient.getBlock((last3Blocks.value[0]?.header.height || 0)-1))
-        last3Blocks.value.push(await cosmosClients.value[props.chainId].stargateClient.getBlock((last3Blocks.value[0]?.header.height || 0)-2))
+        // TODO: use latest blocks for this
+        last3Blocks.value.push(await chainClients.value[props.chainName]?.cosmosClients?.stargateClient.getBlock())
+        last3Blocks.value.push(await chainClients.value[props.chainName]?.cosmosClients?.stargateClient.getBlock((last3Blocks.value[0]?.header.height || 0)-1))
+        last3Blocks.value.push(await chainClients.value[props.chainName]?.cosmosClients?.stargateClient.getBlock((last3Blocks.value[0]?.header.height || 0)-2))
     } catch {
     // 
     }

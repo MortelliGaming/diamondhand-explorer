@@ -14,7 +14,7 @@
                 <human-readable-time :time="proposal?.votingEndTime" />
             </v-col>
         </v-row>
-        <component :is="messageComponent" :message="proposal?.content" :chain-id="props.chainId"/>
+        <component :is="messageComponent" :message="proposal?.content" :chain-id="props.chainName"/>
     </base-sheet>
 </template>
 
@@ -36,7 +36,7 @@ const props = defineProps({
         type: Object as PropType<Proposal>,
         regquired: true,
     },
-    chainId: {
+    chainName: {
         type: String,
         default: ''
     },

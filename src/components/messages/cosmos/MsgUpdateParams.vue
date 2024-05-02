@@ -89,7 +89,7 @@ const props = defineProps({
         type: Object as PropType<DecodeObject>,
         regquired: true,
     },
-    chainId: {
+    chainName: {
         type: String,
         required: true,
     },

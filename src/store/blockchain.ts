@@ -20,12 +20,13 @@ import {
 import { FeegrantExtension, SlashingExtension, setupAuthExtension, setupBankExtension, setupDistributionExtension, setupFeegrantExtension, setupGovExtension, setupIbcExtension, setupMintExtension, setupSlashingExtension, setupStakingExtension, setupTxExtension } from '@cosmjs/stargate/build/modules';
 import { AuthzExtension, setupAuthzExtension } from '@cosmjs/stargate/build/modules/authz/queries';
 import { Subscription } from 'xstream';
+import { PublicClient, createPublicClient, http } from 'viem';
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
 };
 
-export type ComosClients = {
+export type CosmosClients = {
     queryClient: {
         client: QueryClient,
         extensions: {
@@ -52,7 +53,10 @@ export const useBlockchainStore = defineStore('blockchain', () => {
 
     const latestBlocks: Ref<Record<string, NewBlockEvent[]>> = ref({})
 
-    const cosmosClients: Ref<Record<string, ComosClients>> = ref({})
+    const chainClients: Ref<Record<string, {
+        cosmosClients: CosmosClients|undefined,
+        viemClient: PublicClient|undefined
+    }>> = ref({})
 
     const availableChainNames = computed(() => {
         return availableChains.value.map(c => c.name)
@@ -107,61 +111,74 @@ export const useBlockchainStore = defineStore('blockchain', () => {
         }
     }
 
-    async function connectCosmosClients() {
+    async function connectClients() {
         isConnecting.value = true
-        const allCosmosChains = availableChains.value.filter(c => c.keplr != null).map(c => c.keplr!)
-        for(const chainInfo of allCosmosChains){
-            console.log('connecting ' + chainInfo.chainName + chainInfo.chainId)
-            if(cosmosClients.value[chainInfo.chainId]) {
-                try {
-                    cosmosClients.value[chainInfo.chainId].blockHeaderSubscription.unsubscribe()
-                    cosmosClients.value[chainInfo.chainId].stargateClient?.disconnect()
-                    cosmosClients.value[chainInfo.chainId].tendermintClient?.disconnect()
-                } catch(error) { 
-                    //
-                    console.log(error)
-                }
+        const allChains = availableChains.value
+        for(const chainInfo of allChains){
+            const clients = {
+                cosmosClients: undefined,
+                viemClient: undefined
+            } as {
+                cosmosClients: CosmosClients|undefined,
+                viemClient: PublicClient|undefined
             }
-            try {
-                console.log('connect rpc')
-                const stargateClient = await StargateClient.connect(chainInfo.rpc)
-                const tendermintClient = await Tendermint37Client.connect(chainInfo.rpc.replace('https', 'wss'))
+            if(chainInfo.keplr) {
+                disconnectCosmosClients(chainInfo.name)
+                const stargateClient = await StargateClient.connect(chainInfo.keplr.rpc)
+                const tendermintClient = await Tendermint37Client.connect(chainInfo.keplr.rpc.replace('https', 'wss'))
                 const queryClient = QueryClient.withExtensions(tendermintClient)
                 console.log('rpc connected, subscribe block stream')
                 const newBlockHeaderStream = tendermintClient.subscribeNewBlock()
                 // subscribe new block header
-                const subscription = newBlockHeaderStream.subscribe({
-                    next: (event: NewBlockEvent) => NewBlockHeaderEventHandler(chainInfo.chainId, event),
-                    error: (error) => webSocketError(chainInfo.chainId, error),
-                    complete: () => webSocketClosed(chainInfo.chainId)
+                const blockHeaderSubscription = newBlockHeaderStream.subscribe({
+                    next: (event: NewBlockEvent) => NewBlockHeaderEventHandler(chainInfo.name, event),
+                    error: (error) => webSocketError(chainInfo.name, error),
+                    complete: () => webSocketClosed(chainInfo.name)
                 });
-
-                console.log('block stream opened')
-                cosmosClients.value[chainInfo.chainId] = {
+                clients.cosmosClients = {
+                    stargateClient,
                     tendermintClient,
                     queryClient: {
-                        client: queryClient,
+                        client: queryClient, 
                         extensions: setupExtenstions(queryClient)
                     },
-                    stargateClient,
-                    blockHeaderSubscription: subscription
+                    blockHeaderSubscription,
                 }
-            } catch(error) { 
-                //
-                console.log(error)
             }
-        }
-        isConnecting.value = false
+            if(chainInfo.evm) {
+                if(chainInfo.evm.rpcUrls['default'].http.length > 0 && chainInfo.evm.rpcUrls['default'].http[0]) {
+                    const viemClient =  createPublicClient({
+                        transport: http(chainInfo.evm.rpcUrls['default'].http[0]),
+                    })
+                    clients.viemClient = viemClient
+                }
+            }
+            chainClients.value[chainInfo.name] = clients
+        }   
+        isConnecting.value = false;
         return Promise.resolve(true)
     }
 
-    function connectClients() {
-        return connectCosmosClients()
+    function disconnectCosmosClients(chainName: string) {
+        if(chainClients.value[chainName]?.cosmosClients) {
+            try {
+                chainClients.value[chainName].cosmosClients!.blockHeaderSubscription.unsubscribe()
+            } catch(error) { 
+                console.log('cannot unsubscribe blockheader subscription')
+                console.log(error)
+            }
+            try {
+                console.log('cannot disconnect stargate client')
+                chainClients.value[chainName].cosmosClients!.stargateClient?.disconnect()
+            } catch(error) { 
+                console.log(error)
+            }
+        }
     }
 
-    async function getTendermintClient(chainId: string) {
-        const chainInfo = availableChains.value.find(c => c.keplr?.chainId == chainId)
-        if(chainInfo) {
+    async function getTendermintClient(chainName: string) {
+        const chainInfo = availableChains.value.find(c => c.name == chainName)
+        if(chainInfo?.keplr) {
             return Tendermint37Client.connect(chainInfo.keplr!.rpc.replace('https', 'wss'))
         } else {
             return Promise.resolve(undefined)
@@ -170,7 +187,7 @@ export const useBlockchainStore = defineStore('blockchain', () => {
 
     return { 
         isConnecting,
-        cosmosClients,
+        chainClients,
         latestBlocks,
         availableCosmosChainIds,
         availableChains,

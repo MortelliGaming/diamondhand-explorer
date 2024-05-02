@@ -64,24 +64,20 @@ import moment from 'moment';
 const { t } = useI18n()
 
 const { chainIdFromRoute } = storeToRefs(useAppStore())
-const { availableChains, latestBlocks } = storeToRefs(useBlockchainStore())
+const { latestBlocks } = storeToRefs(useBlockchainStore())
 const { validators, keybaseAvatars } = storeToRefs(useValidatorsStore())
 const { getValidatorInfo, loadCosmosValidators } = useValidatorsStore()
 
-const cosmosChainId = computed(() => {
-  return availableChains.value.find(c => c.name === chainIdFromRoute.value)?.keplr?.chainId
-})
-
 const latestChainBlocks= computed(() => {
-  return latestBlocks.value[cosmosChainId.value || '']
+  return latestBlocks.value[chainIdFromRoute.value || '']
 })
 
 function getValidator(proposerAddressBytes: Uint8Array) {
   const hexAddress = '0x' + Buffer.from(proposerAddressBytes).toString('hex')
-  return validators.value[cosmosChainId.value || '']?.map(v => getValidatorInfo(cosmosChainId.value || '', v))?.find(v => v.consensusHexAddress.toLowerCase() == hexAddress.toLowerCase())
+  return validators.value[chainIdFromRoute.value || '']?.map(v => getValidatorInfo(chainIdFromRoute.value || '', v))?.find(v => v.consensusHexAddress.toLowerCase() == hexAddress.toLowerCase())
 }
-if(!validators.value[cosmosChainId.value || '']) {
-  await loadCosmosValidators(cosmosChainId.value || '')
+if(!validators.value[chainIdFromRoute.value || '']) {
+  await loadCosmosValidators(chainIdFromRoute.value || '')
 }
 
 </script>

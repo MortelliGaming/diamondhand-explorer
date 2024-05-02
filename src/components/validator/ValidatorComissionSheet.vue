@@ -2,8 +2,8 @@
     <base-sheet :title="t('validator.commission')" >
         <div class="mt-5">
             <validator-staking-commission-chart 
-                :valoperAddress="props.validator?.operatorAddress || ''"
-                :chainId="cosmosChainId || ''" />
+                :valoper-address="props.validator?.operatorAddress || ''"
+                :chain-name="chainIdFromRoute || ''" />
         </div>
         <v-container class="d-flex justify-center"  style="margin-top:-25px;">
             <div class="">
@@ -25,11 +25,10 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
 import moment from 'moment';
-import { computed, type PropType } from 'vue';
+import { type PropType } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { ExtendedValidator } from '@/store/validators';
-import { useBlockchainStore } from '@/store/blockchain';
 import { useAppStore } from '@/store/app';
 
 import BaseSheet from '../BaseSheet.vue';
@@ -43,12 +42,7 @@ const props = defineProps({
 })
 
 const { t } = useI18n()
-const { availableChains } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
-
-const cosmosChainId = computed(() => {
-    return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.chainId
-})
 
 </script>
 <style>

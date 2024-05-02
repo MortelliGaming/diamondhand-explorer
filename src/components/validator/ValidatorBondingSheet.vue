@@ -5,10 +5,10 @@
             <div class="pr-1 pl-3">{{ t('validator.bondedTokens') }}</div>
             <div class="d-flex flex-grow-1"> {{ BigInt(props.validator?.tokens || 0) / BigInt(Math.pow(10,18)) }}</div>
         </div>
-        <div class="d-flex flex-direction-row" v-if="validatorDelegations[cosmosChainId || '']">
+        <div class="d-flex flex-direction-row" v-if="validatorDelegations[chainIdFromRoute || '']">
             <v-icon icon="mdi-account" />
             <div class="pr-1 pl-3"> {{ t('validator.delegators') }}</div>
-            <div class="d-flex flex-grow-1"> {{ validatorDelegations[cosmosChainId || ''][validator?.operatorAddress || '']?.length }}</div>
+            <div class="d-flex flex-grow-1"> {{ validatorDelegations[chainIdFromRoute || ''][validator?.operatorAddress || '']?.length }}</div>
         </div>
         <div class="d-flex flex-direction-row align-center">
             <div><v-icon icon="mdi-eye-minus-outline" /></div>
@@ -29,14 +29,13 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, type PropType } from 'vue';
+import { type PropType } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import moment from 'moment';
 
 import BaseSheet from '../BaseSheet.vue';
 import { useValidatorsStore, type ExtendedValidator } from '@/store/validators';
-import { useBlockchainStore } from '@/store/blockchain';
 import { useAppStore } from '@/store/app';
 
 
@@ -47,13 +46,8 @@ const props = defineProps({
     },
 })
 const { t } = useI18n()
-
-const { availableChains } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 
-const cosmosChainId = computed(() => {
-    return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.chainId
-})
 const { validatorDelegations } = useValidatorsStore();
 
 </script>
