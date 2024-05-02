@@ -114,7 +114,10 @@ export const en = {
         copied: 'Copied to the clipboard',
         yes: 'Yes',
         no: 'No',
-        language: 'Language'
+        language: 'Language',
+        from: 'From',
+        to: 'To',
+        amount: 'Amount'
     },
     blocks: {
         blocks: 'Blocks',
@@ -128,5 +131,5 @@ export const en = {
         messages: 'Messages',
         transactions: 'Transactions',
         noTxInBlock: 'No Transasctions in this Block'
-    }
+    },
 }

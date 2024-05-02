@@ -23,10 +23,6 @@ const props = defineProps({
         type: Object as PropType<DecodeObject>,
         regquired: true,
     },
-    chainName: {
-        type: String,
-        required: true,
-    },
 })
 const { t } = useI18n()
 
