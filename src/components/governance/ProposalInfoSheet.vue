@@ -14,7 +14,7 @@
                 <human-readable-time :time="proposal?.votingEndTime" />
             </v-col>
         </v-row>
-        <component :is="messageComponent" :message="proposal?.content" :chain-id="props.chainName"/>
+        <component :is="messageComponent" :message="proposal?.content" :chain-name="props.chainName"/>
     </base-sheet>
 </template>
 

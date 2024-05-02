@@ -74,25 +74,25 @@ export const useBlockchainStore = defineStore('blockchain', () => {
         return availableChains.value.map(chain => chain.keplr?.chainId).filter(v => v != undefined) as string[]
     })
 
-    function webSocketClosed(chainId: string) {
-        console.log('websocket closed ' + chainId)
+    function webSocketClosed(chainName: string) {
+        console.log('websocket closed ' + chainName)
     }
 
-    function webSocketError(chainId: string, err: any) {
-        console.log('websocket error ' + chainId + ': ' + err)
+    function webSocketError(chainName: string, err: any) {
+        console.log('websocket error ' + chainName + ': ' + err)
     }
 
-    async function NewBlockHeaderEventHandler(chainId: string, block: NewBlockEvent) {
-        if(!latestBlocks.value[chainId]) {
-            latestBlocks.value[chainId] = []
+    async function NewBlockHeaderEventHandler(chainName: string, block: NewBlockEvent) {
+        if(!latestBlocks.value[chainName]) {
+            latestBlocks.value[chainName] = []
         }
         // keep 100 blocks
-        if (latestBlocks.value[chainId].length >= 100) {
-            latestBlocks.value[chainId].pop();
+        if (latestBlocks.value[chainName].length >= 100) {
+            latestBlocks.value[chainName].pop();
         }
         // Add the new item at position 0 (beginning of the array)
         // console.log(Buffer.from(block.header.proposerAddress).toString('hex'))
-        latestBlocks.value[chainId].unshift(block);
+        latestBlocks.value[chainName].unshift(block);
     }
 
     function setupExtenstions(queryClient: QueryClient) {

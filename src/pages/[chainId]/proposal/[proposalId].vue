@@ -4,7 +4,7 @@
         <chain-content>
             <v-row justify="space-around" style="width: 100%;">
                 <v-col cols="12">
-                    <proposal-info-sheet v-if="proposal" :proposal="proposal" :chain-id="chainIdFromRoute"/>
+                    <proposal-info-sheet v-if="proposal" :proposal="proposal" :chain-name="chainIdFromRoute"/>
                 </v-col>
             </v-row>
             <v-row justify="space-around" style="width: 100%;">

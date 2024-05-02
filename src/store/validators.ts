@@ -151,7 +151,7 @@ export const useValidatorsStore = defineStore('validators', () => {
                     value: Buffer.from(consensusPubkey.key).toString('base64')
                 },
                 consensusAddress: toBech32(blockChainConfig?.keplr?.bech32Config.bech32PrefixConsAddr || 'cosmosvalcons', consensusAddresses.rawAddress!),
-                consensusHexAddress: consensusAddresses.hex,
+                consensusHexAddress: '0x' + consensusAddresses.hex,
             })  as ExtendedValidator
         }
     }

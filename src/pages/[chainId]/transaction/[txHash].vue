@@ -128,8 +128,6 @@ const evmChainConfig = computed(() => {
     return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.evm
 })
 
-console.log(availableChains.value.find(c => c.name == chainIdFromRoute.value)?.evm?.rpcUrls['default'].http[0])
-
 if(evmChainConfig.value?.rpcUrls['default'].http[0]) {
     const viemClient =  createPublicClient({
         transport: http(evmChainConfig.value?.rpcUrls['default'].http[0]),
