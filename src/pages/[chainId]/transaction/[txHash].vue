@@ -33,8 +33,12 @@
                         <b>{{  $t('transaction.signers') }}</b>
                     </v-col>
                     <v-col cols="12" role="button" v-for="signer in tx?.tx?.authInfo?.signerInfos" :key="signer.publicKey?.toString()">
-                        <div  v-if="signer.publicKey">
-                            <div>{{ getAddressForPublicKey(signer.publicKey)?.bech32Address }} / {{ getAddressForPublicKey(signer.publicKey)?.ethAddress }}</div>
+                        <div 
+                            class="d-flex flex-row"
+                            v-if="signer.publicKey && getAddressForPublicKey(signer.publicKey)?.rawAddress">
+                            <div>{{ toBech32(cosmosChainConfig?.bech32Config.bech32PrefixAccAddr || '', getAddressForPublicKey(signer.publicKey).rawAddress!) }} </div>
+                            <div v-if="evmChainConfig" class="pl-1"> / {{ getAddressForPublicKey(signer.publicKey)?.hex }}</div>
+                                
                         </div>
                     </v-col>
                     <v-col cols="12">
@@ -81,13 +85,10 @@
 </template>
 
 <script lang="ts" setup>
-import { Buffer } from 'buffer';
 import { Ref, computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { createPublicClient, http, isAddress } from 'viem';
 import { ethers } from 'ethers';
-import { computeAddress } from '@ethersproject/transactions';
-import secp256k1 from 'secp256k1';
 
 import NotFound from '@/components/404.vue'
 import ChainContent from '@/components/ChainContent.vue';
@@ -103,6 +104,8 @@ import { protoRegistry } from '@/lib/protoRegistry';
 import moment from 'moment';
 import { GetTxResponse } from '@/lib/proto/cosmos/tx/v1beta1/service';
 import { toBech32} from '@cosmjs/encoding';
+
+import { getAddressForPublicKey } from '@/lib/keyhelper';
 
 const route = useRoute()
 const { availableChains, cosmosClients } = storeToRefs(useBlockchainStore())
@@ -122,17 +125,26 @@ const cosmosChainId = computed(() => {
     return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.chainId
 })
 
+const cosmosChainConfig = computed(() => {
+    return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr
+})
+
+const evmChainConfig = computed(() => {
+    return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.evm
+})
+
 console.log(availableChains.value.find(c => c.name == chainIdFromRoute.value)?.evm?.rpcUrls['default'].http[0])
-const viemClient =  createPublicClient({
-    transport: http(availableChains.value.find(c => c.name == chainIdFromRoute.value)?.evm?.rpcUrls['default'].http[0]),
-})
-viemClient.getBytecode({
-    address: '0x7F4FdA70b48AC483Edcd0aA5D20cFD0C1e9840e3'
-}).then((res) => {
-    console.log(res)
-})
 
-
+if(evmChainConfig.value?.rpcUrls['default'].http[0]) {
+    const viemClient =  createPublicClient({
+        transport: http(evmChainConfig.value?.rpcUrls['default'].http[0]),
+    })
+    viemClient.getBytecode({
+        address: '0x7F4FdA70b48AC483Edcd0aA5D20cFD0C1e9840e3'
+    }).then((res) => {
+        console.log(res)
+    })
+}
 
 const tx: Ref<GetTxResponse|undefined> = ref()
 
@@ -150,62 +162,6 @@ function decodeMessage(message: {typeUrl: string, value: Uint8Array}) {
         return messageMapper[message.typeUrl].decode(message.value);
     }
     return message.value
-}
-
-function _u8aToHexString(u8arr: Uint8Array): string {
-  return "0x" + Buffer.from(u8arr).toString("hex");
-}
-
-function ethPublicKeyToAddress(inputValue: string) {
-    //Validation: Must be hexadecimal, with length of 40, 66, or 130
-    if (!/^[0-9A-Fa-f]+$/.test(inputValue)) {
-        return { error: "(not a valid input, expected hexadecimal)" };
-    }
-    const isEthAddress = inputValue.length === 40;
-    const isPublicKey = [66, 130].includes(inputValue.length);
-    if (isEthAddress) {
-        return { success: true, ethAddress: "0x" + inputValue };
-    } else if (isPublicKey) {
-        try {
-        //Re-encode public key
-        const publicKeyBytes = Buffer.from(inputValue, "hex");
-        const publicKeyHexUncompressed = _u8aToHexString(
-            secp256k1.publicKeyConvert(publicKeyBytes, false)
-        );
-        const publicKeyHexCompressed = _u8aToHexString(
-            secp256k1.publicKeyConvert(publicKeyBytes)
-        );
-        const ethAddress = computeAddress(publicKeyHexCompressed);
-        const bech32Address = toBech32('mx', Buffer.from(ethAddress.replace('0x',''), 'hex'))
-        
-        return {
-            success: true,
-            publicKeyHexUncompressed,
-            publicKeyHexCompressed,
-            ethAddress,
-            bech32Address
-        };
-        } catch (error) {
-            console.error(error);
-            return { error: "(not a valid input, invalid public key)" };
-        }
-    }
-    return {
-        error:
-        "not a valid input, incorrect length (expected 40, 66, or 130 hexadecimal characters)"
-    };
-}
-
-function getAddressForPublicKey(_pubKey: {typeUrl: string, value: Uint8Array} ) {
-    try {
-        const decodedPublickey = protoRegistry.decode(_pubKey).key
-        const hexKey = Buffer.from(decodedPublickey, 'base64').toString('hex')
-        const addresses = ethPublicKeyToAddress(hexKey)
-        return addresses;
-    } catch(err) {
-        console.log(err)
-    } 
-    return undefined
 }
 
 function loadTransaction() {

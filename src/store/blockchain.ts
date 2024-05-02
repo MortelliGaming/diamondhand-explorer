@@ -111,33 +111,44 @@ export const useBlockchainStore = defineStore('blockchain', () => {
         isConnecting.value = true
         const allCosmosChains = availableChains.value.filter(c => c.keplr != null).map(c => c.keplr!)
         for(const chainInfo of allCosmosChains){
+            console.log('connecting ' + chainInfo.chainName + chainInfo.chainId)
             if(cosmosClients.value[chainInfo.chainId]) {
                 try {
                     cosmosClients.value[chainInfo.chainId].blockHeaderSubscription.unsubscribe()
                     cosmosClients.value[chainInfo.chainId].stargateClient?.disconnect()
                     cosmosClients.value[chainInfo.chainId].tendermintClient?.disconnect()
-                } catch { /** */}
+                } catch(error) { 
+                    //
+                    console.log(error)
+                }
             }
-            
-            const stargateClient = await StargateClient.connect(chainInfo.rpc)
-            const tendermintClient = await Tendermint37Client.connect(chainInfo.rpc.replace('https', 'wss'))
-            const queryClient = QueryClient.withExtensions(tendermintClient)
-            const newBlockHeaderStream = tendermintClient.subscribeNewBlock()
-            // subscribe new block header
-            const subscription = newBlockHeaderStream.subscribe({
-                next: (event: NewBlockEvent) => NewBlockHeaderEventHandler(chainInfo.chainId, event),
-                error: (error) => webSocketError(chainInfo.chainId, error),
-                complete: () => webSocketClosed(chainInfo.chainId)
-            });
+            try {
+                console.log('connect rpc')
+                const stargateClient = await StargateClient.connect(chainInfo.rpc)
+                const tendermintClient = await Tendermint37Client.connect(chainInfo.rpc.replace('https', 'wss'))
+                const queryClient = QueryClient.withExtensions(tendermintClient)
+                console.log('rpc connected, subscribe block stream')
+                const newBlockHeaderStream = tendermintClient.subscribeNewBlock()
+                // subscribe new block header
+                const subscription = newBlockHeaderStream.subscribe({
+                    next: (event: NewBlockEvent) => NewBlockHeaderEventHandler(chainInfo.chainId, event),
+                    error: (error) => webSocketError(chainInfo.chainId, error),
+                    complete: () => webSocketClosed(chainInfo.chainId)
+                });
 
-            cosmosClients.value[chainInfo.chainId] = {
-                tendermintClient,
-                queryClient: {
-                    client: queryClient,
-                    extensions: setupExtenstions(queryClient)
-                },
-                stargateClient,
-                blockHeaderSubscription: subscription
+                console.log('block stream opened')
+                cosmosClients.value[chainInfo.chainId] = {
+                    tendermintClient,
+                    queryClient: {
+                        client: queryClient,
+                        extensions: setupExtenstions(queryClient)
+                    },
+                    stargateClient,
+                    blockHeaderSubscription: subscription
+                }
+            } catch(error) { 
+                //
+                console.log(error)
             }
         }
         isConnecting.value = false
