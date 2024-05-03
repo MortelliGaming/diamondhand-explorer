@@ -1,47 +1,49 @@
 <template>
   <chain-content>
-    <v-row class="pt-3">
-      <v-col v-if="transactions.length == 0">
-          {{ $t('blocks.noTxInBlock') }}
-      </v-col>
-      <v-col cols="12" sm="6" md="4" class="pb-2" v-for="tx in transactions" :key="tx.toString()">
-          <v-sheet
-              role="button"
-              @click="$router.push('./transaction/' + getTxHash(tx))"
-              color="blue-grey-darken-4" 
-              elevation="12"
-              class="pa-2">
-              <v-row no-gutters>
-                  <v-col cols="12" style="overflow-wrap: break-word;">
-                      <b>{{ $t('blocks.hash')}}</b>
-                  </v-col>
-                  <v-col cols="12" style="overflow-wrap: break-word;">
-                      {{ getTxHash(tx) }}
-                  </v-col>
-                  <v-col cols="12" style="overflow-wrap: break-word;">
-                      <b>{{ $t('blocks.fees')}}</b>
-                  </v-col>
-                  <v-col cols="12" style="overflow-wrap: break-word;" v-for="fee in decodeTx(tx).authInfo.fee?.amount" :key="fee.denom">
-                      {{ Number(fee.amount) / Math.pow(10,18) }} {{ fee.denom.toUpperCase() }}
-                  </v-col>
-                  <v-col cols="12" style="overflow-wrap: break-word;">
-                      <b>{{ $t('blocks.messages')}}</b>
-                  </v-col>
-                  <v-col 
-                      :class="'pb-2 d-flex ' + (decodeTx(tx).body.messages.length > 1 ? 'justify-center' : '')"
-                      v-for="message in decodeTx(tx).body.messages" :key="message.typeUrl">
-                      <v-chip
-                          size="small"
-                          color="orange-darken-4"
-                          label
-                          >
-                          {{ message.typeUrl.split('.')[message.typeUrl.split('.').length -1]}}
-                          </v-chip>
-                  </v-col>
-              </v-row>
-          </v-sheet>
-      </v-col>
-  </v-row>
+    <v-responsive>
+      <v-row class="pt-3">
+        <v-col v-if="transactions?.length == 0">
+            {{ $t('blocks.noTxInBlock') }}
+        </v-col>
+        <v-col cols="12" sm="6" md="4" class="pb-2" v-for="tx in transactions" :key="tx.toString()">
+            <v-sheet
+                role="button"
+                @click="$router.push('./transaction/' + getTxHash(tx))"
+                color="blue-grey-darken-4" 
+                elevation="12"
+                class="pa-2">
+                <v-row no-gutters style="max-width: 100%;">
+                    <v-col cols="12" style="overflow-wrap: break-word;">
+                        <b>{{ $t('blocks.hash')}}</b>
+                    </v-col>
+                    <v-col cols="12" style="overflow-wrap: break-word;">
+                        {{ getTxHash(tx) }}
+                    </v-col>
+                    <v-col cols="12" style="overflow-wrap: break-word;">
+                        <b>{{ $t('blocks.fees')}}</b>
+                    </v-col>
+                    <v-col cols="12" style="overflow-wrap: break-word;" v-for="fee in decodeTx(tx).authInfo.fee?.amount" :key="fee.denom">
+                        {{ Number(fee.amount) / Math.pow(10,18) }} {{ fee.denom.toUpperCase() }}
+                    </v-col>
+                    <v-col cols="12" style="overflow-wrap: break-word;">
+                        <b>{{ $t('blocks.messages')}}</b>
+                    </v-col>
+                    <v-col 
+                        :class="'pb-2 d-flex ' + (decodeTx(tx).body.messages.length > 1 ? 'justify-center' : '')"
+                        v-for="message in decodeTx(tx).body.messages" :key="message.typeUrl">
+                        <v-chip
+                            size="small"
+                            color="orange-darken-4"
+                            label
+                            >
+                            {{ message.typeUrl.split('.')[message.typeUrl.split('.').length -1]}}
+                            </v-chip>
+                    </v-col>
+                </v-row>
+            </v-sheet>
+        </v-col>
+    </v-row>
+    </v-responsive>
   </chain-content>
 </template>
 
