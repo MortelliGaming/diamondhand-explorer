@@ -7,7 +7,7 @@
             <v-sheet
               @click="$router.push('./block/'+block.header.height)"
               role="button"
-              color="blue-grey-darken-4" 
+              color="grey-darken-3" 
               rounded 
               elevation="12" 
               class="pa-2 fill-height" 

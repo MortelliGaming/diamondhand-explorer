@@ -47,7 +47,7 @@
                                         <v-sheet
                                             role="button"
                                             @click="$router.push('../transaction/' + getTxHash(tx))"
-                                            color="blue-grey-darken-4" 
+                                            color="grey-darken-3" 
                                             elevation="12"
                                             class="pa-2">
                                             <v-row no-gutters>
@@ -71,7 +71,7 @@
                                                     v-for="message in decodeTx(tx).body.messages" :key="message.typeUrl">
                                                     <v-chip
                                                         size="small"
-                                                        color="orange-darken-4"
+                                                        color="cyan-lighten-3"
                                                         label
                                                         >
                                                         {{ message.typeUrl.split('.')[message.typeUrl.split('.').length -1]}}
@@ -90,7 +90,7 @@
                                 <v-row class="pt-3">
                                     <v-col cols="12" sm="4" md="3" v-for="signature in nextBlock?.block.lastCommit?.signatures" :key="signature.validatorAddress?.toString()">
                                         <v-sheet
-                                        color="blue-grey-darken-4" rounded elevation="12" class="pa-2 fill-height">
+                                        color="grey-darken-3" rounded elevation="12" class="pa-2 fill-height">
                                                 <v-row no-gutters class="d-flex flex-row">
                                                     <v-col v-if="signature.validatorAddress" cols="12" class="d-flex justify-center">
                                                         <v-avatar v-if="getValidator(signature.validatorAddress)" class="mr-2" size="x-small">
