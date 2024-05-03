@@ -34,7 +34,9 @@
                                 <b>{{ decodedInput?.function }}</b>
                             </v-col>
                             <v-col cols="12" sm="6" v-for="attribute in decodedInput?.attributes" :key="attribute.name">
-                                <b>{{ attribute.name }}: </b>{{ attribute.value }}
+                                <b>{{ attribute.name }}: </b>
+                                {{ (decodedInput?.function == 'transfer' && attribute.name == 'amount' ?  Number(attribute.value) / Math.pow(10, erc20TokenDecimals) : attribute.value) }} 
+                                {{ (decodedInput?.function == 'transfer' && attribute.name == 'amount' ? erc20TokenSymbol : '') }}
                             </v-col>
                         </v-row>
                     </v-col>
@@ -53,7 +55,7 @@
 <script lang="ts" setup>
 import { Ref, computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { GetTransactionReturnType, decodeFunctionData, GetBytecodeReturnType } from 'viem';
+import { GetTransactionReturnType, decodeFunctionData, GetBytecodeReturnType, erc20Abi } from 'viem';
 import { whatsabi } from "@shazow/whatsabi";
 
 import NotFound from '@/components/404.vue'
@@ -82,6 +84,8 @@ const isSmartcontractInteraction = ref(false)
 const ethTxHash = computed(() => (route.params as {ethTxHash: `0x${string}`}).ethTxHash)
 const tx: Ref<GetTransactionReturnType|undefined> = ref()
 const decodedInput: Ref<DecodedTxInput|undefined> = ref()
+const erc20TokenSymbol: Ref<string> = ref('')
+const erc20TokenDecimals: Ref<number> = ref(18)
 
 const isLoading = ref(false)
 
@@ -115,8 +119,33 @@ function loadAndDecodeTxInput() {
         enableExperimentalMetadata: true,
         provider: chainClients.value[chainIdFromRoute.value]!.viemClient as AnyProvider}).then(async (abi) => {
             console.log(abi)
+
+        let isERC20 = false
+        // check if we have a ERC 20 contract
+        if(abi.abi.find(i => i.type=='function' && i.name == 'symbol')
+            && abi.abi.find(i => i.type=='function' && i.name == 'totalSupply')) {
+            console.log('is probalby erc20')
+            isERC20 = true
+            // load token symbol
+            chainClients.value[chainIdFromRoute.value]!.viemClient?.readContract({
+                address: tx.value?.to as `0x${string}` || '0x0',
+                abi: erc20Abi,
+                functionName: 'symbol'
+            }).then(tokenSymbolResult => {
+                erc20TokenSymbol.value = tokenSymbolResult
+            })
+            // load token decimal
+            chainClients.value[chainIdFromRoute.value]!.viemClient?.readContract({
+                address: tx.value?.to as `0x${string}` || '0x0',
+                abi: erc20Abi,
+                functionName: 'decimals'
+            }).then(tokenSymbolResult => {
+                erc20TokenDecimals.value = tokenSymbolResult
+            })
+        }  
+        const abiToUse = (isERC20 ? erc20Abi : abi.abi)
         const _decodedInput = decodeFunctionData({
-            abi: abi.abi,
+            abi: abiToUse,
             data: tx.value!.input,
         })
         if(_decodedInput && _decodedInput.args && _decodedInput.args.length) {
@@ -128,7 +157,7 @@ function loadAndDecodeTxInput() {
                 attributes: { name: string, value: string}[]
             }
             for(let i=0;i<(_decodedInput.args.length || 0);i++) {
-                const abiParameter = abi.abi.find(a => a.name == _decodedInput?.functionName) as (ABIFunction|undefined);
+                const abiParameter = abiToUse.find(a => a.name == _decodedInput?.functionName) as (ABIFunction|undefined);
                 if(abiParameter?.inputs) {
                     result.attributes.push({
                         name: abiParameter.inputs[i]?.name || abiParameter.inputs[i]?.type || '',

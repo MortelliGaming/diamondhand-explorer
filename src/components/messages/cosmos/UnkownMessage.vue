@@ -1,7 +1,7 @@
 <template>
     <v-row>
         <v-col cols="12" class="pb-0">
-            <b>{{ t('proposal.content') }}:</b>
+            <b>{{ props.message?.typeUrl }}</b>
         </v-col>
     </v-row>
     <v-row>
@@ -13,7 +13,6 @@
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from 'vue-i18n';
 import { protoRegistry } from '@/lib/protoRegistry';
 import type { DecodeObject } from '@cosmjs/proto-signing'
 import { computed, type PropType } from 'vue';
@@ -28,7 +27,6 @@ const props = defineProps({
         required: false,
     }
 })
-const { t } = useI18n()
 
 const decodedMessage = computed(() => {
     try {
