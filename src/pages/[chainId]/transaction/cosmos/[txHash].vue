@@ -7,7 +7,7 @@
                 v-if="tx"
                 :tx="tx" />
             <div class="pt-3"></div>
-            <tx-messages-sheet-cosmos 
+            <tx-messages-sheet-cosmos
                 style="height: auto !important;"
                 v-if="tx?.tx?.body?.messages && !txEthHash"
                 :tx="tx" />
@@ -15,19 +15,6 @@
                 style="height: auto !important;"
                 v-if="tx?.tx?.body?.messages && txEthHash"
                 :tx="tx" />
-            <div class="pt-3"></div>
-            <base-sheet :title="$t('transaction.events')">
-                <v-row no-gutters>
-                    <v-col cols="12" v-for="(event, i) in tx?.txResponse?.events" :key="i">
-                        {{ event.type }}
-                        <v-row no-gutters>
-                            <v-col cols="12" v-for="(attribute, j) in event.attributes" :key="'attr_'+j">
-                                {{ attribute.key }}: {{ attribute.value }}
-                            </v-col>
-                        </v-row>
-                    </v-col>
-                </v-row>
-            </base-sheet>
         </div>
     </chain-content>
 </template>
@@ -38,7 +25,6 @@ import { useRoute } from 'vue-router';
 
 import NotFound from '@/components/404.vue'
 import ChainContent from '@/components/ChainContent.vue';
-import BaseSheet from '@/components/BaseSheet.vue';
 
 import TxInfoSheet from './TxInfoSheet.vue';
 import TxMessagesSheetCosmos from './TxMessagesSheetCosmos.vue';
@@ -56,7 +42,8 @@ const { chainIdFromRoute } = storeToRefs(useAppStore())
 
 const txHash = computed(() => (route.params as {txHash: string}).txHash)
 const txEthHash = computed(() => {
-    return tx.value?.txResponse?.logs?.map(l => l.events.map(e => e.attributes.find(a => a.key === 'ethereumTxHash'))?.filter(e => e))[0][0]?.value
+    const ethTxEvent = tx.value?.txResponse?.logs?.map(l => l.events.map(e => e.attributes.find(a => a.key === 'ethereumTxHash'))?.filter(e => e))
+    return (ethTxEvent && ethTxEvent?.length > 0) ? ethTxEvent[0][0]?.value : undefined
 })
 
 const tx: Ref<GetTxResponse|undefined> = ref()

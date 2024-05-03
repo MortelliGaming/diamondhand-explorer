@@ -7,25 +7,25 @@
             <v-col cols="12" sm="3">
                 <v-sheet elevation="12" color="grey-darken-3" class="d-flex pa-2">
                     <div class="pr-1">{{ t('proposal.voteOption.VOTE_OPTION_YES') }}:</div>
-                    <div class="flex-grow-1 text-right">{{ getNormalizedAmount(props.proposal.finalTallyResult.yes) }}</div>
+                    <div class="flex-grow-1 text-right">{{ getNormalizedAmount(props.proposal.finalTallyResult?.yesCount || '') }}</div>
                 </v-sheet>
             </v-col>
             <v-col cols="12" sm="3">
                 <v-sheet elevation="12" color="grey-darken-3" class="d-flex pa-2">
                     <div class="pr-1">{{ t('proposal.voteOption.VOTE_OPTION_NO') }}:</div>
-                    <div class="flex-grow-1 text-right">{{ getNormalizedAmount(props.proposal.finalTallyResult.no) }}</div>
+                    <div class="flex-grow-1 text-right">{{ getNormalizedAmount(props.proposal.finalTallyResult?.noCount || '') }}</div>
                 </v-sheet>
             </v-col>
             <v-col cols="12" sm="3">
                 <v-sheet elevation="12" color="grey-darken-3" class="d-flex pa-2">
                     <div class="pr-1">{{ t('proposal.voteOption.VOTE_OPTION_NO_WITH_VETO') }}:</div>
-                    <div class="flex-grow-1 text-right">{{ getNormalizedAmount(props.proposal.finalTallyResult.noWithVeto) }}</div>
+                    <div class="flex-grow-1 text-right">{{ getNormalizedAmount(props.proposal.finalTallyResult?.noWithVetoCount || '') }}</div>
                 </v-sheet>
             </v-col>
             <v-col cols="12" sm="3">
                 <v-sheet elevation="12" color="grey-darken-3" class="d-flex pa-2">
                     <div class="pr-1">{{ t('proposal.voteOption.VOTE_OPTION_ABSTAIN') }}:</div>
-                    <div class="flex-grow-1 text-right">{{ getNormalizedAmount(props.proposal.finalTallyResult.abstain) }}</div>
+                    <div class="flex-grow-1 text-right">{{ getNormalizedAmount(props.proposal.finalTallyResult?.abstainCount || '') }}</div>
                 </v-sheet>
             </v-col>
         </v-row>
@@ -36,7 +36,7 @@
 import { type PropType } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { Proposal } from '@/lib/proto/cosmos/gov/v1beta1/gov';
+import { Proposal } from '@/lib/proto/cosmos/gov/v1/gov';
 
 import BaseSheet from '../BaseSheet.vue';
 import ProposalVotingChart from '../charts/ProposalVotingChart.vue';
@@ -50,7 +50,7 @@ const props = defineProps({
 })
 
 function getNormalizedAmount(amount: bigint|string|number) {
-    return Number((BigInt(amount) / BigInt(Math.pow(10,18))))
+    return Number(amount) / Number(Math.pow(10,18))
 }
 
 </script>

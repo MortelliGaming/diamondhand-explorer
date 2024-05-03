@@ -19,7 +19,8 @@ import { Ref, ref, type PropType } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseSheet from '../BaseSheet.vue';
-import { Proposal, Vote } from '@/lib/proto/cosmos/gov/v1beta1/gov';
+import { Proposal } from '@/lib/proto/cosmos/gov/v1/gov';
+import { Vote } from '@/lib/proto/cosmos/gov/v1beta1/gov';
 
 import { useBlockchainStore } from '@/store/blockchain';
 import { storeToRefs } from 'pinia';
@@ -39,7 +40,7 @@ const props = defineProps({
 const { chainClients } = storeToRefs(useBlockchainStore())
 const votes: Ref<Vote[]> = ref([])
 
-chainClients.value[props.chainName]?.cosmosClients?.queryClient.extensions.gov.gov.votes(props.proposal.proposalId.toString()).then((res) => {
+chainClients.value[props.chainName]?.cosmosClients?.queryClient.extensions.gov.gov.votes(props.proposal.id.toString()).then((res) => {
     votes.value = res?.votes || []
 })
 

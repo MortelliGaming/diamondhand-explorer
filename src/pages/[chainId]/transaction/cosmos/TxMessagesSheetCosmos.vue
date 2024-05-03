@@ -1,5 +1,5 @@
 <template>
-    <base-sheet :title="$t('transaction.messages')" style="max-height:500px; overflow-y: scroll;overflow-x: hidden;">
+    <base-sheet :title="$t('transaction.messages')">
         <v-row>
             <v-col cols="12" v-for="msg in props.tx.tx?.body?.messages" :key="msg.toString" style="overflow-wrap: break-word;">
                 <component :is="getMessageComponent(msg.typeUrl)" :message="msg" />

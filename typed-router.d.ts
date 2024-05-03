@@ -59,6 +59,7 @@ declare module 'vue-router/auto/routes' {
     '/[chainId]/transaction/cosmos/TxMessagesSheetCosmos': RouteRecordInfo<'/[chainId]/transaction/cosmos/TxMessagesSheetCosmos', '/:chainId/transaction/cosmos/TxMessagesSheetCosmos', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,
     '/[chainId]/transaction/cosmos/TxMessagesSheetEthereum': RouteRecordInfo<'/[chainId]/transaction/cosmos/TxMessagesSheetEthereum', '/:chainId/transaction/cosmos/TxMessagesSheetEthereum', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,
     '/[chainId]/transaction/evm/[ethTxHash]': RouteRecordInfo<'/[chainId]/transaction/evm/[ethTxHash]', '/:chainId/transaction/evm/:ethTxHash', { chainId: ParamValue<true>, ethTxHash: ParamValue<true> }, { chainId: ParamValue<false>, ethTxHash: ParamValue<false> }>,
+    '/[chainId]/transaction/evm/TxInfoSheet': RouteRecordInfo<'/[chainId]/transaction/evm/TxInfoSheet', '/:chainId/transaction/evm/TxInfoSheet', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,
     '/[chainId]/transactions': RouteRecordInfo<'/[chainId]/transactions', '/:chainId/transactions', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,
     '/[chainId]/uptime': RouteRecordInfo<'/[chainId]/uptime', '/:chainId/uptime', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,
     '/[chainId]/validator/[valoper]': RouteRecordInfo<'/[chainId]/validator/[valoper]', '/:chainId/validator/:valoper', { chainId: ParamValue<true>, valoper: ParamValue<true> }, { chainId: ParamValue<false>, valoper: ParamValue<false> }>,

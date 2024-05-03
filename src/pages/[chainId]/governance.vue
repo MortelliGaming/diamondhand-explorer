@@ -26,9 +26,9 @@
     <v-col>
       <base-sheet :title="$t('proposal.proposals')" style="max-height:90%; overflow-y: scroll; overflow-x:hidden;">
         <proposal-header-row 
-          v-for="proposal in proposalsToDisplay" :key="proposal.proposalId.toString()"
+          v-for="proposal in proposalsToDisplay" :key="proposal.id.toString()"
           :proposal="proposal" 
-          @click="() => $router.push('proposal/' + proposal.proposalId.toString())"
+          @click="() => $router.push('proposal/' + proposal.id.toString())"
           >
           <template v-slot:append>
             <proposal-status-chip :proposal="proposal" />
@@ -73,11 +73,11 @@ const activeTab = ref(votingProposals.value?.length > 0
 const proposalsToDisplay = computed(() => {
   switch(activeTab.value) {
     case ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD:
-      return depositingProposals.value?.toSorted((a,b) => Number(b.proposalId - a.proposalId));
+      return depositingProposals.value?.toSorted((a,b) => Number(b.id - a.id));
     case ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD: 
-      return votingProposals.value?.toSorted((a,b) => Number(b.proposalId - a.proposalId));
+      return votingProposals.value?.toSorted((a,b) => Number(b.id - a.id));
     default:
-      return endedProposals.value?.toSorted((a,b) => Number(b.proposalId - a.proposalId));
+      return endedProposals.value?.toSorted((a,b) => Number(b.id - a.id));
   }
 })
 await loadCosmosProposals(chainIdFromRoute.value || '')

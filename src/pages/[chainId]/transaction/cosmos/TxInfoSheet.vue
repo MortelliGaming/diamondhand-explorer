@@ -1,5 +1,5 @@
 <template>
-    <base-sheet :title="$t('transaction.details')" style="max-height:165px; overflow-y: scroll;overflow-x: hidden;">
+    <base-sheet :title="$t('transaction.details')">
         <v-row no-gutters>
             <v-col cols="12">
                 <b>{{  $t('transaction.height') }}</b>
@@ -80,7 +80,8 @@ const txHash = computed(() => {
     return props.tx?.txResponse?.txhash
 })
 const txEthHash = computed(() => {
-    return props.tx?.txResponse?.logs?.map(l => l.events.map(e => e.attributes.find(a => a.key === 'ethereumTxHash'))?.filter(e => e))[0][0]?.value
+    const ethTxEvent = props.tx?.txResponse?.logs?.map(l => l.events.map(e => e.attributes.find(a => a.key === 'ethereumTxHash'))?.filter(e => e))
+    return (ethTxEvent && ethTxEvent?.length > 0) ? ethTxEvent[0][0]?.value : undefined
 })
 
 const signers = computed(() => {

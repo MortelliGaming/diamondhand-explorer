@@ -8,8 +8,8 @@
 import { computed, type PropType } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { Proposal } from '@/lib/proto/cosmos/gov/v1beta1/gov';
-import { ProposalStatus } from '@/lib/proto/cosmos/gov/v1beta1/gov';
+import { Proposal } from '@/lib/proto/cosmos/gov/v1/gov';
+import { ProposalStatus } from '@/lib/proto/cosmos/gov/v1/gov';
 
 const { t } = useI18n()
 

@@ -1,5 +1,5 @@
 <template>
-    <base-sheet :title="$t('transaction.evmTx')" style="max-height:130px; overflow-y: scroll;overflow-x: hidden;">
+    <base-sheet :title="$t('transaction.evmTx')">
         <v-row no-gutters  v-for="msg in ethTxsDetail" :key="msg.toString" >
             <v-col cols="12" class ="pb-1 break-string">
                 <b>{{ msg.type }}</b>

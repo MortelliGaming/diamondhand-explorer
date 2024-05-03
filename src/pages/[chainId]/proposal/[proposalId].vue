@@ -4,7 +4,7 @@
         <chain-content>
             <v-row justify="space-around" style="width: 100%;">
                 <v-col cols="12">
-                    <proposal-info-sheet v-if="proposal" :proposal="proposal" :chain-name="chainIdFromRoute"/>
+                    <proposal-info-sheet v-if="proposal" :proposal="proposal"  :chain-name="chainIdFromRoute"/>
                 </v-col>
             </v-row>
             <v-row justify="space-around" style="width: 100%;">
@@ -14,7 +14,7 @@
             </v-row>
             <v-row justify="space-around" style="width: 100%;">
                 <v-col cols="12">
-                    <proposal-votes-sheet v-if="proposal" :proposal="proposal" :chain-name="chainIdFromRoute || ''" />
+                    <proposal-votes-sheet v-if="proposal" :proposal="proposal" :chain-name="chainIdFromRoute" />
                 </v-col>
             </v-row>
         </chain-content>
@@ -43,7 +43,7 @@ const { chainIdFromRoute } = storeToRefs(useAppStore())
 const proposalId = computed(() => (route.params as {proposalId: string}).proposalId)
 
 const proposal = computed(() => {
-    return proposals.value[chainIdFromRoute.value || '']?.find(p => p.proposalId === BigInt(proposalId.value));
+    return proposals.value[chainIdFromRoute.value || '']?.find(p => p.id === BigInt(proposalId.value));
 })
 
 if(!proposal.value) {

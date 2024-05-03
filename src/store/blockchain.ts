@@ -4,7 +4,7 @@ import { blockchainConfigs } from '@/lib/chains'
 
 import { ExplorerChainInfo } from '@/types';
 import { useAppStore } from './app';
-import { NewBlockEvent, Tendermint37Client } from '@cosmjs/tendermint-rpc';
+import { Comet38Client, CometClient, NewBlockEvent } from '@cosmjs/tendermint-rpc';
 import { 
     AuthExtension,
     BankExtension,
@@ -19,7 +19,6 @@ import {
 
 import { FeegrantExtension, SlashingExtension, setupAuthExtension, setupBankExtension, setupDistributionExtension, setupFeegrantExtension, setupGovExtension, setupIbcExtension, setupMintExtension, setupSlashingExtension, setupStakingExtension, setupTxExtension } from '@cosmjs/stargate/build/modules';
 import { AuthzExtension, setupAuthzExtension } from '@cosmjs/stargate/build/modules/authz/queries';
-import { Subscription } from 'xstream';
 import { PublicClient, createPublicClient, http } from 'viem';
 
 (BigInt.prototype as any).toJSON = function () {
@@ -43,9 +42,9 @@ export type CosmosClients = {
             tx: TxExtension
         }
     },
-    tendermintClient: Tendermint37Client,
+    tendermintClient: CometClient,
     stargateClient: StargateClient,
-    blockHeaderSubscription: Subscription
+    blockHeaderSubscription:  NodeJS.Timeout
 }
 
 export const useBlockchainStore = defineStore('blockchain', () => {
@@ -73,27 +72,6 @@ export const useBlockchainStore = defineStore('blockchain', () => {
     const availableCosmosChainIds = computed(() => {
         return availableChains.value.map(chain => chain.keplr?.chainId).filter(v => v != undefined) as string[]
     })
-
-    function webSocketClosed(chainName: string) {
-        console.log('websocket closed ' + chainName)
-    }
-
-    function webSocketError(chainName: string, err: any) {
-        console.log('websocket error ' + chainName + ': ' + err)
-    }
-
-    async function NewBlockHeaderEventHandler(chainName: string, block: NewBlockEvent) {
-        if(!latestBlocks.value[chainName]) {
-            latestBlocks.value[chainName] = []
-        }
-        // keep 100 blocks
-        if (latestBlocks.value[chainName].length >= 100) {
-            latestBlocks.value[chainName].pop();
-        }
-        // Add the new item at position 0 (beginning of the array)
-        // console.log(Buffer.from(block.header.proposerAddress).toString('hex'))
-        latestBlocks.value[chainName].unshift(block);
-    }
 
     function setupExtenstions(queryClient: QueryClient) {
         return {
@@ -125,16 +103,27 @@ export const useBlockchainStore = defineStore('blockchain', () => {
             if(chainInfo.keplr) {
                 disconnectCosmosClients(chainInfo.name)
                 const stargateClient = await StargateClient.connect(chainInfo.keplr.rpc)
-                const tendermintClient = await Tendermint37Client.connect(chainInfo.keplr.rpc.replace('https', 'wss'))
-                const queryClient = QueryClient.withExtensions(tendermintClient)
+                const tendermintClient = await Comet38Client.connect(chainInfo.keplr.rpc)
+                const queryClient = QueryClient.withExtensions(tendermintClient);
                 console.log('rpc connected, subscribe block stream')
-                const newBlockHeaderStream = tendermintClient.subscribeNewBlock()
-                // subscribe new block header
-                const blockHeaderSubscription = newBlockHeaderStream.subscribe({
-                    next: (event: NewBlockEvent) => NewBlockHeaderEventHandler(chainInfo.name, event),
-                    error: (error) => webSocketError(chainInfo.name, error),
-                    complete: () => webSocketClosed(chainInfo.name)
-                });
+                const blockHeaderFetchInterval = setInterval(async () => {
+                    const latestBlock = await tendermintClient.block();
+
+                    if(latestBlocks.value[chainInfo.name]?.map(b => b.header.height).includes(latestBlock.block.header.height)) {
+                        return;
+                    }
+                    if(!latestBlocks.value[chainInfo.name]) {
+                        latestBlocks.value[chainInfo.name] = []
+                    }
+                    // keep 100 blocks
+                    if (latestBlocks.value[chainInfo.name].length >= 100) {
+                        latestBlocks.value[chainInfo.name].pop();
+                    }
+                    // Add the new item at position 0 (beginning of the array)
+                    // console.log(Buffer.from(block.header.proposerAddress).toString('hex'))
+                    latestBlocks.value[chainInfo.name].unshift(latestBlock.block);
+                }, 1500)
+
                 clients.cosmosClients = {
                     stargateClient,
                     tendermintClient,
@@ -142,7 +131,7 @@ export const useBlockchainStore = defineStore('blockchain', () => {
                         client: queryClient, 
                         extensions: setupExtenstions(queryClient)
                     },
-                    blockHeaderSubscription,
+                    blockHeaderSubscription: blockHeaderFetchInterval,
                 }
             }
             if(chainInfo.evm) {
@@ -162,7 +151,9 @@ export const useBlockchainStore = defineStore('blockchain', () => {
     function disconnectCosmosClients(chainName: string) {
         if(chainClients.value[chainName]?.cosmosClients) {
             try {
-                chainClients.value[chainName].cosmosClients!.blockHeaderSubscription.unsubscribe()
+                if(chainClients.value[chainName]?.cosmosClients?.blockHeaderSubscription) {
+                    clearInterval(chainClients.value[chainName]?.cosmosClients?.blockHeaderSubscription)
+                }
             } catch(error) { 
                 console.log('cannot unsubscribe blockheader subscription')
                 console.log(error)
@@ -176,15 +167,6 @@ export const useBlockchainStore = defineStore('blockchain', () => {
         }
     }
 
-    async function getTendermintClient(chainName: string) {
-        const chainInfo = availableChains.value.find(c => c.name == chainName)
-        if(chainInfo?.keplr) {
-            return Tendermint37Client.connect(chainInfo.keplr!.rpc.replace('https', 'wss'))
-        } else {
-            return Promise.resolve(undefined)
-        }
-    }
-
     return { 
         isConnecting,
         chainClients,
@@ -192,7 +174,6 @@ export const useBlockchainStore = defineStore('blockchain', () => {
         availableCosmosChainIds,
         availableChains,
         availableChainNames,
-        getTendermintClient,
         connectClients,
     }
 })

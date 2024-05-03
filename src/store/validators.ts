@@ -139,7 +139,7 @@ export const useValidatorsStore = defineStore('validators', () => {
         if(!v?.consensusPubkey) {
             return v as ExtendedValidator
         } else {
-            const blockChainConfig = availableChains.value.find(c => c.name === chainName)
+            const blockChainConfig = availableChains.value?.find(c => c.name === chainName)
             const consensusPubkey = protoRegistry.decode(v.consensusPubkey)
             const consensusAddresses = getAddressForPublicKey(v.consensusPubkey)
             return Object.assign(v,{

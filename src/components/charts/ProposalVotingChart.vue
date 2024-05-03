@@ -8,7 +8,7 @@ import { useI18n } from 'vue-i18n';
 import { type ApexOptions } from 'apexcharts'
 import Apexchart from 'vue3-apexcharts';
 
-import { Proposal } from '@/lib/proto/cosmos/gov/v1beta1/gov';
+import { Proposal } from '@/lib/proto/cosmos/gov/v1/gov';
 
 const props = defineProps({
     proposal: {
@@ -21,16 +21,16 @@ const { t } = useI18n()
 const series = computed(() => {
     return [{
         name: t('proposal.voteOption.VOTE_OPTION_YES'),
-        data: [Number(BigInt(props.proposal?.finalTallyResult?.yes) / BigInt(Math.pow(10,18)))]
+        data: [Number(BigInt(props.proposal?.finalTallyResult?.yesCount || '0')) / Number(BigInt(Math.pow(10,18)))]
     }, {
         name: t('proposal.voteOption.VOTE_OPTION_NO'),
-        data: [Number(BigInt(props.proposal?.finalTallyResult?.no) / BigInt(Math.pow(10,18)))]
+        data: [Number(BigInt(props.proposal?.finalTallyResult?.noCount || '0')) / Number(BigInt(Math.pow(10,18)))]
     }, {
         name: t('proposal.voteOption.VOTE_OPTION_NO_WITH_VETO'),
-        data: [Number(BigInt(props.proposal?.finalTallyResult?.noWithVeto) / BigInt(Math.pow(10,18)))]
+        data: [Number(BigInt(props.proposal?.finalTallyResult?.noWithVetoCount || '0')) / Number(BigInt(Math.pow(10,18)))]
     }, {
         name: t('proposal.voteOption.VOTE_OPTION_ABSTAIN'),
-        data: [Number(BigInt(props.proposal?.finalTallyResult?.abstain) / BigInt(Math.pow(10,18)))]
+        data: [Number(BigInt(props.proposal?.finalTallyResult?.abstainCount || '0')) / Number(BigInt(Math.pow(10,18)))]
     }]
 })
 

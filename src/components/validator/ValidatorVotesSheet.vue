@@ -2,13 +2,13 @@
     <base-sheet :title="t('validator.votes')">
         <v-container style="height: 300px;overflow-y: scroll; overflow-x:hidden;" class="pa-0 mt-5">
             <proposal-header-row 
-                v-for="proposal in votingAndEndedProposals" :key="proposal?.proposalId.toString()"
+                v-for="proposal in votingAndEndedProposals" :key="proposal?.id.toString()"
                 :proposal="proposal" 
-                @click="() => $router.push('../proposal/' + proposal?.proposalId.toString())"
+                @click="() => $router.push('../proposal/' + proposal?.id.toString())"
                 >
                 <template v-slot:append>
                     <div class="text-caption flex-grow-1 d-flex justify-end align-center">
-                        {{  validatorVote(proposal?.proposalId.toString() || '0') }}
+                        {{  validatorVote(proposal?.id.toString() || '0') }}
                     </div>
                 </template>
             </proposal-header-row>
@@ -48,9 +48,9 @@ const validatorVotes: Ref<Record<string, Vote|undefined>> = ref({})
 
 const votingAndEndedProposals = computed(() => {
     return proposals.value[chainIdFromRoute.value || '']?.filter(p => [ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD, ProposalStatus.PROPOSAL_STATUS_PASSED].includes(p.status))
-        .map(p => getProposalInfo(chainIdFromRoute.value || '', p.proposalId))
+        .map(p => getProposalInfo(chainIdFromRoute.value || '', p.id))
         .filter(a => a)
-        .toSorted((a,b) => Number(b!.proposalId - a!.proposalId))
+        .toSorted((a,b) => Number(b!.id - a!.id))
 })
 
 function validatorVote(proposalId: string) {
@@ -59,11 +59,11 @@ function validatorVote(proposalId: string) {
 
 function loadValidatorVotes() {
     for(const proposal of proposals.value[chainIdFromRoute.value || ''] || []) {
-        chainClients.value[chainIdFromRoute.value || '']?.cosmosClients?.queryClient.extensions.gov.gov.vote(proposal.proposalId.toString(), props.validator?.operatorWallet || '')
+        chainClients.value[chainIdFromRoute.value || '']?.cosmosClients?.queryClient.extensions.gov.gov.vote(proposal.id.toString(), props.validator?.operatorWallet || '')
         .then((vote) => {
-            validatorVotes.value[proposal.proposalId.toString()] = vote.vote
+            validatorVotes.value[proposal.id.toString()] = vote.vote
         }).catch(() => {
-            validatorVotes.value[proposal.proposalId.toString()] = undefined;
+            validatorVotes.value[proposal.id.toString()] = undefined;
         })
     }
 }

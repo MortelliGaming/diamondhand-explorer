@@ -7,7 +7,6 @@ import { BlockResponse } from '@cosmjs/tendermint-rpc';
 export const useBlocksStore = defineStore('blocks', () => {
 
     const { chainClients } = storeToRefs(useBlockchainStore())
-    const { getTendermintClient } = useBlockchainStore()
     const blocks: Ref<Record<string, BlockResponse[]>> = ref({})
     
     const isLoadingBlocks: Ref<string[]> = ref([])
@@ -25,9 +24,7 @@ export const useBlocksStore = defineStore('blocks', () => {
         isLoadingBlocks.value.push(chainName)
         // const { cosmosHelper } = storeToRefs(useBlockchainStore())
         try {
-            const tendermintClient = await getTendermintClient(chainName);
-            const blockResult = await (await getTendermintClient(chainName))?.block(block)
-            tendermintClient?.disconnect();
+            const blockResult = await chainClients.value[chainName]?.cosmosClients?.tendermintClient?.block(block)
             if(blockResult) {
                 if(!blocks.value[chainName]) {
                     blocks.value[chainName] = []

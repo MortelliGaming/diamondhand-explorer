@@ -1,5 +1,5 @@
 <template>
-    <v-sheet class="text-caption pa-3 fill-height">
+    <v-sheet class="text-caption pa-3">
         <v-container class="pt-0 pb-0">
             <v-row>
                 <v-col cols="12">

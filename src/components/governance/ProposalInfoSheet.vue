@@ -1,5 +1,5 @@
 <template>
-    <base-sheet :title="proposal?.content?.typeUrl?.replace('/','')">
+    <base-sheet :title="title">
         <template v-slot:appendTitle>
             <proposal-status-chip :proposal="props.proposal" />
         </template>
@@ -9,20 +9,24 @@
             </v-col>
             <v-col cols="9" class="d-flex flex-column flex-sm-row pb-0">
                 <div class="mr-sm-2">
-                    {{ moment(Number(proposal?.votingEndTime.seconds) * 1000).format('DD.MM.YY HH:mm:ss') }}
+                    {{ moment(Number(proposal?.votingEndTime?.seconds) * 1000).format('DD.MM.YY HH:mm:ss') }}
                 </div>
                 <human-readable-time :time="proposal?.votingEndTime" />
             </v-col>
         </v-row>
-        <component :is="messageComponent" :message="proposal?.content" :chain-name="props.chainName"/>
+        <component 
+            v-for="(msg, i) in proposal?.messages"
+            :key="'prop_' + i"
+            :is="messageComponent(msg)" 
+            :message="message(msg)" :chain-name="props.chainName" />
     </base-sheet>
 </template>
 
 <script lang="ts" setup>
-import { type Component, Ref, computed, ref, type PropType, markRaw } from 'vue';
+import { type Component, Ref, ref, type PropType, markRaw, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import moment from 'moment';
-import { Proposal } from '@/lib/proto/cosmos/gov/v1beta1/gov';
+import { Proposal } from '@/lib/proto/cosmos/gov/v1/gov';
 
 import BaseSheet from '../BaseSheet.vue';
 import HumanReadableTime from '../HumanReadableTime.vue';
@@ -30,6 +34,8 @@ import ProposalStatusChip from './ProposalStatusChip.vue';
 import MsgSoftwareUpgrade from '@/components/messages/cosmos/MsgSoftwareUpgrade.vue';
 import MsgUpdateParams from '@/components/messages/cosmos/MsgUpdateParams.vue';
 import UnkownMessage from '@/components/messages/cosmos/UnkownMessage.vue';
+import { MsgExecLegacyContent } from '@/lib/proto/cosmos/gov/v1/tx';
+import { protoRegistry } from '@/lib/protoRegistry';
 
 const props = defineProps({
     proposal: {
@@ -50,9 +56,26 @@ const messageMapping: Ref<Record<string, Component>> = ref({
     // '/cosmos.params.v1beta1.ParameterChangeProposal': 
 })
 
-const messageComponent = computed(() => {
-    return props.proposal?.content ? messageMapping.value[props.proposal?.content.typeUrl] || UnkownMessage : UnkownMessage
+const title = computed(() => {
+    // it its a legacy proposal, show type of first message as title (legacy proposals only have 1 message)
+    return props.proposal?.messages.length == 1 && props.proposal.messages[0].typeUrl === MsgExecLegacyContent.typeUrl
+        ? protoRegistry.decode(props.proposal.messages[0])?.content.typeUrl 
+        : props.proposal?.messages.map(msg => msg.typeUrl.replace('/','')).join(', ')
 })
+
+function message(msg: {typeUrl: string, value: Uint8Array}) {
+    // it its a legacy proposal, decode the content as message. (legacy proposals only have 1 message)
+    return msg.typeUrl === MsgExecLegacyContent.typeUrl
+        ? protoRegistry.decode(msg)?.content || msg
+        : msg
+}
+
+function messageComponent(msg: {typeUrl: string, value: Uint8Array}) {
+    // it its a legacy proposal, get component from nested legacy proposal
+    return msg.typeUrl === MsgExecLegacyContent.typeUrl
+        ? messageMapping.value[protoRegistry.decode(msg)?.content.typeUrl] || UnkownMessage
+        : messageMapping.value[msg.typeUrl] || UnkownMessage
+}
 
 </script>
 <style>
