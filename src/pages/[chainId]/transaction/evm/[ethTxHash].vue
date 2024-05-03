@@ -3,40 +3,31 @@
         <loading v-if="isLoading" />
         <not-found v-else-if="!tx"/>
         <div v-else  style="width: 100%; height: 100%;">
-            <tx-info-sheet :tx="tx"/>
+            <tx-info-sheet :tx="tx" :isSmartcontractInteraction="isSmartcontractInteraction"/>
             <div class="pt-2"></div>
-            <base-sheet :title="$t('transaction.details')">
+            <base-sheet v-if="Number(tx.value) == 0" :title="$t('transaction.input')">
                 <v-row no-gutters>
-                    <v-col cols="12" class="break-word">
-                        <b>{{ $t('transaction.from') }}</b>
-                    </v-col>
-                    <v-col cols="12" class="break-word">
-                        {{ tx.from }}
-                    </v-col>
-                    <v-col cols="12" class="break-word">
-                        <b>{{ $t('transaction.to') }}</b>
-                    </v-col>
-                    <v-col cols="12" class="break-word">
-                        {{ tx.to }}
-                    </v-col>
-                    <v-col cols="12" class="break-word" v-if="tx.value > 0">
-                        <b>{{ $t('transaction.value') }}</b>
-                    </v-col>
-                    <v-col cols="12" class="break-word" v-if="tx.value > 0">
-                        {{ tx.value }}
-                    </v-col>
-                    <v-col cols="12" class="break-word" v-if="isSmartcontractInteraction && decodedInput">
-                        <b>{{ $t('transaction.input') }}</b>
-                    </v-col>
                     <v-col cols="12" class="break-word" v-if="isSmartcontractInteraction && decodedInput">
                         <v-row no-gutters>
                             <v-col cols="12">
-                                <b>{{ decodedInput?.function }}</b>
+                                <v-row no-gutters>
+                                    <v-col><b>{{ $t('transaction.smartContractFunction') }}:</b></v-col>
+                                    <v-col><b>{{ decodedInput?.function }}</b></v-col>
+                                </v-row>
                             </v-col>
                             <v-col cols="12" sm="6" v-for="attribute in decodedInput?.attributes" :key="attribute.name">
-                                <b>{{ attribute.name }}: </b>
-                                {{ (decodedInput?.function == 'transfer' && attribute.name == 'amount' ?  Number(attribute.value) / Math.pow(10, erc20TokenDecimals) : attribute.value) }} 
-                                {{ (decodedInput?.function == 'transfer' && attribute.name == 'amount' ? erc20TokenSymbol : '') }}
+                                <div>
+                                    <b>{{ attribute.name || attribute.type }}: </b>
+                                </div>
+                                <div v-if="decodedInput?.function == 'transfer' && attribute.name == 'amount'">
+                                    {{ Number(attribute.value) / Math.pow(10, erc20TokenDecimals)  }} {{ erc20TokenSymbol  }}
+                                </div>
+                                <div v-else-if="attribute.type == 'address'">
+                                    <copy-box :text="attribute.value" :short="$vuetify.display.xs" />
+                                </div>
+                                <div v-else>
+                                    {{ attribute.value }}
+                                </div>
                             </v-col>
                         </v-row>
                     </v-col>
@@ -62,6 +53,7 @@ import NotFound from '@/components/404.vue'
 import ChainContent from '@/components/ChainContent.vue';
 import Loading from '@/components/Loading.vue';
 import BaseSheet from '@/components/BaseSheet.vue';
+import CopyBox from '@/components/CopyBox.vue';
 
 import TxInfoSheet from './TxInfoSheet.vue';
 
@@ -73,7 +65,7 @@ import { ABIFunction } from '@shazow/whatsabi/lib.types/abi';
 
 type DecodedTxInput = { 
     function: string
-    attributes: { name: string, value: string}[]
+    attributes: { name: string, value: string, type: string}[]
 }
 
 const route = useRoute()
@@ -154,13 +146,14 @@ function loadAndDecodeTxInput() {
                 attributes: []
             } as { 
                 function: string, 
-                attributes: { name: string, value: string}[]
+                attributes: { name: string, value: string, type: string}[]
             }
             for(let i=0;i<(_decodedInput.args.length || 0);i++) {
                 const abiParameter = abiToUse.find(a => a.name == _decodedInput?.functionName) as (ABIFunction|undefined);
                 if(abiParameter?.inputs) {
                     result.attributes.push({
-                        name: abiParameter.inputs[i]?.name || abiParameter.inputs[i]?.type || '',
+                        type: abiParameter.inputs[i]?.type || '',
+                        name: abiParameter.inputs[i]?.name || '',
                         value: _decodedInput.args[i]?.toString() || ''
                     })
                 }

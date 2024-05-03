@@ -11,10 +11,6 @@
                 style="height: auto !important;"
                 v-if="tx?.tx?.body?.messages && !txEthHash"
                 :tx="tx" />
-            <tx-messages-sheet-ethereum 
-                style="height: auto !important;"
-                v-if="tx?.tx?.body?.messages && txEthHash"
-                :tx="tx" />
         </div>
     </chain-content>
 </template>
@@ -28,7 +24,6 @@ import ChainContent from '@/components/ChainContent.vue';
 
 import TxInfoSheet from './TxInfoSheet.vue';
 import TxMessagesSheetCosmos from './TxMessagesSheetCosmos.vue';
-import TxMessagesSheetEthereum from './TxMessagesSheetEthereum.vue';
 
 import { useBlockchainStore } from '@/store/blockchain';
 import { useAppStore } from '@/store/app';

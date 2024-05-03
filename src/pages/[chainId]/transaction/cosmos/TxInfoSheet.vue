@@ -29,24 +29,21 @@
                 <b>{{  $t('transaction.signers') }}</b>
             </v-col>
             <v-col cols="12" role="button" v-for="signer in signers" :key="signer.bech32">
-                <div>
-                    {{ signer.bech32 }} 
-                </div>
-                <div v-if="chainConfig?.evm" class="pl-2">
-                    {{ signer.evm }} 
-                </div>
+                <copy-box :text="signer.bech32" :short="$vuetify.display.xs" />
+                <copy-box v-if="chainConfig?.evm" :text="signer.evm" :short="$vuetify.display.xs" />
             </v-col>
             <v-col cols="12">
                 <b>{{  $t('transaction.hash') }}</b>
             </v-col>
             <v-col cols="12" style="overflow-wrap: break-word;">
-                {{  txHash }}
+                <copy-box :text="txHash" :short="$vuetify.display.xs" />
             </v-col>
             <v-col cols="12" v-if="txEthHash">
                 <b>{{  $t('transaction.hashEth') }}</b>
             </v-col>
             <v-col cols="12" v-if="txEthHash" style="overflow-wrap: break-word;">
-                {{  txEthHash }}
+                <copy-box :text="txEthHash" :short="$vuetify.display.xs" />
+                <router-link role="button" color="orange-darken-4" :to="'../evm/'+txEthHash">{{ $t('transaction.inspectEvmTx') }}</router-link>
             </v-col>
         </v-row>
     </base-sheet>
@@ -63,6 +60,8 @@ import { getAddressForPublicKey } from '@/lib/keyhelper';
 import { useBlockchainStore } from '@/store/blockchain';
 import { useAppStore } from '@/store/app';
 import { storeToRefs } from 'pinia';
+
+import CopyBox from '@/components/CopyBox.vue';
 
 const { availableChains } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())

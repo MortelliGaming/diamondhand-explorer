@@ -132,4 +132,24 @@ export const en = {
         transactions: 'Transactions',
         noTxInBlock: 'No Transasctions in this Block'
     },
+    transaction: {
+        ethTx: 'EVM Transaction',
+        smartContractInteraction: 'Smart Contract Call',
+        height: 'Height',
+        gas: 'Gas',
+        from: 'From',
+        to: 'To',
+        interactedWith: 'Interacted With',
+        value: 'Value',
+        hash: 'Hash',
+        input: 'Input',
+        smartContractFunction: 'Method',
+        inputRaw: 'Raw Input',
+        details: 'Details',
+        info: 'Info',
+        timestamp: 'Time',
+        signers: 'Signers',
+        hashEth: 'EVM Hash',
+        inspectEvmTx: 'Check EVM Tx',
+    }
 }

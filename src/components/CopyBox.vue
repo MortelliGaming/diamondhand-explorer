@@ -2,7 +2,7 @@
     <div>
         <div
             class="break-string">
-            {{ props.text }}
+            {{ props.short ? shortenString(props.text || '', 12, 3) : props.text }}
             <span
                 role="button"
                 @click="() => copyToClipboard(props.text)">
@@ -20,12 +20,18 @@
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import { shortenString } from '@/lib/stringHelper';
+
 const props = defineProps({
     text: {
         type: String,
         required: false,
         default: undefined
     },
+    short: {
+        type: Boolean,
+        default: false
+    }
 })
 const { t } = useI18n()
 const snackbar = ref(false)
