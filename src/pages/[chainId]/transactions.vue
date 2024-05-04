@@ -20,7 +20,7 @@
                         <div>{{ moment(getTxTime(tx)?.toISOString()).format('DD.MM.YY HH:mm:ss') }}</div>
                         <div><b>{{ $t('transaction.fees')}}</b></div>
                         <div  v-for="fee in decodeTx(tx).authInfo.fee?.amount" :key="fee.denom">
-                          {{ Number(fee.amount) / Math.pow(10,18) }} {{ fee.denom.toUpperCase() }}
+                          {{ getCosmosAsset(BigInt(fee.amount), fee.denom).display.amount }} {{ getCosmosAsset(BigInt(fee.amount), fee.denom).display.denom }}
                         </div>
                     </v-col>
                     <v-col cols="12">
@@ -58,6 +58,7 @@ import moment from 'moment';
 
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 const { latestBlocks } = storeToRefs(useBlockchainStore())
+const { getCosmosAsset } = useBlockchainStore()
 
 const transactions = computed(() => {
   return latestBlocks.value[chainIdFromRoute.value]?.flatMap(b => b.txs)

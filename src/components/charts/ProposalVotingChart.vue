@@ -7,8 +7,11 @@ import { type PropType, Ref, computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { type ApexOptions } from 'apexcharts'
 import Apexchart from 'vue3-apexcharts';
+import { useBlockchainStore } from '@/store/blockchain';
+import { useAppStore } from '@/store/app';
 
 import { Proposal } from '@/lib/proto/cosmos/gov/v1/gov';
+import { storeToRefs } from 'pinia';
 
 const props = defineProps({
     proposal: {
@@ -18,19 +21,31 @@ const props = defineProps({
 })
 const { t } = useI18n()
 
+const { getCosmosAsset } = useBlockchainStore()
+const { availableChains } = storeToRefs(useBlockchainStore())
+const { chainIdFromRoute } = storeToRefs(useAppStore())
+
+const currentChainStakingCurrency = computed(() => {
+    return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.stakeCurrency
+})
+
+function getVoteInAsset(amount: BigInt) {
+    return getCosmosAsset(amount, currentChainStakingCurrency.value?.coinMinimalDenom || '')
+}
+
 const series = computed(() => {
     return [{
         name: t('proposal.voteOption.VOTE_OPTION_YES'),
-        data: [Number(BigInt(props.proposal?.finalTallyResult?.yesCount || '0')) / Number(BigInt(Math.pow(10,18)))]
+        data: [getVoteInAsset(BigInt(props.proposal?.finalTallyResult?.yesCount  || 0n)).display.amount]
     }, {
         name: t('proposal.voteOption.VOTE_OPTION_NO'),
-        data: [Number(BigInt(props.proposal?.finalTallyResult?.noCount || '0')) / Number(BigInt(Math.pow(10,18)))]
+        data: [getVoteInAsset(BigInt(props.proposal?.finalTallyResult?.noCount  || 0n)).display.amount]
     }, {
         name: t('proposal.voteOption.VOTE_OPTION_NO_WITH_VETO'),
-        data: [Number(BigInt(props.proposal?.finalTallyResult?.noWithVetoCount || '0')) / Number(BigInt(Math.pow(10,18)))]
+        data: [getVoteInAsset(BigInt(props.proposal?.finalTallyResult?.noWithVetoCount  || 0n)).display.amount]
     }, {
         name: t('proposal.voteOption.VOTE_OPTION_ABSTAIN'),
-        data: [Number(BigInt(props.proposal?.finalTallyResult?.abstainCount || '0')) / Number(BigInt(Math.pow(10,18)))]
+        data: [getVoteInAsset(BigInt(props.proposal?.finalTallyResult?.abstainCount  || 0n)).display.amount]
     }]
 })
 

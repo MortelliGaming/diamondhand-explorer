@@ -10,7 +10,7 @@
                         </div>
                     </div>
                     <div class="text-caption text-right d-flex align-end justify-end flex-grow-1" style="word-break: break-word;">
-                        {{ Number(BigInt(delegation.balance.amount) / BigInt(Math.pow(10,18))).toFixed(2) }} {{ delegation.balance.denom }}
+                        {{ getCosmosAsset(BigInt(delegation.balance.amount), delegation.balance.denom).display.amount }} {{ getCosmosAsset(BigInt(delegation.balance.amount), delegation.balance.denom).display.denom }}
                     </div>
                 </v-col>
                 <v-divider />
@@ -35,6 +35,7 @@ import { useI18n } from 'vue-i18n';
 
 import { ExtendedValidator, useValidatorsStore } from '@/store/validators';
 import { useAppStore } from '@/store/app';
+import { useBlockchainStore } from '@/store/blockchain';
 import BaseSheet from '../BaseSheet.vue';
 
 const props = defineProps({
@@ -47,6 +48,7 @@ const { t } = useI18n()
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 
 const { validatorDelegations } = storeToRefs(useValidatorsStore())
+const { getCosmosAsset } = useBlockchainStore()
 
 const page=ref(1)
 const numDelegationPerPage = ref(50)
@@ -64,7 +66,7 @@ const numPages = computed(() => {
 
 const allDelegations = computed(() => {
     if(validatorDelegations.value[chainIdFromRoute.value || '']) {
-        return (validatorDelegations.value[chainIdFromRoute.value || ''][props.validator?.operatorAddress || ''])?.toSorted((a,b) => Number(BigInt(b.balance.amount) - BigInt(a.balance.amount) / BigInt(Math.pow(10,18)))) || []
+        return (validatorDelegations.value[chainIdFromRoute.value || ''][props.validator?.operatorAddress || ''])?.toSorted((a,b) => Number(BigInt(b.balance.amount) - BigInt(a.balance.amount))) || []
     } else {
         return []
     }
@@ -77,6 +79,7 @@ const delegationsToShow = computed(() => {
         return []
     }
 })
+
 
 function getElements<T>(arr: T[], x: number, y: number): T[] {
     const maxIndex = arr.length - 1;

@@ -47,6 +47,18 @@ export type CosmosClients = {
     blockHeaderSubscription:  NodeJS.Timeout
 }
 
+export type ExplorerAsset = {
+    display: {
+        amount: number, 
+        denom: string,
+    }
+    base: {
+        amount: number, 
+        denom: string,
+        decimals: number
+    }
+}
+
 export const useBlockchainStore = defineStore('blockchain', () => {
     const isConnecting = ref(false)
 
@@ -71,6 +83,10 @@ export const useBlockchainStore = defineStore('blockchain', () => {
 
     const availableCosmosChainIds = computed(() => {
         return availableChains.value.map(chain => chain.keplr?.chainId).filter(v => v != undefined) as string[]
+    })
+
+    const allCurrencies = computed(() => {
+        return availableChains.value?.flatMap(c  => c.keplr?.currencies)
     })
 
     function setupExtenstions(queryClient: QueryClient) {
@@ -167,6 +183,35 @@ export const useBlockchainStore = defineStore('blockchain', () => {
         }
     }
 
+    function getCosmosAsset(amount: BigInt, denom: string) {
+        const asset = allCurrencies.value
+            .find(currency => currency?.coinMinimalDenom == denom)
+        if(asset) {
+            return {
+                display: {
+                    amount: Number(amount) / Number(Math.pow(10, asset.coinDecimals)),
+                    denom: asset.coinDenom,
+                },
+                base: {
+                    amount: Number(amount),
+                    denom: denom,
+                    decimals: asset.coinDecimals
+                }
+            } as ExplorerAsset
+        }
+        return {
+            display: {
+                amount: Number(amount),
+                denom: denom,
+            },
+            base: {
+                amount: Number(amount),
+                denom: denom,
+                decimals: 0
+            }
+        } as ExplorerAsset
+    }
+
     return { 
         isConnecting,
         chainClients,
@@ -175,5 +220,6 @@ export const useBlockchainStore = defineStore('blockchain', () => {
         availableChains,
         availableChainNames,
         connectClients,
+        getCosmosAsset
     }
 })

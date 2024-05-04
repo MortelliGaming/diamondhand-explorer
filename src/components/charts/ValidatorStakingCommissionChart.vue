@@ -8,10 +8,14 @@ import { type ApexOptions } from 'apexcharts'
 import Apexchart from 'vue3-apexcharts';
 
 import { useValidatorsStore } from '@/store/validators';
+import { useBlockchainStore } from '@/store/blockchain';
+import { useAppStore } from '@/store/app';
 import { storeToRefs } from 'pinia';
 
 const { getValidatorInfo } = useValidatorsStore()
 const { validators } = storeToRefs(useValidatorsStore())
+const { availableChains } = storeToRefs(useBlockchainStore())
+const { chainIdFromRoute } = storeToRefs(useAppStore())
 
 
 const props = defineProps({
@@ -25,6 +29,10 @@ const props = defineProps({
     }
 })
 
+const currentChainStakingCurrency = computed(() => {
+    return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.stakeCurrency
+})
+
 const valoper = computed(() => props.valoperAddress)
 const basicValidator = computed(() => {
     return validators.value[props.chainName]?.find(v => v.operatorAddress === valoper.value);
@@ -34,9 +42,9 @@ const validator = computed(() => { return (basicValidator.value != undefined ? g
 
 const series = computed(() => {
     // [min, step, current, step, max]
-    const rate = Number(BigInt(validator.value?.commission.commissionRates.rate || 0n)) / Number(BigInt(Math.pow(10,18))) * 100
-    const maxChange = Number(BigInt(validator.value?.commission.commissionRates.maxChangeRate || 0n)) / Number(BigInt(Math.pow(10,18))) * 100
-    const max = Number(BigInt(validator.value?.commission.commissionRates.maxRate || 0n)) / Number(BigInt(Math.pow(10,18))) * 100
+    const rate = Number(BigInt(validator.value?.commission.commissionRates.rate || 0n)) / Number(BigInt(Math.pow(10,currentChainStakingCurrency.value?.coinDecimals || 0))) * 100
+    const maxChange = Number(BigInt(validator.value?.commission.commissionRates.maxChangeRate || 0n)) / Number(BigInt(Math.pow(10,currentChainStakingCurrency.value?.coinDecimals || 0))) * 100
+    const max = Number(BigInt(validator.value?.commission.commissionRates.maxRate || 0n)) / Number(BigInt(Math.pow(10,currentChainStakingCurrency.value?.coinDecimals || 0))) * 100
     return [
         // commmision rate - maxChange
         rate - maxChange,
@@ -90,7 +98,7 @@ const chartOptions: Ref<ApexOptions> = ref({
                         color: '#0d8d42',
                         label: 'Current',
                         formatter: function () {
-                            return (Number((validator?.value?.commission.commissionRates.rate || 0n)) / Math.pow(10,18) * 100).toFixed(2) + '%'
+                            return (Number((validator?.value?.commission.commissionRates.rate || 0n)) / Math.pow(10,currentChainStakingCurrency.value?.coinDecimals || 0) * 100).toFixed(2) + '%'
                         }
                     }
                 }

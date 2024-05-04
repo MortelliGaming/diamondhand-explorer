@@ -10,7 +10,7 @@ export const useAppStore = defineStore('app', () => {
 
     const route = useRoute()
     const chainIdFromRoute: Ref<string> = computed(() => {
-      return (route.params as { chainId: string }).chainId || '' as string;
+      return (route.params as { chainId: string })?.chainId || '' as string;
     })
 
     return { 

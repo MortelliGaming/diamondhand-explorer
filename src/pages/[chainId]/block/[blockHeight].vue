@@ -61,7 +61,7 @@
                                                     <b>{{ $t('blocks.fees')}}</b>
                                                 </v-col>
                                                 <v-col cols="12" style="overflow-wrap: break-word;" v-for="fee in decodeTx(tx).authInfo.fee?.amount" :key="fee.denom">
-                                                    {{ Number(fee.amount) / Math.pow(10,18) }} {{ fee.denom.toUpperCase() }}
+                                                    {{ getCosmosAsset(BigInt(fee.amount), fee.denom).display.amount }} {{ getCosmosAsset(BigInt(fee.amount), fee.denom).display.denom }}
                                                 </v-col>
                                                 <v-col cols="12" style="overflow-wrap: break-word;">
                                                     <b>{{ $t('blocks.messages')}}</b>
@@ -142,6 +142,7 @@ const { blocks } = storeToRefs(useBlocksStore())
 const { validators, keybaseAvatars } = storeToRefs(useValidatorsStore())
 const { getValidatorInfo, loadCosmosValidators } = useValidatorsStore()
 const { loadCosmosBlock } = useBlocksStore()
+const { getCosmosAsset } = useBlockchainStore()
 
 const blockHeight = computed(() => parseInt((route.params as {blockHeight: string}).blockHeight))
 

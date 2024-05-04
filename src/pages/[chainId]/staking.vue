@@ -108,9 +108,11 @@ import ChainContent from '@/components/ChainContent.vue'
 
 import { useAppStore } from '@/store/app'
 import { useValidatorsStore } from '@/store/validators'
+import { useBlockchainStore } from '@/store/blockchain'
 
 const { t } = useI18n()
 const { chainIdFromRoute } = storeToRefs(useAppStore())
+const { availableChains } = storeToRefs(useBlockchainStore())
 const { getValidatorInfo, loadCosmosValidators } = useValidatorsStore()
 const { keybaseAvatars, validators } = storeToRefs(useValidatorsStore())
 
@@ -123,8 +125,8 @@ const tableValidators = computed(() => {
     return {
         rank: i + 1,
         description: [v?.description.identity, v?.description?.moniker, v?.description?.website, v?.operatorAddress],
-        votingPower: numeral(((BigInt(v?.tokens || 0n)) / BigInt(Math.pow(10, 18)))).format("0,0"),
-        comission: numeral((Number((v?.commission.commissionRates.rate || 0n)) / Number(Math.pow(10, 18)) * 100)).format("0") + '%',
+        votingPower: numeral(((BigInt(v?.tokens || 0n)) / BigInt(Math.pow(10, currentChainStakingCurrency.value?.coinDecimals || 0)))).format("0,0") + ' ' + currentChainStakingCurrency.value?.coinDenom,
+        comission: numeral((Number((v?.commission.commissionRates.rate || 0n)) / Number(Math.pow(10, currentChainStakingCurrency.value?.coinDecimals || 0)) * 100)).format("0") + '%',
         action: [() => { console.log(v?.operatorAddress); /* showDelegateDialog(v?.operatorAddress || '') */}, (v?.jailed)]
     }
   })
@@ -132,6 +134,10 @@ const tableValidators = computed(() => {
 
 const validatorsToShow = computed(() => {
   return validators.value[chainIdFromRoute.value || '']?.filter(v => (BondStatus[v?.status]) === activeTab.value)
+})
+
+const currentChainStakingCurrency = computed(() => {
+    return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.stakeCurrency
 })
 // make sure table isnt too big when data is there before mount
 const isTableVisible = ref(false)

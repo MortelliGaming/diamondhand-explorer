@@ -19,7 +19,7 @@
             {{ decodedMessage?.toAddress }}
         </v-col>
         <v-col cols="3" style="overflow-wrap: break-word;" class="pr-2 text-right">
-            {{ sendAmount }} {{ decodedMessage?.amount[0].denom.toUpperCase() }}
+            {{ sendAmount.display.amount }} {{ sendAmount.display.denom }}
         </v-col>
     </v-row>
 </template>
@@ -30,6 +30,9 @@ import { protoRegistry } from '@/lib/protoRegistry';
 import type { DecodeObject } from '@cosmjs/proto-signing'
 import { computed, type PropType } from 'vue';
 import { MsgSend } from '@/lib/proto/cosmos/bank/v1beta1/tx';
+import { useBlockchainStore } from '@/store/blockchain';
+
+const { getCosmosAsset } = useBlockchainStore()
 
 const props = defineProps({
     message: {
@@ -51,8 +54,7 @@ const decodedMessage = computed(() => {
 })
 
 const sendAmount = computed(() => {
-    const amount = (((Number(decodedMessage.value?.amount[0].amount || 0n))/ Math.pow(10,18)))
-    return amount > 1 ? amount.toFixed(2) : amount
+    return getCosmosAsset(BigInt(decodedMessage.value?.amount[0].amount || 0),decodedMessage.value?.amount[0].denom || '' )
 })
 
 

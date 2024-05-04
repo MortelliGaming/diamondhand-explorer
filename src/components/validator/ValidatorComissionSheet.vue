@@ -7,13 +7,13 @@
         </div>
         <v-container class="d-flex justify-center"  style="margin-top:-25px;">
             <div class="">
-                {{ t('validator.rate') }}: {{ (Number(props.validator?.commission.commissionRates.rate || 0n) / Math.pow(10, 18) * 100).toFixed(0) }}%
+                {{ t('validator.rate') }}: {{ (Number(props.validator?.commission.commissionRates.rate || 0n) / Math.pow(10, currentChainStakingCurrency?.coinDecimals || 0) * 100).toFixed(0) }}%
             </div>
             <div class="pl-3 pr-3">
-                24h ±: {{ (Number(props.validator?.commission.commissionRates.maxChangeRate || 0n) / Math.pow(10, 18) * 100).toFixed(0) }}%
+                24h ±: {{ (Number(props.validator?.commission.commissionRates.maxChangeRate || 0n) / Math.pow(10, currentChainStakingCurrency?.coinDecimals || 0) * 100).toFixed(0) }}%
             </div>
             <div class="">
-                {{ t('validator.max') }}: {{ (Number(props.validator?.commission.commissionRates.maxRate || 0n) / Math.pow(10, 18) * 100).toFixed(0) }}%
+                {{ t('validator.max') }}: {{ (Number(props.validator?.commission.commissionRates.maxRate || 0n) / Math.pow(10, currentChainStakingCurrency?.coinDecimals || 0) * 100).toFixed(0) }}%
             </div>
         </v-container>
         <div class="text-center">
@@ -25,11 +25,12 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
 import moment from 'moment';
-import { type PropType } from 'vue';
+import { computed, type PropType } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { ExtendedValidator } from '@/store/validators';
 import { useAppStore } from '@/store/app';
+import { useBlockchainStore } from '@/store/blockchain';
 
 import BaseSheet from '../BaseSheet.vue';
 import ValidatorStakingCommissionChart from '../charts/ValidatorStakingCommissionChart.vue';
@@ -43,7 +44,11 @@ const props = defineProps({
 
 const { t } = useI18n()
 const { chainIdFromRoute } = storeToRefs(useAppStore())
+const { availableChains } = storeToRefs(useBlockchainStore())
 
+const currentChainStakingCurrency = computed(() => {
+    return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.stakeCurrency
+})
 </script>
 <style>
 </style>
