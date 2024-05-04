@@ -5,21 +5,19 @@
             <v-responsive class="mt-3">
                 <base-sheet :title="$t('account.address')">
                 <v-row no-gutters class="pt-2">
-                    <v-col :cols="isEVMChain ? '6' : '12'" class="d-flex justify-center">
+                    <v-col cols="12" sm="6" class="d-flex justify-center align-center">
                         <qr-code :content="address" />
                     </v-col>
-                    <v-col :cols="isEVMChain ? '6' : '12'" class="d-flex justify-center">
-                        <qr-code :content="hexAddress" />
-                    </v-col>
-                    <v-col cols="6" v-if="isEVMChain">
+                    <v-col cols="12" sm="6" class="d-flex justify-center align-center">
                         <copy-box
-                            class="d-flex justify-center"
                             :short="$vuetify.display.xs" :text="address">
                         </copy-box>
                     </v-col>
-                    <v-col cols="6" v-if="isEVMChain">
+                    <v-col cols="12" sm="6" class="d-flex justify-center align-center pt-2"  v-if="isEVMChain">
+                        <qr-code :content="hexAddress" />
+                    </v-col>
+                    <v-col cols="12" sm="6" v-if="isEVMChain" class="d-flex justify-center align-center">
                         <copy-box
-                            class="d-flex justify-center"
                             :short="$vuetify.display.xs" :text="hexAddress">
                         </copy-box>
                     </v-col>
@@ -70,10 +68,6 @@ setTimeout(() => {
 }, 500);
 
 </script>
-<style>
-.qr {
-        max-height: 100px;
-        max-width: 100px;
-}
+<style scoped>
 </style>
   

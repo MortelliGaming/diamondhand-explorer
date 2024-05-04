@@ -4,7 +4,7 @@
         imgclass="qr"
         :backgroundOptions="{ color: 'transparent' }"
         :dotsOptions="{
-            type: 'dots',
+            type: 'dot',
             color: '#FFFFFF',
             gradient: {
                 type: 'linear',
@@ -14,10 +14,11 @@
                     { offset: 1, color: '#FFFFFF' },
                 ],
             },
+            size: 0.8
         }"
-        image="http://testnet.localhost:5173/src/assets/logo.png"
+        :image="dhLogo"
         :imageOptions="{
-            imageSize: 0.8
+            imageSize: 0.6
         }"
         :cornersDotOptions="{ type: undefined, color: '#FFFFFF' }"
         :cornersSquareOptions="{ type: 'dot', color: '#FFFFFF' }"
@@ -27,6 +28,7 @@
 
 <script lang="ts" setup>
 import QRCodeVue3 from 'qrcode-vue3';
+import dhLogo from '@/assets/logo.png';
 
 const props = defineProps({
     content: {
@@ -38,8 +40,8 @@ const props = defineProps({
 </script>
 <style>
 .qr {
-    max-height: 100px;
-    max-width: 100px;
+    height: 100px;
+    width: 100px;
 }
 </style>
   

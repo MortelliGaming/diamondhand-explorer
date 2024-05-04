@@ -151,5 +151,8 @@ export const en = {
         signers: 'Signers',
         hashEth: 'EVM Hash',
         inspectEvmTx: 'Check EVM Tx',
+    },
+    account: {
+        address: 'Addresses'
     }
 }
