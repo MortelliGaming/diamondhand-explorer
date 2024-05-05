@@ -12,7 +12,7 @@
                         </v-col>
                         <v-col cols="12" sm="6" class="d-flex align-center">
                             <copy-box
-                                :short="$vuetify.display.xs" :text="address" :show-qr="true">
+                                :short="$vuetify.display.xs ? 12 : undefined" :text="address" :show-qr="true">
                             </copy-box>
                         </v-col>
                         <v-col cols="12" sm="6" class="d-flex align-center pt-2"  v-if="isEVMChain">
@@ -22,7 +22,7 @@
                         </v-col>
                         <v-col cols="12" sm="6" v-if="isEVMChain" class="d-flex align-center">
                             <copy-box
-                                :short="$vuetify.display.xs" :text="hexAddress" :show-qr="true">
+                                :short="$vuetify.display.xs ? 12 : undefined" :text="hexAddress" :show-qr="true">
                             </copy-box>
                         </v-col>
                     </v-row>

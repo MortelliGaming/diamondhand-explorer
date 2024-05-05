@@ -31,22 +31,22 @@
             <v-col cols="12" role="button" v-for="signer in signers" :key="signer.bech32">
                 <copy-box 
                     :show-qr="true"
-                    :text="signer.bech32" :short="$vuetify.display.xs" />
+                    :text="signer.bech32" :short="$vuetify.display.xs ? 12 : undefined" />
                 <!-- <copy-box
                     :show-qr="true"
-                    v-if="chainConfig?.evm" :text="signer.evm" :short="$vuetify.display.xs" /> -->
+                    v-if="chainConfig?.evm" :text="signer.evm" :short="$vuetify.display.xs ? 12 : undefined" /> -->
             </v-col>
             <v-col cols="12">
                 <b>{{  $t('transaction.hash') }}</b>
             </v-col>
             <v-col cols="12" style="overflow-wrap: break-word;">
-                <copy-box :text="txHash" :short="$vuetify.display.xs" />
+                <copy-box :text="txHash" :short="$vuetify.display.xs ? 12 : undefined" />
             </v-col>
             <v-col cols="12" v-if="txEthHash">
                 <b>{{  $t('transaction.hashEth') }}</b>
             </v-col>
             <v-col cols="12" v-if="txEthHash" style="overflow-wrap: break-word;">
-                <copy-box :text="txEthHash" :short="$vuetify.display.xs" />
+                <copy-box :text="txEthHash" :short="$vuetify.display.xs ? 12 : undefined" />
                 <router-link role="button" color="orange-darken-4" :to="'../evm/'+txEthHash">{{ $t('transaction.inspectEvmTx') }}</router-link>
             </v-col>
         </v-row>

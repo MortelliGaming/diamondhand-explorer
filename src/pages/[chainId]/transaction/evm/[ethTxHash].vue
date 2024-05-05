@@ -23,7 +23,7 @@
                                     {{ Number(attribute.value) / Math.pow(10, erc20TokenDecimals)  }} {{ erc20TokenSymbol  }}
                                 </div>
                                 <div v-else-if="attribute.type == 'address'" @click="$router.push('../../account/' + attribute.value)">
-                                    <copy-box :show-qr="true" :text="attribute.value" :short="$vuetify.display.xs" />
+                                    <copy-box :show-qr="true" :text="attribute.value" :short="$vuetify.display.xs ? 12 : undefined" />
                                 </div>
                                 <div v-else>
                                     {{ attribute.value }}

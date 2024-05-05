@@ -19,15 +19,15 @@
             <v-col cols="12" role="button">
 
                 <v-row no-gutters>
-                    <v-col class="flex-column" @click="$router.push('../../account/' + (chainConfig?.keplr ? toBech32(chainConfig?.keplr?.bech32Config.bech32PrefixAccAddr || '', fromHex(tx?.from.replace('0x', ''))) : tx?.from))">
+                    <v-col class="flex-column" @click="navigateToAccount">
                         <copy-box 
                             :show-qr="true"
-                            :short="$vuetify.display.xs"
+                            :short="$vuetify.display.xs ? 12 : undefined"
                             :text="tx?.from?.toString()" />
                         <div v-if="chainConfig?.keplr && tx.value > 0" class="d-flex flex-row">
                             (<copy-box
                             :show-qr="true"
-                            :short="$vuetify.display.xs"
+                            :short="$vuetify.display.xs ? 12 : undefined"
                             :text="toBech32(chainConfig?.keplr?.bech32Config.bech32PrefixAccAddr || '', fromHex(tx?.from.replace('0x', '')))" />)
                         </div>
                     </v-col>
@@ -38,15 +38,15 @@
             </v-col>
             <v-col cols="12" class="break-word" v-if="tx.to">
                 <v-row no-gutters>
-                    <v-col class="flex-column">
+                    <v-col class="flex-column" @click="navigateToAccount">
                         <copy-box 
                             :show-qr="true"
-                            :short="$vuetify.display.xs"
+                            :short="$vuetify.display.xs ? 12 : undefined"
                             :text="tx.to?.toString()" />
                         <div v-if="chainConfig?.keplr && tx.value > 0" class="d-flex flex-row">
                             (<copy-box
                             :show-qr="true"
-                            :short="$vuetify.display.xs"
+                            :short="$vuetify.display.xs ? 12 : undefined"
                             :text="toBech32(chainConfig?.keplr?.bech32Config.bech32PrefixAccAddr || '', fromHex(tx?.to.replace('0x', '')))" />)
                         </div>
                     </v-col>
@@ -70,6 +70,7 @@
 
 <script lang="ts" setup>
 import { PropType, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import BaseSheet from '@/components/BaseSheet.vue';
 import { GetTransactionReturnType } from 'viem';
 import { toBech32, fromHex } from '@cosmjs/encoding';
@@ -82,7 +83,7 @@ import CopyBox from '@/components/CopyBox.vue';
 
 const { availableChains } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
-
+const router = useRouter()
 const props = defineProps({
     tx: {
         type: Object as PropType<GetTransactionReturnType>,
@@ -101,6 +102,10 @@ const chainConfig = computed(() => {
 const nativeCurrency = computed(() => {
     return chainConfig.value?.evm?.nativeCurrency
 })
+
+function navigateToAccount() {
+    router.push('../../account/' + (chainConfig.value?.keplr ? toBech32(chainConfig.value?.keplr?.bech32Config.bech32PrefixAccAddr || '', fromHex(props.tx?.from.replace('0x', ''))) : props.tx?.from))
+}
 
 </script>
 <style>

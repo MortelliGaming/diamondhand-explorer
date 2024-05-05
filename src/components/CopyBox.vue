@@ -2,7 +2,7 @@
     <div>
         <div
             class="break-string">
-            {{ props.short ? shortenString(props.text || '', 12, 3) : props.text }}
+            {{ props.short ? shortenString(props.text || '', props.short, 3) : props.text }}
             <span
                 role="button"
                 @click.stop="() => copyToClipboard(props.text)">
@@ -32,8 +32,8 @@ const props = defineProps({
         default: undefined
     },
     short: {
-        type: Boolean,
-        default: false
+        type: Number,
+        default: undefined
     },
     showQr: {
         type: Boolean,

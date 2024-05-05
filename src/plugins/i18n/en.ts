@@ -151,6 +151,8 @@ export const en = {
         signers: 'Signers',
         hashEth: 'EVM Hash',
         inspectEvmTx: 'Check EVM Tx',
+        send: 'send',
+        fees: 'fees',
     },
     account: {
         addresses: 'Addresses',
@@ -158,6 +160,6 @@ export const en = {
         addressHex: 'Hex Address',
         balances: 'Balances',
         delegations: 'Delegations',
-        transactions: 'Transactions'
+        transactions: 'Transactions',
     }
 }

@@ -6,7 +6,10 @@
                     {{ $t('blocks.noTxInBlock') }}
                 </v-col>
                 <v-col cols="12" sm="6" md="4" class="pb-2" v-for="tx in props.block.block.txs" :key="tx.toString()">
-                    <transaction-header-info-sheet :tx="tx" />
+                    <transaction-header-info-sheet
+                        :tx="tx" 
+                        @click="$router.push('../transaction/' + calcTxHash(tx))"
+                    />
                 </v-col>
             </v-row>
         </v-container>
@@ -18,6 +21,7 @@ import TransactionHeaderInfoSheet from '../tx/TransactionHeaderInfoSheet.vue';
 
 import { PropType } from 'vue';
 import { BlockResponse } from '@cosmjs/tendermint-rpc';
+import { sha256 } from '@cosmjs/crypto';
 
 const props = defineProps({
     block: {
@@ -26,4 +30,7 @@ const props = defineProps({
     },
 })
 
+function calcTxHash(tx: Uint8Array) {
+  return Buffer.from(sha256(tx)).toString('hex').toUpperCase()
+}
 </script>
