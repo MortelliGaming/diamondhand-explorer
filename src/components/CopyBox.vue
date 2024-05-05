@@ -8,8 +8,10 @@
                 @click="() => copyToClipboard(props.text)">
                 <v-icon size="x-small" icon="mdi-content-copy" />
             </span>
+            <qr-code-dialog
+                :qr-content="props.text"
+                v-if="props.showQr == true"/>
         </div>
-
         <v-snackbar rounded elevation="12" color="success" location="top" :timeout="1000" v-model="snackbar" class="text-center">
             <div class="text-center text-caption"><b>{{ t('message.copied') }}</b></div>
         </v-snackbar>
@@ -20,6 +22,7 @@
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import QrCodeDialog from './QrCodeDialog.vue';
 import { shortenString } from '@/lib/stringHelper';
 
 const props = defineProps({
@@ -31,6 +34,10 @@ const props = defineProps({
     short: {
         type: Boolean,
         default: false
+    },
+    showQr: {
+        type: Boolean,
+        default: false,
     }
 })
 const { t } = useI18n()
@@ -42,7 +49,6 @@ function copyToClipboard(text: string|undefined) {
     }
     snackbar.value = true
 }
-
 </script>
 <style>
 </style>

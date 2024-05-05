@@ -28,6 +28,7 @@ declare module 'vue' {
     ProposalVotingChart: typeof import('./src/components/charts/ProposalVotingChart.vue')['default']
     ProposalVotingsSheet: typeof import('./src/components/governance/ProposalVotingsSheet.vue')['default']
     QrCode: typeof import('./src/components/QrCode.vue')['default']
+    QrCodeDialog: typeof import('./src/components/QrCodeDialog.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TimeFormatter: typeof import('./src/components/TimeFormatter.vue')['default']

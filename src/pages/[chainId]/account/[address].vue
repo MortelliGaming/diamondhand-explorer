@@ -3,22 +3,26 @@
     <div v-else>
         <v-container>
             <v-responsive class="mt-3">
-                <base-sheet :title="$t('account.address')">
+                <base-sheet :title="$t('account.addresses')">
                 <v-row no-gutters class="pt-2">
-                    <v-col cols="12" sm="6" class="d-flex justify-center align-center">
-                        <qr-code :content="address" />
+                    <v-col cols="12" sm="6" class="d-flex align-center">
+                        <div>
+                            <b>{{ $t('account.address') }}</b>
+                        </div>
                     </v-col>
-                    <v-col cols="12" sm="6" class="d-flex justify-center align-center">
+                    <v-col cols="12" sm="6" class="d-flex align-center">
                         <copy-box
-                            :short="$vuetify.display.xs" :text="address">
+                            :short="$vuetify.display.xs" :text="address" :show-qr="true">
                         </copy-box>
                     </v-col>
-                    <v-col cols="12" sm="6" class="d-flex justify-center align-center pt-2"  v-if="isEVMChain">
-                        <qr-code :content="hexAddress" />
+                    <v-col cols="12" sm="6" class="d-flex align-center pt-2"  v-if="isEVMChain">
+                        <div>
+                            <b>{{ $t('account.addressHex') }}</b>
+                        </div>
                     </v-col>
-                    <v-col cols="12" sm="6" v-if="isEVMChain" class="d-flex justify-center align-center">
+                    <v-col cols="12" sm="6" v-if="isEVMChain" class="d-flex align-center">
                         <copy-box
-                            :short="$vuetify.display.xs" :text="hexAddress">
+                            :short="$vuetify.display.xs" :text="hexAddress" :show-qr="true">
                         </copy-box>
                     </v-col>
                 </v-row>
@@ -31,8 +35,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-
-import QrCode from '@/components/QrCode.vue';
 
 import NotFound from '@/components/404.vue'
 import BaseSheet from '@/components/BaseSheet.vue';

@@ -8,3 +8,7 @@
 // @use 'vuetify/settings' with (
 //   $color-pack: false
 // );
+
+.break-word {
+    overflow-wrap: break-word !important;
+}

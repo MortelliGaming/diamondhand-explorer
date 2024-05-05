@@ -153,6 +153,8 @@ export const en = {
         inspectEvmTx: 'Check EVM Tx',
     },
     account: {
-        address: 'Addresses'
+        addresses: 'Addresses',
+        address: 'Address',
+        addressHex: 'Hex Address'
     }
 }
