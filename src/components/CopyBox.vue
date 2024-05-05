@@ -5,7 +5,7 @@
             {{ props.short ? shortenString(props.text || '', 12, 3) : props.text }}
             <span
                 role="button"
-                @click="() => copyToClipboard(props.text)">
+                @click.stop="() => copyToClipboard(props.text)">
                 <v-icon size="x-small" icon="mdi-content-copy" />
             </span>
             <qr-code-dialog

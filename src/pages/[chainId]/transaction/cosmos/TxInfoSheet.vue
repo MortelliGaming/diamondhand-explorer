@@ -29,8 +29,12 @@
                 <b>{{  $t('transaction.signers') }}</b>
             </v-col>
             <v-col cols="12" role="button" v-for="signer in signers" :key="signer.bech32">
-                <copy-box :text="signer.bech32" :short="$vuetify.display.xs" />
-                <copy-box v-if="chainConfig?.evm" :text="signer.evm" :short="$vuetify.display.xs" />
+                <copy-box 
+                    :show-qr="true"
+                    :text="signer.bech32" :short="$vuetify.display.xs" />
+                <!-- <copy-box
+                    :show-qr="true"
+                    v-if="chainConfig?.evm" :text="signer.evm" :short="$vuetify.display.xs" /> -->
             </v-col>
             <v-col cols="12">
                 <b>{{  $t('transaction.hash') }}</b>

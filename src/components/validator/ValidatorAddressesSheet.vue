@@ -5,6 +5,7 @@
                 <div class="d-flex flex-column">
                     <b><div>{{ t('validator.operatorAddress') }}</div></b>
                     <copy-box
+                        :show-qr="true"
                         :text="props.validator?.operatorAddress" />
                 </div>
             </v-col>

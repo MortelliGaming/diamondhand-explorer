@@ -2,11 +2,15 @@
     <base-sheet :title="t('validator.delegations') + '('+ (validatorDelegations[chainIdFromRoute || ''] ? (validatorDelegations[chainIdFromRoute || ''][validator?.operatorAddress || ''])?.length : '') +')'">
         <v-container style="height: 300px;overflow-y: scroll; overflow-x:hidden;" v-if="validatorDelegations[chainIdFromRoute || '']" class="pa-0 mt-5">
             <v-row v-for="(delegation, i) in delegationsToShow" :key="delegation.delegation.delegatorAddress">
-                <v-col cols="12" class="d-flex  d-flex align-center" v-if="delegation">
+                <v-col 
+                    @click="$router.push('../account/'+delegation.delegation.delegatorAddress)"
+                    cols="12" class="d-flex  d-flex align-center" v-if="delegation">
                     <v-chip class="justify-center">{{ ((page-1) * numDelegationPerPage) + 1 + i }}</v-chip>
                     <div class="pl-2" style="max-width: 65%; overflow-wrap: break-word;">
                         <div class="text-caption">
-                            <copy-box :text="delegation.delegation.delegatorAddress" />
+                            <copy-box
+                                :show-qr="true"
+                                :text="delegation.delegation.delegatorAddress" />
                         </div>
                     </div>
                     <div class="text-caption text-right d-flex align-end justify-end flex-grow-1" style="word-break: break-word;">
@@ -32,6 +36,8 @@
 import { computed, ref, type PropType } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
+
+import CopyBox from '../CopyBox.vue';
 
 import { ExtendedValidator, useValidatorsStore } from '@/store/validators';
 import { useAppStore } from '@/store/app';

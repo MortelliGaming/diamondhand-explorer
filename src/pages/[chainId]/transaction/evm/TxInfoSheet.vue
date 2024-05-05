@@ -19,12 +19,14 @@
             <v-col cols="12" role="button">
 
                 <v-row no-gutters>
-                    <v-col class="flex-column">
+                    <v-col class="flex-column" @click="$router.push('../../account/' + (chainConfig?.keplr ? toBech32(chainConfig?.keplr?.bech32Config.bech32PrefixAccAddr || '', fromHex(tx?.from.replace('0x', ''))) : tx?.from))">
                         <copy-box 
+                            :show-qr="true"
                             :short="$vuetify.display.xs"
                             :text="tx?.from?.toString()" />
                         <div v-if="chainConfig?.keplr && tx.value > 0" class="d-flex flex-row">
                             (<copy-box
+                            :show-qr="true"
                             :short="$vuetify.display.xs"
                             :text="toBech32(chainConfig?.keplr?.bech32Config.bech32PrefixAccAddr || '', fromHex(tx?.from.replace('0x', '')))" />)
                         </div>
@@ -38,10 +40,12 @@
                 <v-row no-gutters>
                     <v-col class="flex-column">
                         <copy-box 
+                            :show-qr="true"
                             :short="$vuetify.display.xs"
                             :text="tx.to?.toString()" />
                         <div v-if="chainConfig?.keplr && tx.value > 0" class="d-flex flex-row">
                             (<copy-box
+                            :show-qr="true"
                             :short="$vuetify.display.xs"
                             :text="toBech32(chainConfig?.keplr?.bech32Config.bech32PrefixAccAddr || '', fromHex(tx?.to.replace('0x', '')))" />)
                         </div>

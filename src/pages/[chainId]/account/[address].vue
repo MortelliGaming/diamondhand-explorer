@@ -45,6 +45,21 @@
                         </v-col>
                     </v-row>
                 </base-sheet>
+                <div class="pt-2"></div>
+                <base-sheet :title="$t('account.transactions')">
+                    <v-row no-gutters>
+                        <v-col cols="12">
+                        </v-col>
+                    </v-row>
+                </base-sheet>
+                <div class="pt-2"></div>
+                <base-sheet :title="$t('account.delegations')">
+                    <v-row no-gutters>
+                        <v-col cols="12">
+                            
+                        </v-col>
+                    </v-row>
+                </base-sheet>
             </v-responsive>
         </v-container>
     </div>
@@ -61,7 +76,7 @@ import CopyBox from '@/components/CopyBox.vue';
 import { useBlockchainStore } from '@/store/blockchain';
 import { useAppStore } from '@/store/app';
 import { storeToRefs } from 'pinia';
-import { fromBech32, toHex } from '@cosmjs/encoding'
+import { fromBech32, toHex, toBech32, fromHex } from '@cosmjs/encoding';
 import { Coin } from '@/lib/proto/cosmos/base/v1beta1/coin';
 import { erc20Abi } from 'viem';
 
@@ -70,7 +85,16 @@ const { availableChains, chainClients } = storeToRefs(useBlockchainStore())
 const { getCosmosAsset } = useBlockchainStore()
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 
-const address = computed(() => (route.params as {address: string}).address)
+const address = computed(() => {
+    const paramAddress = (route.params as {address: string}).address
+    if(paramAddress.startsWith('0x')) {
+        return toBech32(availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.bech32Config.bech32PrefixAccAddr || '', fromHex(paramAddress.replace('0x','')))
+    } else {
+        return paramAddress
+    }
+})
+
+
 const isEVMChain = computed(() => {
     return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.evm != null ? true : false
 })
