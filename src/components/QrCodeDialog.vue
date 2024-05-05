@@ -12,6 +12,7 @@
             <v-card class="text-center" :title="props.qrContent">
             <v-card-text class="text-center">
                 <qr-code :content="props.qrContent" />
+                <div class="pb-2"></div>
             </v-card-text>
             </v-card>
         </template>

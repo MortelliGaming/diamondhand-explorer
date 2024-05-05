@@ -26,7 +26,8 @@
                             </copy-box>
                         </v-col>
                     </v-row>
-                    </base-sheet>
+                </base-sheet>
+                <div class="pt-2"></div>
                 <base-sheet :title="$t('account.balances')">
                     <v-row no-gutters>
                         <v-col cols="12" v-for="coin in balances" :key="coin.denom">
