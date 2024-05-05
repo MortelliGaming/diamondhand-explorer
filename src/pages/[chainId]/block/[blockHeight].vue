@@ -9,79 +9,10 @@
             <div v-else class="fill-height">
                 <div v-if="block">
                     <block-info-sheet :block="block" />
-                    <div class="pt-3" style="height: 100%">
-                        <base-sheet :title="$t('blocks.transactions')" class="pt-5" style="height:100%;">
-                            <v-container class="pa-0 mt-2" :style="'max-height: 350px; overflow-y: '+(block.block.txs.length == 0 ? 'hidden;' : 'scroll;'+ 'overflow-x: hidden;')">
-                                <v-row class="pt-3">
-                                    <v-col v-if="block.block.txs.length == 0">
-                                        {{ $t('blocks.noTxInBlock') }}
-                                    </v-col>
-                                    <v-col cols="12" sm="6" md="4" class="pb-2" v-for="tx in block.block.txs" :key="tx.toString()">
-                                        <v-sheet
-                                            role="button"
-                                            @click="$router.push('../transaction/' + getTxHash(tx))"
-                                            color="grey-darken-3" 
-                                            elevation="12"
-                                            class="pa-2">
-                                            <v-row no-gutters>
-                                                <v-col cols="12" style="overflow-wrap: break-word;">
-                                                    <b>{{ $t('blocks.hash')}}</b>
-                                                </v-col>
-                                                <v-col cols="12" style="overflow-wrap: break-word;">
-                                                    {{ getTxHash(tx) }}
-                                                </v-col>
-                                                <v-col cols="12" style="overflow-wrap: break-word;">
-                                                    <b>{{ $t('blocks.fees')}}</b>
-                                                </v-col>
-                                                <v-col cols="12" style="overflow-wrap: break-word;" v-for="fee in decodeTx(tx).authInfo.fee?.amount" :key="fee.denom">
-                                                    {{ getCosmosAsset(BigInt(fee.amount), fee.denom).display.amount }} {{ getCosmosAsset(BigInt(fee.amount), fee.denom).display.denom }}
-                                                </v-col>
-                                                <v-col cols="12" style="overflow-wrap: break-word;">
-                                                    <b>{{ $t('blocks.messages')}}</b>
-                                                </v-col>
-                                                <v-col 
-                                                    :class="'pb-2 d-flex ' + (decodeTx(tx).body.messages.length > 1 ? 'justify-center' : '')"
-                                                    v-for="message in decodeTx(tx).body.messages" :key="message.typeUrl">
-                                                    <v-chip
-                                                        size="small"
-                                                        color="cyan-lighten-3"
-                                                        label
-                                                        >
-                                                        {{ message.typeUrl.split('.')[message.typeUrl.split('.').length -1]}}
-                                                        </v-chip>
-                                                </v-col>
-                                            </v-row>
-                                        </v-sheet>
-                                    </v-col>
-                                </v-row>
-                            </v-container>
-                        </base-sheet>
-                    </div>
-                    <div class="pt-3" style="height: 100%">
-                        <base-sheet :title="$t('blocks.blockSignatures')" class="pt-5" style="height:100%;">
-                            <v-container class="pa-0 mt-2" style="height: 160px; overflow-y: scroll; overflow-x:hidden;">
-                                <v-row class="pt-3">
-                                    <v-col cols="12" sm="4" md="3" v-for="signature in nextBlock?.block.lastCommit?.signatures" :key="signature.validatorAddress?.toString()">
-                                        <v-sheet
-                                        color="grey-darken-3" rounded elevation="12" class="pa-2 fill-height">
-                                                <v-row no-gutters class="d-flex flex-row">
-                                                    <v-col v-if="signature.validatorAddress" cols="12" class="d-flex justify-center">
-                                                        <v-avatar v-if="getValidator(signature.validatorAddress)" class="mr-2" size="x-small">
-                                                            <v-img 
-                                                                v-if="keybaseAvatars[getValidator(signature.validatorAddress)!.description.identity]"
-                                                                :src="keybaseAvatars[getValidator(signature.validatorAddress)!.description.identity]" />
-                                                            <v-icon v-else icon="mdi-account" />
-                                                        </v-avatar>
-                                                        {{ getValidator(signature.validatorAddress)?.description.moniker  }}
-                                                    </v-col>
-                                                    <v-col class="d-flex justify-center pt-1" cols="12"><b>{{ BlockIdFlag[signature.blockIdFlag] }}</b></v-col>
-                                                </v-row>
-                                            </v-sheet>
-                                    </v-col>
-                                </v-row>
-                            </v-container>
-                        </base-sheet>
-                    </div>
+                    <div class="pt-3" style="height: 100%"></div>
+                    <block-transactions-sheet :block="block" />  
+                    <div class="pt-3" style="height: 100%"></div>
+                    <block-signatures-sheet :block="block" />
                 </div>
             </div>
         </div>
@@ -89,34 +20,29 @@
 </template>
 
 <script lang="ts" setup>
-import { Buffer } from 'buffer';
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 
-import { decodeTxRaw } from '@cosmjs/proto-signing'
-
 import NotFound from '@/components/404.vue'
 import ChainContent from '@/components/ChainContent.vue';
-import BaseSheet from '@/components/BaseSheet.vue';
 
 import { useBlockchainStore } from '@/store/blockchain';
 import { useValidatorsStore } from '@/store/validators';
 import { useBlocksStore } from '@/store/blocks';
 import { useAppStore } from '@/store/app';
 import { storeToRefs } from 'pinia';
-import { BlockIdFlag } from '@cosmjs/tendermint-rpc';
-import { sha256 } from '@cosmjs/crypto';
 
 import BlockInfoSheet from '@/components/blocks/BlockInfoSheet.vue';
+import BlockTransactionsSheet from '@/components/blocks/BlockTransactionsSheet.vue';
+import BlockSignaturesSheet from '@/components/blocks/BlockSignaturesSheet.vue';
 
 const route = useRoute()
 const { latestBlocks } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 const { blocks } = storeToRefs(useBlocksStore())
-const { validators, keybaseAvatars } = storeToRefs(useValidatorsStore())
-const { getValidatorInfo, loadCosmosValidators } = useValidatorsStore()
+const { validators } = storeToRefs(useValidatorsStore())
+const { loadCosmosValidators } = useValidatorsStore()
 const { loadCosmosBlock } = useBlocksStore()
-const { getCosmosAsset } = useBlockchainStore()
 
 const blockHeight = computed(() => parseInt((route.params as {blockHeight: string}).blockHeight))
 
@@ -126,30 +52,12 @@ const latestBlockHeight = computed(() => {
 const block = computed(() => {
     return blocks.value[chainIdFromRoute.value || '']?.find(b => b.block.header.height === blockHeight.value);
 })
-const nextBlock = computed(() => {
-    return blocks.value[chainIdFromRoute.value || '']?.find(b => b.block.header.height === blockHeight.value + 1);
-})
-
-function getValidator(validatorAddress: Uint8Array) {
-    const proposerAddressHex = '0x' + Buffer.from(validatorAddress).toString('hex')
-    return validators.value[chainIdFromRoute.value || '']?.find(
-            v => getValidatorInfo(chainIdFromRoute.value || '', v)?.consensusHexAddress.toLowerCase() === proposerAddressHex.toLowerCase())
-}
-
-function decodeTx(transaction: Uint8Array) {
-    return decodeTxRaw(transaction)
-}
-
-function getTxHash(tx: Uint8Array) {
-    return Buffer.from(sha256(tx)).toString('hex').toUpperCase()
-}
 
 if(!validators.value[chainIdFromRoute.value || '']) {
     await loadCosmosValidators(chainIdFromRoute.value || '');
 }
 
 await loadCosmosBlock(chainIdFromRoute.value || '', blockHeight.value)
-loadCosmosBlock(chainIdFromRoute.value || '', blockHeight.value + 1)
 </script>
 <style>
 .break-string {
