@@ -8,34 +8,7 @@
             </v-container>
             <div v-else class="fill-height">
                 <div v-if="block">
-                    <base-sheet :title="$t('blocks.block') + ' #' + block.block.header.height">
-                        <v-row no-gutters class="pt-3">
-                            <v-col cols="12">
-                                <b>{{ $t('blocks.time') }}</b>
-                            </v-col>
-                            <v-col cols="12">
-                                {{ moment(block.block.header.time.toISOString()).format('DD.MM.YY HH:mm:ss') }}
-                            </v-col>
-                            <v-col cols="12">
-                                <b>{{ $t('blocks.proposer') }}</b>
-                            </v-col>
-                            <v-col cols="12" style="overflow-wrap: break-word;">
-                                <v-avatar v-if="blockProposer" class="mr-2" size="small">
-                                    <v-img 
-                                        v-if="keybaseAvatars[blockProposer.description.identity]"
-                                        :src="keybaseAvatars[blockProposer.description.identity]" />
-                                    <v-icon v-else icon="mdi-account" />
-                                </v-avatar>
-                                {{ blockProposer?.description.moniker }}
-                            </v-col>
-                            <v-col cols="12">
-                                <b>{{ $t('blocks.hash') }}</b>
-                            </v-col>
-                            <v-col cols="12" style="overflow-wrap: break-word;">
-                                {{ blockHash }}
-                            </v-col>
-                        </v-row>
-                    </base-sheet>
+                    <block-info-sheet :block="block" />
                     <div class="pt-3" style="height: 100%">
                         <base-sheet :title="$t('blocks.transactions')" class="pt-5" style="height:100%;">
                             <v-container class="pa-0 mt-2" :style="'max-height: 350px; overflow-y: '+(block.block.txs.length == 0 ? 'hidden;' : 'scroll;'+ 'overflow-x: hidden;')">
@@ -131,9 +104,10 @@ import { useValidatorsStore } from '@/store/validators';
 import { useBlocksStore } from '@/store/blocks';
 import { useAppStore } from '@/store/app';
 import { storeToRefs } from 'pinia';
-import moment from 'moment';
 import { BlockIdFlag } from '@cosmjs/tendermint-rpc';
 import { sha256 } from '@cosmjs/crypto';
+
+import BlockInfoSheet from '@/components/blocks/BlockInfoSheet.vue';
 
 const route = useRoute()
 const { latestBlocks } = storeToRefs(useBlockchainStore())
@@ -154,16 +128,6 @@ const block = computed(() => {
 })
 const nextBlock = computed(() => {
     return blocks.value[chainIdFromRoute.value || '']?.find(b => b.block.header.height === blockHeight.value + 1);
-})
-
-const blockHash = computed(() => {
-    return block.value ? Buffer.from(block.value.blockId.hash).toString('hex') : ''
-})
-const blockProposer = computed(() => {
-    if(!block.value) {
-        return undefined
-    }
-    return getValidator(block.value.block.header.proposerAddress)
 })
 
 function getValidator(validatorAddress: Uint8Array) {

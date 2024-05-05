@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     404: typeof import('./src/components/404.vue')['default']
     BaseSheet: typeof import('./src/components/BaseSheet.vue')['default']
+    BlockInfoSheet: typeof import('./src/components/blocks/BlockInfoSheet.vue')['default']
     ChainContent: typeof import('./src/components/ChainContent.vue')['default']
     copy: typeof import('./src/components/messages/cosmos/UnkownMessage copy.vue')['default']
     CopyBox: typeof import('./src/components/CopyBox.vue')['default']
