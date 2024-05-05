@@ -155,6 +155,7 @@ export const en = {
     account: {
         addresses: 'Addresses',
         address: 'Address',
-        addressHex: 'Hex Address'
+        addressHex: 'Hex Address',
+        balances: 'Balances'
     }
 }
