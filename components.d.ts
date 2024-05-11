@@ -25,7 +25,7 @@ declare module 'vue' {
     LanguageSelector: typeof import('./src/components/LanguageSelector.vue')['default']
     Loading: typeof import('./src/components/Loading.vue')['default']
     MsgExecLegacyContent: typeof import('./src/components/messages/cosmos/MsgExecLegacyContent.vue')['default']
-    MsgSend: typeof import('./src/components/messages/cosmos/cosmos/bank/v1beta1/tx/MsgSend.vue')['default']
+    MsgSend: typeof import('./src/components/tx/messagerow/MsgSend.vue')['default']
     MsgSoftwareUpgrade: typeof import('./src/components/messages/cosmos/MsgSoftwareUpgrade.vue')['default']
     MsgUpdateParams: typeof import('./src/components/messages/cosmos/MsgUpdateParams.vue')['default']
     ProposalHeaderRow: typeof import('./src/components/governance/ProposalHeaderRow.vue')['default']

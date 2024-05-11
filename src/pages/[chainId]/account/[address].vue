@@ -31,17 +31,34 @@
                 <base-sheet :title="$t('account.balances')">
                     <v-row no-gutters>
                         <v-col cols="12" v-for="coin in balances" :key="coin.denom">
-                            {{ getCosmosAsset(BigInt(coin.amount), coin.denom).display.amount }} {{ getCosmosAsset(BigInt(coin.amount), coin.denom).display.denom }}
+                            <v-row no-gutters>
+                                <v-col cols="3">
+                                    {{ getCosmosAsset(BigInt(coin.amount), coin.denom).display.denom }}
+                                </v-col>
+                                <v-col cols="3" class="text-right">
+                                    {{ getCosmosAsset(BigInt(coin.amount), coin.denom).display.amount }}
+                                </v-col>
+                                <v-col></v-col>
+                            </v-row>
                         </v-col>
                         <v-col cols="12" v-for="coin in erc20Balances" :key="coin.display.denom">
-                            {{ coin.display.amount }} {{ coin.display.denom }}
-                            <span>
-                                <v-chip label size="xx-small" color="cyan-lighten-4">
-                                    <div class="pl-2 pr-2">
-                                        ERC20
-                                    </div>
-                                </v-chip>
-                            </span>
+                            
+                            <v-row no-gutters>
+                                <v-col cols="3">
+                                    {{ coin.display.denom }}
+                                    <span>
+                                        <v-chip label size="xx-small" color="cyan-lighten-4">
+                                            <div class="pl-2 pr-2">
+                                                ERC20
+                                            </div>
+                                        </v-chip>
+                                    </span>
+                                </v-col>
+                                <v-col cols="3" class="text-right">
+                                    {{ coin.display.amount }}
+                                </v-col>
+                                <v-col></v-col>
+                            </v-row>
                         </v-col>
                     </v-row>
                 </base-sheet>
@@ -81,8 +98,8 @@ import { Coin } from '@/lib/proto/cosmos/base/v1beta1/coin';
 import { erc20Abi } from 'viem';
 
 const route = useRoute()
-const { availableChains, chainClients } = storeToRefs(useBlockchainStore())
-const { getCosmosAsset } = useBlockchainStore()
+const { availableChains, chainClients, latestBlocks } = storeToRefs(useBlockchainStore())
+const { getCosmosAsset, getChainCurrencies } = useBlockchainStore()
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 
 const address = computed(() => {
@@ -105,19 +122,36 @@ const hexAddress = computed(() => {
 
 const balances:Ref<Coin[]> = ref([])
 
-chainClients.value[chainIdFromRoute.value]?.cosmosClients?.queryClient.extensions.bank.bank.allBalances(address.value)
-.then((_balances) => {
-    balances.value = _balances
-})
+console.log(getChainCurrencies(chainIdFromRoute.value))
+setTimeout(async () => {
+    for(const denom of getChainCurrencies(chainIdFromRoute.value)) {
+        chainClients.value[chainIdFromRoute.value]?.cosmosClients?.queryClient.extensions.bank.bank.balance(address.value, denom?.coinMinimalDenom)
+        .then((balance) => {
+            balances.value.push(balance)
+            console.log(`denom ${balance.denom}: ${balance.amount }`)
+        })
+        await new Promise((resolve) => setTimeout(() => resolve(true), 500))
+    }
+},0)
+
 const erc20Balances: Ref<{display: {amount: number, denom: string}}[]> = ref([])
 
 if(isEVMChain.value) {
     const viemClient = chainClients.value[chainIdFromRoute.value]?.viemClient
+    let latestBlockNumber = 0
+    if(latestBlocks.value[chainIdFromRoute.value]?.length > 0) {
+        latestBlockNumber = latestBlocks.value[chainIdFromRoute.value][0]?.header?.height
+    } else {
+        latestBlockNumber =  Number(await viemClient?.getBlockNumber());
+    }
     // find all erc20 contracts
     const erc20ContractAddresses = new Set((await viemClient?.getContractEvents({ 
         abi: erc20Abi,
         eventName: 'Transfer',
+        fromBlock: BigInt((Number(latestBlockNumber) - 1000)),
+        toBlock: BigInt(Number(latestBlockNumber))
     }))?.flatMap(e => e.address))
+
     for(const erc20Contract of erc20ContractAddresses) {
         const balance = await viemClient?.readContract({
             address: erc20Contract,

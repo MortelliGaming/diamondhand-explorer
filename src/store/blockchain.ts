@@ -4,6 +4,7 @@ import { blockchainConfigs } from '@/lib/chains'
 
 import { ExplorerChainInfo } from '@/types';
 import { useAppStore } from './app';
+import { AppCurrency } from '@keplr-wallet/types'
 import { Comet38Client, CometClient, NewBlockEvent } from '@cosmjs/tendermint-rpc';
 import { 
     AuthExtension,
@@ -84,10 +85,99 @@ export const useBlockchainStore = defineStore('blockchain', () => {
     const availableCosmosChainIds = computed(() => {
         return availableChains.value.map(chain => chain.keplr?.chainId).filter(v => v != undefined) as string[]
     })
+    const chainCurrencies = ref({} as Record<string, AppCurrency[]>)
+    const chainSupplyCurrencies = ref({} as Record<string, AppCurrency[]>)
 
+    const uniqueArray = <T>(array: T[], uniqueBy: (keyof T)[]) => {
+        const map = new Map<string, boolean>();
+        
+        return array.filter((item) => {
+            const key = uniqueBy.map((prop) => String(item[prop])).join('-');
+            if (map.has(key)) {
+            return false;
+            }
+            map.set(key, true);
+            return true;
+        });
+    };
     const allCurrencies = computed(() => {
-        return availableChains.value?.flatMap(c  => c.keplr?.currencies)
+        return uniqueArray(availableChains.value?.flatMap(c  => {
+            if(c.keplr?.chainId) {
+                return c.keplr?.currencies.concat(chainCurrencies.value[c.name]).concat(chainSupplyCurrencies.value[c.name]).filter(c => c);
+            } else {
+                return chainSupplyCurrencies.value[c.name].concat(chainCurrencies.value[c.name]).filter(c => c);
+            }
+        }) as AppCurrency[], ['coinDenom']);
     })
+
+    function getChainCurrencies(chainName: string) {
+        const chain = availableChains.value.find(c => c.name == chainName);
+        let result: AppCurrency[];
+        if(chain?.keplr?.chainId) {
+            result = chain.keplr.currencies.concat(chainCurrencies.value[chainName]).concat(chainSupplyCurrencies.value[chainName]).filter(c => c);
+        } else {
+            result = chainSupplyCurrencies.value[chainName].concat(chainCurrencies.value[chainName]).filter(c => c);
+        }
+        return uniqueArray(result,  ['coinDenom']);
+    }
+
+    function loadDenomAssets(chainName: string) {
+        const allPromises = [];
+        if(!chainCurrencies.value[chainName]) {
+            chainCurrencies.value[chainName] = []
+        }
+        allPromises.push(new Promise((resolve) => {
+            chainClients.value[chainName]?.cosmosClients?.queryClient.extensions.bank.bank.denomsMetadata().then((denoms) => {
+                console.log(denoms)
+                
+                const tokens = denoms?.map(d => {
+                    if( d.denomUnits.length > 0) {
+                        return {
+                            coinDenom: d.display,
+                            coinMinimalDenom: d.base,
+                            coinDecimals: d.denomUnits.find(u => u.denom == d.base)?.exponent || 0,
+                            coinImageUrl: ''
+                        }
+                    } else {
+                        return {
+                            coinDenom: d.display,
+                            coinMinimalDenom: d.base,
+                            coinDecimals: 0,
+                            coinImageUrl: ''
+                        }
+                    }
+                });
+                chainCurrencies.value[chainName] = tokens;
+                resolve(true)
+            })
+        }))
+
+        allPromises.push(new Promise((resolve) => {
+            chainClients.value[chainName]?.cosmosClients?.queryClient.extensions.bank.bank.totalSupply().then(totalSupply => {
+                console.log(totalSupply)
+                const mapped = totalSupply.supply.map((supplyToken) => {
+                    return {
+                        coinDenom: supplyToken.denom,
+                        coinMinimalDenom: supplyToken.denom,
+                        coinDecimals: 0,
+                        coinImageUrl: ''
+                    } as AppCurrency
+                })
+                chainSupplyCurrencies.value[chainName] = mapped;
+                resolve(true)
+            })
+        }))
+        return Promise.all(allPromises);
+    }
+    function loadChainCurrencies() {
+        const allPromises = []
+        for(const chain of availableChains.value) {
+            if(chain.keplr?.chainId) {
+                allPromises.push(loadDenomAssets(chain.name))
+            }
+        }
+        return Promise.all(allPromises);
+    }
 
     function setupExtenstions(queryClient: QueryClient) {
         return {
@@ -159,7 +249,9 @@ export const useBlockchainStore = defineStore('blockchain', () => {
                 }
             }
             chainClients.value[chainInfo.name] = clients
-        }   
+        }
+
+        await loadChainCurrencies();
         isConnecting.value = false;
         return Promise.resolve(true)
     }
@@ -219,6 +311,8 @@ export const useBlockchainStore = defineStore('blockchain', () => {
         availableCosmosChainIds,
         availableChains,
         availableChainNames,
+        chainCurrencies,
+        getChainCurrencies,
         connectClients,
         getCosmosAsset
     }
