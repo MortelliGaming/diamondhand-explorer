@@ -116,7 +116,7 @@ export const useBlockchainStore = defineStore('blockchain', () => {
         if(chain?.keplr?.chainId) {
             result = chain.keplr.currencies.concat(chainCurrencies.value[chainName]).concat(chainSupplyCurrencies.value[chainName]).filter(c => c);
         } else {
-            result = chainSupplyCurrencies.value[chainName].concat(chainCurrencies.value[chainName]).filter(c => c);
+            result = (chainSupplyCurrencies.value[chainName] || []).concat(chainCurrencies.value[chainName]).filter(c => c);
         }
         return uniqueArray(result,  ['coinMinimalDenom']);
     }
