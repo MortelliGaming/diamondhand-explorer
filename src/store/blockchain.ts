@@ -118,7 +118,7 @@ export const useBlockchainStore = defineStore('blockchain', () => {
         } else {
             result = chainSupplyCurrencies.value[chainName].concat(chainCurrencies.value[chainName]).filter(c => c);
         }
-        return uniqueArray(result,  ['coinDenom']);
+        return uniqueArray(result,  ['coinMinimalDenom']);
     }
 
     function loadDenomAssets(chainName: string) {
