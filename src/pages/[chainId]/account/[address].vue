@@ -257,6 +257,9 @@ watch(isLoadingERC20Tokens.value, () => {
         loadEVMBalances()
     }
 })
+if(isLoadingERC20Tokens.value[chainIdFromRoute.value] == false && isEVMChain.value) {
+    loadEVMBalances()
+}
 loadCosmosBalances()
 
 </script>
