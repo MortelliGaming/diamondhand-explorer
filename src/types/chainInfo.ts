@@ -5,5 +5,6 @@ export type ExplorerChainInfo = {
     name: string,
     isTestnet?: boolean,
     evm: Chain|null,
-    keplr: ChainInfo|null
+    keplr: ChainInfo|null,
+    erc20Contracts: string[]|undefined
 }

@@ -109,9 +109,8 @@ function loadAndDecodeTxInput() {
     whatsabi.autoload(tx.value?.to || '', {
         followProxies: true,
         enableExperimentalMetadata: true,
-        provider: chainClients.value[chainIdFromRoute.value]!.viemClient as AnyProvider}).then(async (abi) => {
-            console.log(abi)
-
+        provider: chainClients.value[chainIdFromRoute.value]!.viemClient as AnyProvider})
+    .then(async (abi) => {
         let isERC20 = false
         // check if we have a ERC 20 contract
         if(abi.abi.find(i => i.type=='function' && i.name == 'symbol')

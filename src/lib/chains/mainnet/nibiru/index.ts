@@ -4,5 +4,6 @@ import { keplr } from './keplr'
 export const nibiru: ExplorerChainInfo = {
   name: 'nibiru',
   keplr,
-  evm: null
+  evm: null,
+  erc20Contracts: undefined
 }

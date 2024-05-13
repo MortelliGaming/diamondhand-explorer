@@ -4,5 +4,6 @@ import { keplr } from './keplr'
 export const mineplex: ExplorerChainInfo = {
   name: 'mineplex',
   keplr,
-  evm: null
+  evm: null,
+  erc20Contracts: undefined
 }

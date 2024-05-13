@@ -69,8 +69,6 @@ export const useProposalsStore = defineStore('proposals', () => {
         } catch(err) { 
             console.error('error fetching proposal infos: ', err)
         }
-
-        console.log(allProposals.proposals.length)
         proposals.value[chainName] = allProposals.proposals
         // dont wait for the avatars
         const isLoadingIndex = isLoadingProposals.value.indexOf(chainName)

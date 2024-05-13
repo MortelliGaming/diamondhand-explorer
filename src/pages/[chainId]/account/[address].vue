@@ -5,22 +5,22 @@
             <v-responsive class="mt-3">
                 <base-sheet :title="$t('account.addresses')">
                     <v-row no-gutters class="pt-2">
-                        <v-col cols="12" sm="6" class="d-flex align-center">
+                        <v-col cols="4" class="d-flex align-center">
                             <div>
                                 <b>{{ $t('account.address') }}</b>
                             </div>
                         </v-col>
-                        <v-col cols="12" sm="6" class="d-flex align-center">
+                        <v-col cols="8" class="d-flex align-center justify-end">
                             <copy-box
                                 :short="$vuetify.display.xs ? 12 : undefined" :text="address" :show-qr="true">
                             </copy-box>
                         </v-col>
-                        <v-col cols="12" sm="6" class="d-flex align-center pt-2"  v-if="isEVMChain">
+                        <v-col cols="4" class="d-flex align-center pt-2"  v-if="isEVMChain">
                             <div>
                                 <b>{{ $t('account.addressHex') }}</b>
                             </div>
                         </v-col>
-                        <v-col cols="12" sm="6" v-if="isEVMChain" class="d-flex align-center">
+                        <v-col cols="8" v-if="isEVMChain" class="d-flex align-center justify-end">
                             <copy-box
                                 :short="$vuetify.display.xs ? 12 : undefined" :text="hexAddress" :show-qr="true">
                             </copy-box>
@@ -29,22 +29,27 @@
                 </base-sheet>
                 <div class="pt-2"></div>
                 <base-sheet :title="$t('account.balances')">
-                    <v-row no-gutters>
-                        <v-col cols="12" v-for="coin in balances" :key="coin.denom">
+                    <v-row no-gutters style="max-height: 300px; overflow-y:scroll;">
+                        <v-col cols="12" v-for="coin in displayBalances.filter(b => !b.displayDenom.includes('/')).sort((a, b) => (a.interChain === b.interChain ? a.displayDenom.localeCompare(b.displayDenom) : a.interChain ? 1 : -1))" :key="coin.baseDenom">
                             <v-row no-gutters>
-                                <v-col cols="3">
-                                    {{ getCosmosAsset(BigInt(coin.amount), coin.denom).display.denom }}
+                                <v-col cols="6" class="break-word">
+                                    {{ coin.displayDenom }}
+                                    <span v-if="coin.interChain">
+                                        <v-chip label size="xx-small" color="green-lighten-4">
+                                            <div class="pl-2 pr-2">
+                                                IBC
+                                            </div>
+                                        </v-chip>
+                                    </span>
                                 </v-col>
-                                <v-col cols="3" class="text-right">
-                                    {{ getCosmosAsset(BigInt(coin.amount), coin.denom).display.amount }}
+                                <v-col cols="6" class="text-right">
+                                    {{ coin.displayAmount }}
                                 </v-col>
-                                <v-col></v-col>
                             </v-row>
                         </v-col>
-                        <v-col cols="12" v-for="coin in erc20Balances" :key="coin.display.denom">
-                            
+                        <v-col cols="12" v-for="coin in erc20Balances.filter(b => b.display.amount > 0)" :key="coin.display.denom">
                             <v-row no-gutters>
-                                <v-col cols="3">
+                                <v-col cols="6">
                                     {{ coin.display.denom }}
                                     <span>
                                         <v-chip label size="xx-small" color="cyan-lighten-4">
@@ -54,10 +59,9 @@
                                         </v-chip>
                                     </span>
                                 </v-col>
-                                <v-col cols="3" class="text-right">
+                                <v-col cols="6" class="text-right">
                                     {{ coin.display.amount }}
                                 </v-col>
-                                <v-col></v-col>
                             </v-row>
                         </v-col>
                     </v-row>
@@ -92,15 +96,24 @@ import CopyBox from '@/components/CopyBox.vue';
 
 import { useBlockchainStore } from '@/store/blockchain';
 import { useAppStore } from '@/store/app';
+import { useCoinsStore } from '@/store/coins';
 import { storeToRefs } from 'pinia';
 import { fromBech32, toHex, toBech32, fromHex } from '@cosmjs/encoding';
-import { Coin } from '@/lib/proto/cosmos/base/v1beta1/coin';
 import { erc20Abi } from 'viem';
 
+type DisplayBalance = {
+    baseAmount: number
+    baseDenom: string
+    displayAmount: number
+    displayDenom: string
+    interChain: boolean
+    erc20: boolean
+}
+
 const route = useRoute()
-const { availableChains, chainClients, latestBlocks } = storeToRefs(useBlockchainStore())
-const { getCosmosAsset, getChainCurrencies } = useBlockchainStore()
+const { availableChains, chainClients } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
+const { getCoin } = useCoinsStore();
 
 const address = computed(() => {
     const paramAddress = (route.params as {address: string}).address
@@ -111,62 +124,39 @@ const address = computed(() => {
     }
 })
 
+const chainConfig = computed(() => {
+    return availableChains.value.find(c => c.name == chainIdFromRoute.value)
+})
 
 const isEVMChain = computed(() => {
-    return availableChains.value.find(c => c.name == chainIdFromRoute.value)?.evm != null ? true : false
+    return chainConfig.value?.evm != null ? true : false
 })
 
 const hexAddress = computed(() => {
     return '0x' + toHex(fromBech32(address.value || '').data) as `0x${string}`
 })
 
-const balances:Ref<Coin[]> = ref([])
-
-console.log(getChainCurrencies(chainIdFromRoute.value))
-setTimeout(async () => {
-    for(const denom of getChainCurrencies(chainIdFromRoute.value)) {
-        chainClients.value[chainIdFromRoute.value]?.cosmosClients?.queryClient.extensions.bank.bank.balance(address.value, denom?.coinMinimalDenom)
-        .then((balance) => {
-            balances.value.push(balance)
-            console.log(`denom ${balance.denom}: ${balance.amount }`)
-        })
-        await new Promise((resolve) => setTimeout(() => resolve(true), 500))
-    }
-},0)
+const displayBalances: Ref<DisplayBalance[]> = ref([])
 
 const erc20Balances: Ref<{display: {amount: number, denom: string}}[]> = ref([])
 
-if(isEVMChain.value) {
+async function loadEVMBalances() {
     const viemClient = chainClients.value[chainIdFromRoute.value]?.viemClient
-    let latestBlockNumber = 0
-    if(latestBlocks.value[chainIdFromRoute.value]?.length > 0) {
-        latestBlockNumber = latestBlocks.value[chainIdFromRoute.value][0]?.header?.height
-    } else {
-        latestBlockNumber =  Number(await viemClient?.getBlockNumber());
-    }
-    // find all erc20 contracts
-    const erc20ContractAddresses = new Set((await viemClient?.getContractEvents({ 
-        abi: erc20Abi,
-        eventName: 'Transfer',
-        fromBlock: BigInt((Number(latestBlockNumber) - 1000)),
-        toBlock: BigInt(Number(latestBlockNumber))
-    }))?.flatMap(e => e.address))
-
-    for(const erc20Contract of erc20ContractAddresses) {
+    for(const erc20Contract of chainConfig.value?.erc20Contracts || []) {
         const balance = await viemClient?.readContract({
-            address: erc20Contract,
+            address: erc20Contract as `0x${string}`,
             abi: erc20Abi,
             functionName: 'balanceOf',
             args: [hexAddress.value],
         })
         const tokenSymbol = await viemClient?.readContract({
-            address: erc20Contract,
+            address: erc20Contract as `0x${string}`,
             abi: erc20Abi,
             functionName: 'symbol',
             args: [],
         })
         const tokenDecimals = await viemClient?.readContract({
-            address: erc20Contract,
+            address: erc20Contract as `0x${string}`,
             abi: erc20Abi,
             functionName: 'decimals',
             args: [],
@@ -179,6 +169,100 @@ if(isEVMChain.value) {
         })
     }
 }
+
+async function loadCosmosBalances() {
+    const allBalances = await chainClients.value[chainIdFromRoute.value]?.cosmosClients?.queryClient.extensions.bank.bank.allBalances(address.value)
+    displayBalances.value = []
+    for(const balance of allBalances || []) {
+        const coinDef = getCoin(balance.denom)
+        const baseDenomDef = coinDef?.denom_units
+            .find(d => d.denom == balance.denom || d.aliases?.includes(balance.denom))
+        const displayDenomDef = coinDef?.denom_units
+            .find(d => d.denom == coinDef.display || d.aliases?.includes(coinDef.display))
+        if(coinDef && baseDenomDef && displayDenomDef) {
+            const baseAmount = Number(balance.amount) / Number(Math.pow(10, baseDenomDef.exponent))
+            const baseDenom = baseDenomDef.denom
+            const displayAmount = baseAmount  / Number(Math.pow(10, displayDenomDef.exponent))
+            const displayDenom = displayDenomDef.denom.toUpperCase()
+            const interChain: boolean = balance.denom.startsWith('ibc') || false
+            const displayCoin = {
+                baseAmount,
+                baseDenom,
+                displayAmount,
+                displayDenom,
+                interChain,
+                erc20: false
+            }
+            displayBalances.value.push(displayCoin)
+        } else {
+            // coin not found in chain registry. check other sources...
+            // first denom infos from chain 
+            const denomsMetadata = await chainClients.value[chainIdFromRoute.value]?.cosmosClients?.queryClient.extensions.bank.bank.denomsMetadata()
+            const denomDef = denomsMetadata?.find(d => d.denomUnits.map(du => du.denom).includes(balance.denom))
+            if(denomDef) {
+                const baseAmount = Number(balance.amount) / Number(Math.pow(10, denomDef.denomUnits.find(u => u.denom == denomDef.base)!.exponent))
+                const baseDenom = denomDef.base
+                const displayAmount = baseAmount  / Number(Math.pow(10, denomDef.denomUnits.find(u => u.denom == denomDef.display)!.exponent))
+                const displayDenom = denomDef.display.toUpperCase()
+                const interChain: boolean = balance.denom.startsWith('ibc') || false
+                const displayCoin = {
+                    baseAmount,
+                    baseDenom,
+                    displayAmount,
+                    displayDenom,
+                    interChain,
+                    erc20: false
+                }
+                displayBalances.value.push(displayCoin)
+            } else {
+
+                // if still not found
+                // denom info from chainconfig
+                const denomsMetadata = availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.currencies
+                    .find(c => c.coinDenom == balance.denom || c.coinMinimalDenom == balance.denom)
+                
+                if(denomsMetadata) {
+                    const displayDecimals = denomsMetadata.coinMinimalDenom == balance.denom ? denomsMetadata.coinDecimals : 0
+                    const baseDecimals = denomsMetadata.coinMinimalDenom == balance.denom ? 0 : denomsMetadata.coinDecimals
+                    
+                    const baseAmount = Number(balance.amount) * Math.pow(10, baseDecimals)
+                    const baseDenom = denomsMetadata.coinMinimalDenom
+                    const displayAmount = baseAmount  / Number(Math.pow(10, displayDecimals))
+                    const displayDenom = denomsMetadata.coinDenom.toUpperCase()
+                    const interChain: boolean = balance.denom.startsWith('ibc') || false
+                    const displayCoin = {
+                        baseAmount,
+                        baseDenom,
+                        displayAmount,
+                        displayDenom,
+                        interChain,
+                        erc20: false
+                    }
+                    displayBalances.value.push(displayCoin)
+                } else {
+
+                    const displayCoin = {
+                        baseAmount: Number(balance.amount),
+                        baseDenom: balance.denom,
+                        displayAmount: Number(balance.amount),
+                        displayDenom: balance.denom,
+                        interChain: balance.denom.startsWith('ibc'),
+                        erc20: false
+                    }
+                    displayBalances.value.push(displayCoin)
+                }
+
+                // if still not found use denom and amount
+            }
+        }
+        //console.log(getCoin(balance.denom))
+    }
+}
+
+if(isEVMChain.value) {
+    loadEVMBalances()
+}
+loadCosmosBalances()
 
 </script>
 <style scoped>

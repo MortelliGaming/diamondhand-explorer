@@ -4,6 +4,7 @@ import { blockchainConfigs } from '@/lib/chains'
 
 import { ExplorerChainInfo } from '@/types';
 import { useAppStore } from './app';
+import { useCoinsStore } from './coins';
 import { AppCurrency } from '@keplr-wallet/types'
 import { Comet38Client, CometClient, NewBlockEvent } from '@cosmjs/tendermint-rpc';
 import { 
@@ -61,6 +62,8 @@ export type ExplorerAsset = {
 }
 
 export const useBlockchainStore = defineStore('blockchain', () => {
+    const { init } = useCoinsStore()
+    init();
     const isConnecting = ref(false)
 
     const latestBlocks: Ref<Record<string, NewBlockEvent[]>> = ref({})
@@ -119,64 +122,6 @@ export const useBlockchainStore = defineStore('blockchain', () => {
             result = (chainSupplyCurrencies.value[chainName] || []).concat(chainCurrencies.value[chainName]).filter(c => c);
         }
         return uniqueArray(result,  ['coinMinimalDenom']);
-    }
-
-    function loadDenomAssets(chainName: string) {
-        const allPromises = [];
-        if(!chainCurrencies.value[chainName]) {
-            chainCurrencies.value[chainName] = []
-        }
-        allPromises.push(new Promise((resolve) => {
-            chainClients.value[chainName]?.cosmosClients?.queryClient.extensions.bank.bank.denomsMetadata().then((denoms) => {
-                console.log(denoms)
-                
-                const tokens = denoms?.map(d => {
-                    if( d.denomUnits.length > 0) {
-                        return {
-                            coinDenom: d.display,
-                            coinMinimalDenom: d.base,
-                            coinDecimals: d.denomUnits.find(u => u.denom == d.base)?.exponent || 0,
-                            coinImageUrl: ''
-                        }
-                    } else {
-                        return {
-                            coinDenom: d.display,
-                            coinMinimalDenom: d.base,
-                            coinDecimals: 0,
-                            coinImageUrl: ''
-                        }
-                    }
-                });
-                chainCurrencies.value[chainName] = tokens;
-                resolve(true)
-            })
-        }))
-
-        allPromises.push(new Promise((resolve) => {
-            chainClients.value[chainName]?.cosmosClients?.queryClient.extensions.bank.bank.totalSupply().then(totalSupply => {
-                console.log(totalSupply)
-                const mapped = totalSupply.supply.map((supplyToken) => {
-                    return {
-                        coinDenom: supplyToken.denom,
-                        coinMinimalDenom: supplyToken.denom,
-                        coinDecimals: 0,
-                        coinImageUrl: ''
-                    } as AppCurrency
-                })
-                chainSupplyCurrencies.value[chainName] = mapped;
-                resolve(true)
-            })
-        }))
-        return Promise.all(allPromises);
-    }
-    function loadChainCurrencies() {
-        const allPromises = []
-        for(const chain of availableChains.value) {
-            if(chain.keplr?.chainId) {
-                allPromises.push(loadDenomAssets(chain.name))
-            }
-        }
-        return Promise.all(allPromises);
     }
 
     function setupExtenstions(queryClient: QueryClient) {
@@ -250,8 +195,6 @@ export const useBlockchainStore = defineStore('blockchain', () => {
             }
             chainClients.value[chainInfo.name] = clients
         }
-
-        await loadChainCurrencies();
         isConnecting.value = false;
         return Promise.resolve(true)
     }

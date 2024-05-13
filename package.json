@@ -8,6 +8,7 @@
     "lint": "eslint . --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@chain-registry/client": "^1.32.0",
     "@cosmjs/amino": "^0.32.3",
     "@cosmjs/stargate": "^0.32.0-rc.1",
     "@cosmjs/tendermint-rpc": "^0.32.0-rc.1",

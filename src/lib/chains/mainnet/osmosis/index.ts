@@ -4,5 +4,6 @@ import { keplr } from './keplr'
 export const osmosis: ExplorerChainInfo = {
   name: 'osmosis',
   keplr,
-  evm: null
+  evm: null,
+  erc20Contracts: undefined
 }
