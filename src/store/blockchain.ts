@@ -63,7 +63,6 @@ export type ExplorerAsset = {
 
 export const useBlockchainStore = defineStore('blockchain', () => {
     const { init } = useCoinsStore()
-    init();
     const isConnecting = ref(false)
 
     const latestBlocks: Ref<Record<string, NewBlockEvent[]>> = ref({})
@@ -196,6 +195,7 @@ export const useBlockchainStore = defineStore('blockchain', () => {
             chainClients.value[chainInfo.name] = clients
         }
         isConnecting.value = false;
+        init();
         return Promise.resolve(true)
     }
 

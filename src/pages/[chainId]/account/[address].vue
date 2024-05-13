@@ -47,7 +47,13 @@
                                 </v-col>
                             </v-row>
                         </v-col>
-                        <v-col cols="12" v-for="coin in erc20Balances.filter(b => b.display.amount > 0)" :key="coin.display.denom">
+                        <v-col cols="12" v-if="isLoadingERC20Tokens[chainIdFromRoute]">
+                            <v-progress-linear
+                            color="cyan-lighten-2"
+                            indeterminate
+                            ></v-progress-linear>
+                        </v-col>
+                        <v-col v-else cols="12" v-for="coin in erc20Balances.filter(b => b.display.amount > 0)" :key="coin.display.denom">
                             <v-row no-gutters>
                                 <v-col cols="6">
                                     {{ coin.display.denom }}
@@ -87,7 +93,7 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref, computed, ref } from 'vue';
+import { Ref, computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import NotFound from '@/components/404.vue'
@@ -114,6 +120,7 @@ const route = useRoute()
 const { availableChains, chainClients } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 const { getCoin } = useCoinsStore();
+const { erc20Assets, isLoadingERC20Tokens } = storeToRefs(useCoinsStore());
 
 const address = computed(() => {
     const paramAddress = (route.params as {address: string}).address
@@ -142,29 +149,18 @@ const erc20Balances: Ref<{display: {amount: number, denom: string}}[]> = ref([])
 
 async function loadEVMBalances() {
     const viemClient = chainClients.value[chainIdFromRoute.value]?.viemClient
-    for(const erc20Contract of chainConfig.value?.erc20Contracts || []) {
+    erc20Balances.value = []
+    for(const erc20Asset of erc20Assets.value[chainIdFromRoute.value] || []) {
         const balance = await viemClient?.readContract({
-            address: erc20Contract as `0x${string}`,
+            address: erc20Asset.contract,
             abi: erc20Abi,
             functionName: 'balanceOf',
             args: [hexAddress.value],
         })
-        const tokenSymbol = await viemClient?.readContract({
-            address: erc20Contract as `0x${string}`,
-            abi: erc20Abi,
-            functionName: 'symbol',
-            args: [],
-        })
-        const tokenDecimals = await viemClient?.readContract({
-            address: erc20Contract as `0x${string}`,
-            abi: erc20Abi,
-            functionName: 'decimals',
-            args: [],
-        })
         erc20Balances.value.push({
             display: {
-                amount: Number(balance) / Math.pow(10, Number(tokenDecimals)),
-                denom: tokenSymbol || ''
+                amount: Number(balance) / Math.pow(10, Number(erc20Asset.decimals)),
+                denom: erc20Asset.symbol || ''
             }
         })
     }
@@ -240,7 +236,7 @@ async function loadCosmosBalances() {
                     }
                     displayBalances.value.push(displayCoin)
                 } else {
-
+                    // if still not found use denom and amount
                     const displayCoin = {
                         baseAmount: Number(balance.amount),
                         baseDenom: balance.denom,
@@ -251,17 +247,16 @@ async function loadCosmosBalances() {
                     }
                     displayBalances.value.push(displayCoin)
                 }
-
-                // if still not found use denom and amount
             }
         }
-        //console.log(getCoin(balance.denom))
     }
 }
 
-if(isEVMChain.value) {
-    loadEVMBalances()
-}
+watch(isLoadingERC20Tokens.value, () => {
+    if(isLoadingERC20Tokens.value[chainIdFromRoute.value] == false && isEVMChain.value) {
+        loadEVMBalances()
+    }
+})
 loadCosmosBalances()
 
 </script>
