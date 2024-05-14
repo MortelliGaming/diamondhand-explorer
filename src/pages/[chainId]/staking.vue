@@ -126,7 +126,7 @@ const tableValidators = computed(() => {
         rank: i + 1,
         description: [v?.description.identity, v?.description?.moniker, v?.description?.website, v?.operatorAddress],
         votingPower: numeral(((BigInt(v?.tokens || 0n)) / BigInt(Math.pow(10, currentChainStakingCurrency.value?.coinDecimals || 0)))).format("0,0") + ' ' + currentChainStakingCurrency.value?.coinDenom,
-        comission: numeral((Number((v?.commission.commissionRates.rate || 0n)) / Number(Math.pow(10, currentChainStakingCurrency.value?.coinDecimals || 0)) * 100)).format("0") + '%',
+        comission: numeral((Number((v?.commission.commissionRates.rate || 0n)) / Number(Math.pow(10, 18)) * 100)).format("0") + '%',
         action: [() => { console.log(v?.operatorAddress); /* showDelegateDialog(v?.operatorAddress || '') */}, (v?.jailed)]
     }
   })
