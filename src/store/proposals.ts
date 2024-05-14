@@ -25,13 +25,12 @@ export const useProposalsStore = defineStore('proposals', () => {
         }
         isLoadingProposals.value.push(chainName)
         // const { cosmosHelper } = storeToRefs(useBlockchainStore())
-        const allProposals = {
-            proposals: []
-        } as QueryProposalsResponse
-        
         try {
 
             if(chainClients.value[chainName]?.cosmosClients?.queryClient) {
+                if(!proposals.value[chainName]) {
+                    proposals.value[chainName] = []
+                }
                 const query: QueryProposalsRequest = {
                     proposalStatus: ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
                     voter: '',
@@ -42,13 +41,13 @@ export const useProposalsStore = defineStore('proposals', () => {
                     path: "/cosmos.gov.v1.Query/Proposals",
                     data: QueryProposalsRequest.encode(query).finish(),
                 })
-                const proposals = QueryProposalsResponse.decode(proposalsRaw.value)
-                
-                while (proposals.pagination && proposals.pagination.nextKey.length  > 0) {
+                const proposalsResponse = QueryProposalsResponse.decode(proposalsRaw.value)
+                proposals.value[chainName].push(...proposalsResponse.proposals)
+                while (proposalsResponse.pagination && proposalsResponse.pagination.nextKey.length  > 0) {
                     try {
                         // Encode the PageRequest to Uint8Array
                         const pageRequest = PageRequest.fromPartial({
-                            key: proposals.pagination.nextKey,
+                            key: proposalsResponse.pagination.nextKey,
                         });
                         query.pagination = pageRequest
                         const nextResultRaw = await chainClients.value[chainName].cosmosClients!.tendermintClient.abciQuery({
@@ -56,20 +55,21 @@ export const useProposalsStore = defineStore('proposals', () => {
                             data: QueryProposalsRequest.encode(query).finish(),
                         })
                         const nextResult = QueryProposalsResponse.decode(nextResultRaw.value)
+                        proposals.value[chainName].push(...nextResult.proposals)
                         //const nextResult = await chainClients.value[chainName].cosmosClients!.queryClient.extensions.gov.gov.proposals(proposalStatus as ProposalStatus, '', '', proposals.pagination.nextKey)
-                        proposals.proposals.push(...nextResult.proposals)
-                        proposals.pagination = nextResult.pagination
+                        // proposalsResponse.proposals.push(...nextResult.proposals)
+                        proposalsResponse.pagination = nextResult.pagination
                     } catch {
-                        proposals.pagination = undefined
-                        proposals.proposals = []
+                        proposalsResponse.pagination = undefined
+                        proposalsResponse.proposals = []
                     }
                 }
-                allProposals.proposals.push(...proposals.proposals)
+                // allProposals.proposals.push(...proposalsResponse.proposals)
             }
         } catch(err) { 
             console.error('error fetching proposal infos: ', err)
         }
-        proposals.value[chainName] = allProposals.proposals
+        // proposals.value[chainName] = allProposals.proposals
         // dont wait for the avatars
         const isLoadingIndex = isLoadingProposals.value.indexOf(chainName)
         isLoadingProposals.value.splice(isLoadingIndex, 1)

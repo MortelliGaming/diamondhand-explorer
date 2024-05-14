@@ -10,7 +10,7 @@ import { useBlockchainStore } from '@/store/blockchain';
 import { fromBech32, toBech32 } from '@cosmjs/encoding';
 import { DelegationResponse } from '@/lib/proto/cosmos/staking/v1beta1/staking';
 import { BondStatusString } from '@cosmjs/stargate/build/modules/staking/queries';
-import { QueryValidatorDelegationsResponse, QueryValidatorsResponse } from '@/lib/proto/cosmos/staking/v1beta1/query';
+import { QueryValidatorsResponse } from '@/lib/proto/cosmos/staking/v1beta1/query';
 import { protoRegistry } from '@/lib/protoRegistry';
 import { getAddressForPublicKey } from '@/lib/keyhelper';
 
@@ -81,36 +81,30 @@ export const useValidatorsStore = defineStore('validators', () => {
             return Promise.resolve(true)
         }
         isLoadingValidatorDelegations.value.push(chainName)
-
-        const allDelegations = {
-            delegationResponses: []
-        } as QueryValidatorDelegationsResponse
-
         if(chainClients.value[chainName]?.cosmosClients?.queryClient) {
+            if(!validatorDelegations.value[chainName]) {
+                validatorDelegations.value[chainName] = {}
+            }
+            if(!validatorDelegations.value[chainName][valoperAddress]) {
+                validatorDelegations.value[chainName][valoperAddress] = []
+            }
+            
             try {
                 const delegations = await chainClients.value[chainName].cosmosClients!.queryClient.extensions.staking.staking.validatorDelegations(valoperAddress)
+                validatorDelegations.value[chainName][valoperAddress].push(...delegations.delegationResponses)
                 while (delegations.pagination && delegations.pagination.nextKey.length > 0) {
                     try {
                         const nextResult = await chainClients.value[chainName].cosmosClients!.queryClient.extensions.staking.staking.validatorDelegations(valoperAddress, delegations.pagination.nextKey)
-                        delegations.delegationResponses.push(...nextResult.delegationResponses)
+                        validatorDelegations.value[chainName][valoperAddress].push(...nextResult.delegationResponses)
                         delegations.pagination = nextResult.pagination
                     } catch {
                         delegations.pagination = undefined
                     }
                 }
-                allDelegations.delegationResponses.push(...delegations.delegationResponses)
             } catch(err) { 
                 console.error('error fetching validator infos: ', err)
             }
         }
-        if(!validatorDelegations.value[chainName]) {
-            validatorDelegations.value[chainName] = {}
-        }
-        if(!validatorDelegations.value[chainName][valoperAddress]) {
-            validatorDelegations.value[chainName][valoperAddress] = []
-        }
-        validatorDelegations.value[chainName][valoperAddress] = allDelegations.delegationResponses
-        
         const isLoadingIndex = isLoadingValidatorDelegations.value.indexOf(chainName)
         isLoadingValidatorDelegations.value.splice(isLoadingIndex, 1)
         return Promise.resolve(true)

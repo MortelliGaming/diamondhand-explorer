@@ -75,7 +75,7 @@ const validator = computed(() => { return (basicValidator.value != undefined ? g
 if(!validator.value) {
     await loadCosmosValidators(chainIdFromRoute.value || '')
 }
-await loadValidatorDelegations(chainIdFromRoute.value || '', valoper.value)
+loadValidatorDelegations(chainIdFromRoute.value || '', valoper.value)
 
 </script>
 <style>
