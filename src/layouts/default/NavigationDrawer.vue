@@ -14,12 +14,12 @@
         </div>
       </v-list-item>
       <v-divider class="hidden-md-and-up" />
-      <v-list-item class="hidden-md-and-up">
+      <v-list-item>
         <div class="d-flex flex-row align-center">
           <search-component />
         </div>
       </v-list-item>
-      <v-divider class="hidden-md-and-up" />
+      <v-divider />
       <!--<v-list-group :value="'wallet'">
         <template v-slot:activator="{ props }">
           <v-list-item
