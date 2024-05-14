@@ -119,7 +119,7 @@ type DisplayBalance = {
 const route = useRoute()
 const { availableChains, chainClients } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
-const { getCoin } = useCoinsStore();
+const { findAssetInCosmosAssets, findAssetInDenomsMetadata, findAssetInChainconfig, explorerAssetFromBalance } = useCoinsStore();
 const { erc20Assets, isLoadingERC20Tokens } = storeToRefs(useCoinsStore());
 
 const address = computed(() => {
@@ -170,81 +170,22 @@ async function loadCosmosBalances() {
     const allBalances = await chainClients.value[chainIdFromRoute.value]?.cosmosClients?.queryClient.extensions.bank.bank.allBalances(address.value)
     displayBalances.value = []
     for(const balance of allBalances || []) {
-        const coinDef = getCoin(balance.denom)
-        const baseDenomDef = coinDef?.denom_units
-            .find(d => d.denom == balance.denom || d.aliases?.includes(balance.denom))
-        const displayDenomDef = coinDef?.denom_units
-            .find(d => d.denom == coinDef.display || d.aliases?.includes(coinDef.display))
-        if(coinDef && baseDenomDef && displayDenomDef) {
-            const baseAmount = Number(balance.amount) / Number(Math.pow(10, baseDenomDef.exponent))
-            const baseDenom = baseDenomDef.denom
-            const displayAmount = baseAmount  / Number(Math.pow(10, displayDenomDef.exponent))
-            const displayDenom = displayDenomDef.denom.toUpperCase()
-            const interChain: boolean = balance.denom.startsWith('ibc') || false
-            const displayCoin = {
-                baseAmount,
-                baseDenom,
-                displayAmount,
-                displayDenom,
-                interChain,
-                erc20: false
-            }
+        let displayCoin = findAssetInCosmosAssets(balance)
+        if(displayCoin) {
             displayBalances.value.push(displayCoin)
         } else {
-            // coin not found in chain registry. check other sources...
-            // first denom infos from chain 
-            const denomsMetadata = await chainClients.value[chainIdFromRoute.value]?.cosmosClients?.queryClient.extensions.bank.bank.denomsMetadata()
-            const denomDef = denomsMetadata?.find(d => d.denomUnits.map(du => du.denom).includes(balance.denom))
-            if(denomDef) {
-                const baseAmount = Number(balance.amount) / Number(Math.pow(10, denomDef.denomUnits.find(u => u.denom == denomDef.base)!.exponent))
-                const baseDenom = denomDef.base
-                const displayAmount = baseAmount  / Number(Math.pow(10, denomDef.denomUnits.find(u => u.denom == denomDef.display)!.exponent))
-                const displayDenom = denomDef.display.toUpperCase()
-                const interChain: boolean = balance.denom.startsWith('ibc') || false
-                const displayCoin = {
-                    baseAmount,
-                    baseDenom,
-                    displayAmount,
-                    displayDenom,
-                    interChain,
-                    erc20: false
-                }
+            displayCoin = findAssetInChainconfig(chainIdFromRoute.value, balance)
+            // if still not found
+            // denom info from chainconfig
+            if(displayCoin) {
                 displayBalances.value.push(displayCoin)
             } else {
-
-                // if still not found
-                // denom info from chainconfig
-                const denomsMetadata = availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr?.currencies
-                    .find(c => c.coinDenom == balance.denom || c.coinMinimalDenom == balance.denom)
-                
-                if(denomsMetadata) {
-                    const displayDecimals = denomsMetadata.coinMinimalDenom == balance.denom ? denomsMetadata.coinDecimals : 0
-                    const baseDecimals = denomsMetadata.coinMinimalDenom == balance.denom ? 0 : denomsMetadata.coinDecimals
-                    
-                    const baseAmount = Number(balance.amount) * Math.pow(10, baseDecimals)
-                    const baseDenom = denomsMetadata.coinMinimalDenom
-                    const displayAmount = baseAmount  / Number(Math.pow(10, displayDecimals))
-                    const displayDenom = denomsMetadata.coinDenom.toUpperCase()
-                    const interChain: boolean = balance.denom.startsWith('ibc') || false
-                    const displayCoin = {
-                        baseAmount,
-                        baseDenom,
-                        displayAmount,
-                        displayDenom,
-                        interChain,
-                        erc20: false
-                    }
+                displayCoin = await findAssetInDenomsMetadata(chainIdFromRoute.value, balance)
+                if(displayCoin) {
                     displayBalances.value.push(displayCoin)
                 } else {
                     // if still not found use denom and amount
-                    const displayCoin = {
-                        baseAmount: Number(balance.amount),
-                        baseDenom: balance.denom,
-                        displayAmount: Number(balance.amount),
-                        displayDenom: balance.denom,
-                        interChain: balance.denom.startsWith('ibc'),
-                        erc20: false
-                    }
+                    const displayCoin = explorerAssetFromBalance(balance);
                     displayBalances.value.push(displayCoin)
                 }
             }

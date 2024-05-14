@@ -6,6 +6,18 @@ import { type Ref, ref } from 'vue';
 import { useBlockchainStore } from './blockchain';
 import { erc20Abi } from 'viem';
 
+export type ExplorerAsset = {
+    name: string|undefined,
+    description: string|undefined,
+    coingeckoId: string|undefined,
+    baseAmount: number
+    baseDenom: string
+    displayAmount: number,
+    displayDenom: string,
+    interChain: boolean,
+    erc20: boolean,
+}
+
 
 const supportedChains = ['osmosis', 'cosmoshub', 'archway', 'nibiru', 'axelar', 'agoric', 'umee', 'cronos', 'evmos'];
 const ibcPairs = [
@@ -44,6 +56,106 @@ export const useCoinsStore = defineStore('coins', () => {
         return Object.values(generatedCosmosAssets.value)
             .flatMap(assets => assets.map(a => a.assets)).flatMap(a => a)
             .find(a => a.denom_units.map(d => d.denom).includes(denom) || a.denom_units.flatMap(d => d.aliases).includes(denom))
+    }
+
+    function findAssetInCosmosAssets(balance: { amount: string, denom: string}) {
+        // find the denom
+        const coinDef = getCoin(balance.denom)
+        const baseDenomDef = coinDef?.denom_units
+            .find(d => d.denom == balance.denom || d.aliases?.includes(balance.denom))
+        const displayDenomDef = coinDef?.denom_units
+            .find(d => d.denom == coinDef.display || d.aliases?.includes(coinDef.display))
+
+        if(coinDef && baseDenomDef && displayDenomDef) {
+            const baseAmount = Number(balance.amount) / Number(Math.pow(10, baseDenomDef.exponent))
+            const baseDenom = baseDenomDef.denom
+            const displayAmount = baseAmount  / Number(Math.pow(10, displayDenomDef.exponent))
+            const displayDenom = displayDenomDef.denom.toUpperCase()
+            const interChain: boolean = balance.denom.startsWith('ibc') || false
+            const displayCoin = {
+                name: coinDef.name,
+                description: coinDef.description,
+                coingeckoId: coinDef.coingecko_id,
+                baseAmount,
+                baseDenom,
+                displayAmount,
+                displayDenom,
+                interChain,
+                erc20: false,
+            } as ExplorerAsset
+            return displayCoin
+        }
+        return undefined;
+    }
+
+    function findAssetInChainconfig(chainName: string, balance: { amount: string, denom: string}) {
+        const { availableChains } = storeToRefs(useBlockchainStore())
+        const denomsMetadata = availableChains.value.find(c => c.name == chainName)?.keplr?.currencies
+            .find(c => c.coinDenom == balance.denom || c.coinMinimalDenom == balance.denom)
+        if(denomsMetadata) {
+            const displayDecimals = denomsMetadata.coinMinimalDenom == balance.denom ? denomsMetadata.coinDecimals : 0
+            const baseDecimals = denomsMetadata.coinMinimalDenom == balance.denom ? 0 : denomsMetadata.coinDecimals
+            
+            const baseAmount = Number(balance.amount) * Math.pow(10, baseDecimals)
+            const baseDenom = denomsMetadata.coinMinimalDenom
+            const displayAmount = baseAmount  / Number(Math.pow(10, displayDecimals))
+            const displayDenom = denomsMetadata.coinDenom.toUpperCase()
+            const interChain: boolean = balance.denom.startsWith('ibc') || false
+            const displayCoin = {
+                name: denomsMetadata.coinDenom,
+                description: undefined,
+                coingeckoId: denomsMetadata.coinGeckoId,
+                baseAmount,
+                baseDenom,
+                displayAmount,
+                displayDenom,
+                interChain,
+                erc20: false,
+            } as ExplorerAsset
+            return displayCoin
+        }
+        return undefined
+    }
+
+    function explorerAssetFromBalance(balance: { amount: string, denom: string}) {
+        const displayCoin = {
+            name: undefined,
+            description: undefined,
+            coingeckoId: undefined,
+            baseAmount: Number(balance.amount),
+            baseDenom: balance.denom,
+            displayAmount: Number(balance.amount),
+            displayDenom: balance.denom,
+            interChain: balance.denom.startsWith('ibc'),
+            erc20: false
+        } as ExplorerAsset
+        return displayCoin
+    }
+
+    async function findAssetInDenomsMetadata(chainName: string, balance: { amount: string, denom: string}) {
+        const { chainClients } = storeToRefs(useBlockchainStore())
+        const denomsMetadata = await chainClients.value[chainName]?.cosmosClients?.queryClient.extensions.bank.bank.denomsMetadata()
+        const denomDef = denomsMetadata?.find(d => d.denomUnits.map(du => du.denom).includes(balance.denom))
+        if(denomDef) {
+            const baseAmount = Number(balance.amount) / Number(Math.pow(10, denomDef.denomUnits.find(u => u.denom == denomDef.base)!.exponent))
+            const baseDenom = denomDef.base
+            const displayAmount = baseAmount  / Number(Math.pow(10, denomDef.denomUnits.find(u => u.denom == denomDef.display)!.exponent))
+            const displayDenom = denomDef.display.toUpperCase()
+            const interChain: boolean = balance.denom.startsWith('ibc') || false
+            const displayCoin = {
+                name: denomDef.name,
+                description: denomDef.description,
+                coingeckoId: undefined,
+                baseAmount,
+                baseDenom,
+                displayAmount,
+                displayDenom,
+                interChain,
+                erc20: false,
+            } as ExplorerAsset
+            return displayCoin
+        }
+        return undefined
     }
 
     async function init() {
@@ -86,6 +198,10 @@ export const useCoinsStore = defineStore('coins', () => {
         isLoadingERC20Tokens,
         erc20Assets,
         getCoin,
+        findAssetInCosmosAssets,
+        findAssetInDenomsMetadata,
+        findAssetInChainconfig,
+        explorerAssetFromBalance,
         init
     }
 })

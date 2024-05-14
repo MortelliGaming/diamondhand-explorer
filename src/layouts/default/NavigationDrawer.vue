@@ -14,7 +14,13 @@
         </div>
       </v-list-item>
       <v-divider class="hidden-md-and-up" />
-      <v-list-group :value="'wallet'">
+      <v-list-item class="hidden-md-and-up">
+        <div class="d-flex flex-row align-center">
+          <search-component />
+        </div>
+      </v-list-item>
+      <v-divider class="hidden-md-and-up" />
+      <!--<v-list-group :value="'wallet'">
         <template v-slot:activator="{ props }">
           <v-list-item
             v-bind="props"
@@ -44,6 +50,7 @@
         </v-list-item>
       </v-list-group>
       <v-divider />
+      -->
       <v-list-group :value="chainName" v-for="chainName in availableChainNames" :key="chainName">
         <template v-slot:activator="{ props }">
           <v-list-item
@@ -162,6 +169,7 @@ import { ref } from 'vue';
 import { useAppStore } from '@/store/app'
 import { useBlockchainStore } from '@/store/blockchain';
 import LanguageSelector from '@/components/LanguageSelector.vue';
+import SearchComponent from './SearchComponent.vue';
 
 const router = useRouter();
 
