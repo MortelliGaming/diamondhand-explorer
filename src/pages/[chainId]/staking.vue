@@ -94,10 +94,10 @@
         </v-data-table>
     </v-col>
   </v-row>
+  <dh-tx-dialog
+    ref="transactionDialog"
+    :blockchain-config="chainConfig || undefined" />
 </chain-content>
-<dh-tx-dialog
-  ref="transactionDialog"
-  :blockchain-config="chainConfig || undefined" />
 </template>
 
 <script lang="ts" setup>
@@ -113,12 +113,11 @@ import { useAppStore } from '@/store/app'
 import { useValidatorsStore } from '@/store/validators'
 import { useBlockchainStore } from '@/store/blockchain'
 
-import { DhTxDialog, TxDialogParams } from 'diamondhand-widget'
+import { DhTxDialog, type TxDialogParams } from 'diamondhand-widget'
 
 const chainConfig = computed(() => 
   availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr
 )
-const transactionDialog = ref<InstanceType<typeof DhTxDialog>>();
 
 const { t } = useI18n()
 const { chainIdFromRoute } = storeToRefs(useAppStore())
@@ -130,6 +129,8 @@ const { keybaseAvatars, validators } = storeToRefs(useValidatorsStore())
 
 const activeTab = ref('BOND_STATUS_BONDED')
 
+const transactionDialog = ref<InstanceType<typeof DhTxDialog>>();
+  
 const tableValidators = computed(() => {
   return validatorsToShow.value?.toSorted((a,b) => Number(BigInt(b?.tokens || 0n) - BigInt(a?.tokens || 0n)))
     .map(v => getValidatorInfo(chainIdFromRoute.value || '',v))
@@ -139,7 +140,7 @@ const tableValidators = computed(() => {
         description: [v?.description.identity, v?.description?.moniker, v?.description?.website, v?.operatorAddress],
         votingPower: numeral(((BigInt(v?.tokens || 0n)) / BigInt(Math.pow(10, currentChainStakingCurrency.value?.coinDecimals || 0)))).format("0,0") + ' ' + currentChainStakingCurrency.value?.coinDenom,
         comission: numeral((Number((v?.commission.commissionRates.rate || 0n)) / Number(Math.pow(10, 18)) * 100)).format("0") + '%',
-        action: [() => { showDelegatedialog(v?.operatorAddress || '') }, (v?.jailed)]
+        action: [() => showDelegatedialog(v?.operatorAddress || ''), (v?.jailed)]
     }
   })
 })
