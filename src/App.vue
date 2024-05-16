@@ -10,7 +10,6 @@ import { storeToRefs } from 'pinia';
 
 const { mdAndUp } = useDisplay();
 const { isNavigationDrawerOpen } = storeToRefs(useAppStore())
-
 onMounted(() => {
   if(mdAndUp.value == true) {
     isNavigationDrawerOpen.value = true;

@@ -95,6 +95,9 @@
     </v-col>
   </v-row>
 </chain-content>
+<dh-tx-dialog
+  ref="transactionDialog"
+  :blockchain-config="chainConfig" />
 </template>
 
 <script lang="ts" setup>
@@ -110,9 +113,22 @@ import { useAppStore } from '@/store/app'
 import { useValidatorsStore } from '@/store/validators'
 import { useBlockchainStore } from '@/store/blockchain'
 
+import { DhTxDialog, TxDialogParams } from 'diamondhand-widget'
+
+const chainConfig = computed(() => 
+  availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr
+)
+const transactionDialog = ref<InstanceType<typeof DhTxDialog>>();
+
+setTimeout(() => {
+  transactionDialog.value?.show('delegate')
+}, 1000)
+
 const { t } = useI18n()
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 const { availableChains } = storeToRefs(useBlockchainStore())
+
+
 const { getValidatorInfo, loadCosmosValidators } = useValidatorsStore()
 const { keybaseAvatars, validators } = storeToRefs(useValidatorsStore())
 
@@ -127,7 +143,7 @@ const tableValidators = computed(() => {
         description: [v?.description.identity, v?.description?.moniker, v?.description?.website, v?.operatorAddress],
         votingPower: numeral(((BigInt(v?.tokens || 0n)) / BigInt(Math.pow(10, currentChainStakingCurrency.value?.coinDecimals || 0)))).format("0,0") + ' ' + currentChainStakingCurrency.value?.coinDenom,
         comission: numeral((Number((v?.commission.commissionRates.rate || 0n)) / Number(Math.pow(10, 18)) * 100)).format("0") + '%',
-        action: [() => { console.log(v?.operatorAddress); /* showDelegateDialog(v?.operatorAddress || '') */}, (v?.jailed)]
+        action: [() => { showDelegatedialog(v?.operatorAddress || '') }, (v?.jailed)]
     }
   })
 })
@@ -142,12 +158,17 @@ const currentChainStakingCurrency = computed(() => {
 // make sure table isnt too big when data is there before mount
 const isTableVisible = ref(false)
 
+function showDelegatedialog(validatorAddress: string) {
+  transactionDialog.value?.show('delegate', {
+    validator: validatorAddress,
+  } as TxDialogParams)
+}
 
 isTableVisible.value = true;
 await loadCosmosValidators(chainIdFromRoute.value || '')
 
 onUnmounted(() => {
-  isTableVisible.value = false;
+  // isTableVisible.value = false;
 })
 
 </script>

@@ -54,7 +54,7 @@ export const useCoinsStore = defineStore('coins', () => {
 
     function getCoin(denom: string) {
         return Object.values(generatedCosmosAssets.value)
-            .flatMap(assets => assets.map(a => a.assets)).flatMap(a => a)
+            .flatMap(assets => assets?.map(a => a.assets)).flatMap(a => a)
             .find(a => a.denom_units.map(d => d.denom).includes(denom) || a.denom_units.flatMap(d => d.aliases).includes(denom))
     }
 

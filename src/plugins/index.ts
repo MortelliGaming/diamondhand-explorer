@@ -13,10 +13,9 @@ import router from '../router'
 import i18n from './i18n'
 
 // Types
-import type { App } from 'vue'
+import type { App, Plugin } from 'vue'
 
 const pinia = createPinia();
-
 export function registerPlugins (app: App) {
   app
     .use(VueApexCharts)
@@ -24,5 +23,5 @@ export function registerPlugins (app: App) {
     .use(router)
     .use(pinia)
     .use(i18n)
-    .use(DiamondhandWidgetPlugin)
+    .use(DiamondhandWidgetPlugin as Plugin)
 }

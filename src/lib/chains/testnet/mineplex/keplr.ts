@@ -2,10 +2,10 @@
 import type { ChainInfo } from '@keplr-wallet/types'
 
 export const keplr: ChainInfo = {
-  "rpc": "https://crossfitestnetrpc.diamondhand.capital",
-  "rest": "https://crossfitestnetapi.diamondhand.capital",
-  "chainId": "crossfi-evm-testnet-1",
-  "chainName": "CrossFi Testnet",
+  "rpc": "https://rpc-mineplex.diamondhand.capital",
+  "rest": "https://api-mineplex.diamondhand.capital",
+  "chainId": "mineplex-mainnet-1",
+  "chainName": "Mineplex Mainnet",
   "chainSymbolImageUrl": "https://media.licdn.com/dms/image/D4E0BAQEs0PUwKhAw9g/company-logo_200_200/0/1699597847512/crossfichain_logo?e=2147483647&v=beta&t=36793GMlIOqcltdR6gIdZhOpT8OpANC52XwQ4gewqmg",
   "nodeProvider": {
     "name": "CrossFi Foundation",
@@ -18,7 +18,7 @@ export const keplr: ChainInfo = {
     "coinDecimals": 18
   },
   "bip44": {
-    "coinType": 60
+    "coinType": 118
   },
   "bech32Config": {
     "bech32PrefixAccAddr": "mx",
@@ -57,16 +57,6 @@ export const keplr: ChainInfo = {
   ],
   "feeCurrencies": [
     {
-      "coinDenom": "XFI",
-      "coinMinimalDenom": "xfi",
-      "coinDecimals": 18,
-      "gasPriceStep": {
-        "low": 10000000000,
-        "average": 15000000000,
-        "high": 20000000000
-      }
-    },
-    {
       "coinDenom": "MPX",
       "coinMinimalDenom": "mpx",
       "coinDecimals": 18,
@@ -77,5 +67,5 @@ export const keplr: ChainInfo = {
       }
     }
   ],
-  "features": ["eth-address-gen", "eth-key-sign", "ibc-transfer", "ibc-go", "cosmwasm"]
+  "features": ["ibc-transfer", "ibc-go", "cosmwasm"]
 }
