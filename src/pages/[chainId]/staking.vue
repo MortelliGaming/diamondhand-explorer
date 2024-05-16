@@ -97,7 +97,7 @@
 </chain-content>
 <dh-tx-dialog
   ref="transactionDialog"
-  :blockchain-config="chainConfig" />
+  :blockchain-config="chainConfig || undefined" />
 </template>
 
 <script lang="ts" setup>
