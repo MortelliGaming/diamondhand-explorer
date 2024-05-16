@@ -120,10 +120,6 @@ const chainConfig = computed(() =>
 )
 const transactionDialog = ref<InstanceType<typeof DhTxDialog>>();
 
-setTimeout(() => {
-  transactionDialog.value?.show('delegate')
-}, 1000)
-
 const { t } = useI18n()
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 const { availableChains } = storeToRefs(useBlockchainStore())
