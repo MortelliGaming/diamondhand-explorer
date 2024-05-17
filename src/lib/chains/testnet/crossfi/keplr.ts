@@ -77,5 +77,9 @@ export const keplr: ChainInfo = {
       }
     }
   ],
-  "features": ["eth-address-gen", "eth-key-sign", "ibc-transfer", "ibc-go", "cosmwasm"]
+  "features": ["eth-address-gen", "eth-key-sign", "ibc-transfer", "ibc-go", "cosmwasm"],
+  "evm": {
+    "rpc": "https://evmrpc-crossfi-testnet.diamondhand.capital",
+    "chainId": 4157,
+  }
 }
