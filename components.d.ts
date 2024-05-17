@@ -36,7 +36,6 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     TimeFormatter: typeof import('./src/components/TimeFormatter.vue')['default']
     TransactionHeaderInfoSheet: typeof import('./src/components/tx/TransactionHeaderInfoSheet.vue')['default']
-    TxDialog: typeof import('./src/components/TxDialog.vue')['default']
     UnkownMessage: typeof import('./src/components/messages/cosmos/UnkownMessage.vue')['default']
     ValidatorAddressesSheet: typeof import('./src/components/validator/ValidatorAddressesSheet.vue')['default']
     ValidatorBondingSheet: typeof import('./src/components/validator/ValidatorBondingSheet.vue')['default']

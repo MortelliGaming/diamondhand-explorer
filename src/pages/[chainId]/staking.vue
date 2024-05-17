@@ -113,8 +113,8 @@ import { useAppStore } from '@/store/app'
 import { useValidatorsStore } from '@/store/validators'
 import { useBlockchainStore } from '@/store/blockchain'
 
-import { DhTxDialog, type TxDialogParams } from 'diamondhand-widget'
-import { WalletName } from 'diamondhand-widget/src/lib/wallet/Wallet';
+import { DhTxDialog, WalletName, type TxDialogParams } from 'diamondhand-widget'
+//import { WalletName } from 'diamondhand-widget';
 
 const chainConfig = computed(() => 
   availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr
