@@ -20,7 +20,7 @@
     "axios": "^1.6.8",
     "buffer": "^6.0.3",
     "core-js": "^3.34.0",
-    "diamondhand-widget": "^0.0.13",
+    "diamondhand-widget": "^0.0.15",
     "ethers": "^6.12.1",
     "human-readable-numbers": "^0.9.5",
     "moment": "^2.30.1",

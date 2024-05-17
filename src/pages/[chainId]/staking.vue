@@ -114,6 +114,7 @@ import { useValidatorsStore } from '@/store/validators'
 import { useBlockchainStore } from '@/store/blockchain'
 
 import { DhTxDialog, type TxDialogParams } from 'diamondhand-widget'
+import { WalletName } from 'diamondhand-widget/src/lib/wallet/Wallet';
 
 const chainConfig = computed(() => 
   availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr
@@ -130,7 +131,7 @@ const { keybaseAvatars, validators } = storeToRefs(useValidatorsStore())
 const activeTab = ref('BOND_STATUS_BONDED')
 
 const transactionDialog = ref<InstanceType<typeof DhTxDialog>>();
-  
+
 const tableValidators = computed(() => {
   return validatorsToShow.value?.toSorted((a,b) => Number(BigInt(b?.tokens || 0n) - BigInt(a?.tokens || 0n)))
     .map(v => getValidatorInfo(chainIdFromRoute.value || '',v))
@@ -156,7 +157,7 @@ const currentChainStakingCurrency = computed(() => {
 const isTableVisible = ref(false)
 
 function showDelegatedialog(validatorAddress: string) {
-  transactionDialog.value?.show('delegate', {
+  transactionDialog.value?.show('delegate', WalletName.Keplr, {
     validator: validatorAddress,
   } as TxDialogParams)
 }
