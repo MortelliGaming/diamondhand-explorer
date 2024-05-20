@@ -1,6 +1,6 @@
 <template>
     <base-sheet :title="t('proposal.votes')">
-        <v-row v-for="vote in votes" :key="vote.voter" no-gutters>
+        <v-row v-for="vote in paginatedVotes" :key="vote.voter" no-gutters>
             <v-col cols="12">
                 <v-row no-gutters>
                     <v-col cols="9">
@@ -25,6 +25,15 @@
             </v-col>
             <v-divider />
         </v-row>
+        <v-row no-gutters v-if="votes.length > 0">
+            <v-col>
+                <v-pagination
+                    v-model="page"
+                    :length="numPages"
+                    rounded="circle"
+                ></v-pagination>
+            </v-col>
+        </v-row>
         <v-row v-if="votes.length == 0">
             <v-col>
                 {{ t('proposal.noVotesFound') }}
@@ -34,7 +43,7 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref, ref, type PropType } from 'vue';
+import { Ref, computed, ref, type PropType } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseSheet from '../BaseSheet.vue';
@@ -63,9 +72,34 @@ const { getValidatorInfo } = useValidatorsStore()
 const { chainClients } = storeToRefs(useBlockchainStore())
 const isLoadingVotes = ref(false)
 const votes: Ref<Vote[]> = ref([])
-const gov = chainClients.value[props.chainName]?.cosmosClients?.queryClient.extensions.gov.gov;
+
+const page=ref(1)
+const numVotesPerPage = ref(10)
+
+const numPages = computed(() => {
+  const numPagesDecimal = votes.value?.length / numVotesPerPage.value;
+  return Math.ceil(numPagesDecimal);
+})
+
+function getElements<T>(arr: T[], x: number, y: number): T[] {
+    const maxIndex = arr.length - 1;
+    if (y + x > maxIndex) {
+        return arr.slice(y);
+    } else {
+        return arr.slice(y, y + x);
+    }
+}
+
+const paginatedVotes = computed(() => {
+    if(votes.value) {
+        return getElements(votes.value, numVotesPerPage.value, (page.value - 1) * numVotesPerPage.value)
+    } else {
+        return []
+    }
+})
 
 isLoadingVotes.value = true;
+const gov = chainClients.value[props.chainName]?.cosmosClients?.queryClient.extensions.gov.gov;
 gov?.votes(props.proposal.id.toString()).then(async (res) => {
     votes.value = res?.votes || []
     let nextPage = res?.pagination?.nextKey

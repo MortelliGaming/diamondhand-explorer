@@ -23,6 +23,8 @@ import { FeegrantExtension, SlashingExtension, setupAuthExtension, setupBankExte
 import { AuthzExtension, setupAuthzExtension } from '@cosmjs/stargate/build/modules/authz/queries';
 import { PublicClient, createPublicClient, http } from 'viem';
 
+import { useValidatorsStore } from './validators';
+
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
 };
@@ -193,6 +195,9 @@ export const useBlockchainStore = defineStore('blockchain', () => {
                 }
             }
             chainClients.value[chainInfo.name] = clients
+
+            const { loadCosmosValidators } = useValidatorsStore()
+            loadCosmosValidators(chainInfo.name)
         }
         isConnecting.value = false;
         init();
