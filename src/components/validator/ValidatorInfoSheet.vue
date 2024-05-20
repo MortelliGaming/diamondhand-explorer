@@ -36,21 +36,32 @@
             </div>
         </div>
         <div>
-            <v-btn density="compact" color="blue-grey-lighten-1">{{ t('validator.delegate') }}</v-btn>
+            <v-btn
+                @click="showDelegatedialog(props.validator?.operatorAddress || '')"
+                density="compact" color="blue-grey-lighten-1">{{ t('validator.delegate') }}</v-btn>
         </div>
     </base-sheet>
+    <dh-tx-dialog
+        ref="transactionDialog"
+        :blockchain-config="chainConfig || undefined" />
 </template>
 
 <script lang="ts" setup>
-import { computed, type PropType } from 'vue';
+import { computed, ref, type PropType } from 'vue';
 import { storeToRefs } from 'pinia';
 import { ExtendedValidator, useValidatorsStore } from '@/store/validators';
 import { useI18n } from 'vue-i18n';
+import { DhTxDialog, TxDialogParams, WalletName } from 'diamondhand-widget';
 
 import BaseSheet from '../BaseSheet.vue';
+import { useAppStore } from '@/store/app';
+import { useBlockchainStore } from '@/store/blockchain';
 
 const { t } = useI18n();
 const { keybaseAvatars } = storeToRefs(useValidatorsStore())
+
+const { chainIdFromRoute } = storeToRefs(useAppStore())
+const { availableChains } = storeToRefs(useBlockchainStore())
 
 const props = defineProps({
     validator: {
@@ -58,9 +69,22 @@ const props = defineProps({
         regquired: true,
     },
 })
+
+const chainConfig = computed(() => 
+  availableChains.value.find(c => c.name == chainIdFromRoute.value)?.keplr
+)
+
 const bondStatusTranslation = computed(() => {
     return t('validator.bondStatus.' + props.validator?.bondStatus)
 })
+
+const transactionDialog = ref<InstanceType<typeof DhTxDialog>>();
+
+function showDelegatedialog(validatorAddress: string) {
+  transactionDialog.value?.show('delegate', WalletName.Keplr, {
+    validator: validatorAddress,
+  } as TxDialogParams)
+}
 
 </script>
 <style>
