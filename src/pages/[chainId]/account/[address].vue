@@ -87,7 +87,7 @@
                                     <b>{{ $t('validator.rewards') }}</b>
                                 </v-col>
                             </v-row>
-                            <v-row no-gutters v-for="delegation in delegations" :key="delegation.delegation.validatorAddress">
+                            <v-row no-gutters v-for="(delegation, i) in delegations" :key="delegation.delegation.validatorAddress + i">
                                 <v-col
                                     cols="4"
                                     class="d-flex align-center">
