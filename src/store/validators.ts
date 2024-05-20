@@ -85,9 +85,7 @@ export const useValidatorsStore = defineStore('validators', () => {
             if(!validatorDelegations.value[chainName]) {
                 validatorDelegations.value[chainName] = {}
             }
-            if(!validatorDelegations.value[chainName][valoperAddress]) {
-                validatorDelegations.value[chainName][valoperAddress] = []
-            }
+            validatorDelegations.value[chainName][valoperAddress] = []
             
             try {
                 const delegations = await chainClients.value[chainName].cosmosClients!.queryClient.extensions.staking.staking.validatorDelegations(valoperAddress)

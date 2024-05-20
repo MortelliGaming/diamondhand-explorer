@@ -102,7 +102,7 @@
                                     <asset :balance="{
                                         amount: addPeriodBeforeEnd(reward.amount),
                                         denom: reward.denom
-                                    }" v-for="reward in rewards.find(r => r.validatorAddress == delegation.delegation.validatorAddress)?.reward" :key="delegation.delegation.validatorAddress + reward.denom"></asset>
+                                    }" v-for="reward in rewards.find(r => r.validatorAddress == delegation.delegation.validatorAddress)?.reward" :key="delegation.delegation.validatorAddress + reward.denom + 'reward'"></asset>
                                 </v-col>
                                 <v-divider />
                             </v-row>
