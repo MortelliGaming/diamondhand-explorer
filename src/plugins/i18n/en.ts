@@ -34,6 +34,7 @@ export const en = {
     validator: {
         rank: 'Rank',
         description: 'Description',
+        delegation: 'Delegation',
         votingPower: 'Voting Power',
         action: 'Action',
         status: 'Status',

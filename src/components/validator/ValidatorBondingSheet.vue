@@ -37,7 +37,7 @@
             <v-row no-gutters class="d-flex flex-grow-1" v-for="coin in commissionAssets" :key="coin.displayDenom">
                 <v-col offset="1">
                     {{ coin.displayAmount }}
-                    <b class="pl-1">{{ coin.displayDenom }}</b>
+                    <b class="pl-1 break-word">{{ coin.displayDenom.includes('/') ? coin.displayDenom.split('/')[coin.displayDenom.split('/').length -1] : coin.displayDenom }}</b>
                 </v-col>
             </v-row>
         </div>
@@ -53,7 +53,7 @@
             <v-row no-gutters class="d-flex flex-grow-1" v-for="coin in rewardAssets" :key="coin.displayDenom">
                 <v-col offset="1">
                     {{ coin.displayAmount }}
-                    <b class="pl-1">{{ coin.displayDenom }}</b>
+                    <b class="pl-1 break-word">{{ coin.displayDenom.includes('/') ? coin.displayDenom.split('/')[coin.displayDenom.split('/').length -1] : coin.displayDenom }}</b>
                 </v-col>
             </v-row>
         </div>

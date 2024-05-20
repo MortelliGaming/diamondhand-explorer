@@ -19,7 +19,7 @@ export type ExplorerAsset = {
 }
 
 
-const supportedChains = ['osmosis', 'cosmoshub', 'archway', 'nibiru', 'axelar', 'agoric', 'umee', 'cronos', 'evmos'];
+const supportedChains = ['osmosis', 'cosmoshub', 'archway', 'nibiru', 'axelar', 'agoric', 'umee', 'cronos', 'evmos', 'injective'];
 const ibcPairs = [
     ['archway', 'osmosis'],
     ['archway', 'axelar'],
@@ -31,11 +31,18 @@ const ibcPairs = [
     ['cosmoshub', 'umee'],
     ['cosmoshub', 'agoric'],
     ['cosmoshub', 'evmos'],
+    ['cosmoshub', 'injective'],
     ['osmosis', 'nibiru'],
     ['osmosis', 'axelar'],
     ['osmosis', 'agoric'],
     ['osmosis', 'umee'],
     ['osmosis', 'evmos'],
+    ['dydx', 'osmosis'],
+    ['dydx', 'evmos'],
+    ['dydx', 'umee'],
+    ['injective', 'axelar'],
+    ['injective', 'umee'],
+    ['injective', 'nibiru'],
 ];
 
 export const useCoinsStore = defineStore('coins', () => {

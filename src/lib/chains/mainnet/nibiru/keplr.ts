@@ -6,7 +6,7 @@ export const keplr: ChainInfo = {
   "chainName": "Nibiru",
   "chainSymbolImageUrl": "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/cataclysm/chain.png",
   "rpc": "https://nibiru.rpc.kjnodes.com",
-  "rest": "https://lcd.nibiru.fi",
+  "rest": "https://nibiru.api.kjnodes.com",
   "nodeProvider": {
     "name": "Nibiru Team",
     "email": "dev@nibiru.org",
