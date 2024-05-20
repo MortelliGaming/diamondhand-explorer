@@ -72,7 +72,7 @@ const numPages = computed(() => {
 
 const allDelegations = computed(() => {
     if(validatorDelegations.value[chainIdFromRoute.value || '']) {
-        return (validatorDelegations.value[chainIdFromRoute.value || ''][props.validator?.operatorAddress || ''])?.toSorted((a,b) => Number(BigInt(b.balance.amount) - BigInt(a.balance.amount))) || []
+        return (validatorDelegations.value[chainIdFromRoute.value || ''][props.validator?.operatorAddress || ''])?.toSorted((a,b) => Number(b.balance.amount) - Number(a.balance.amount)) || []
     } else {
         return []
     }
@@ -85,7 +85,6 @@ const delegationsToShow = computed(() => {
         return []
     }
 })
-
 
 function getElements<T>(arr: T[], x: number, y: number): T[] {
     const maxIndex = arr.length - 1;

@@ -73,17 +73,39 @@
                     </v-row>
                 </base-sheet>
                 <div class="pt-2"></div>
-                <base-sheet :title="$t('account.transactions')">
+                <base-sheet :title="$t('account.delegations')">
                     <v-row no-gutters>
                         <v-col cols="12">
+                            <v-row no-gutters v-for="delegation in displayDelegations" :key="delegation.validatorAddress">
+                                <v-col
+                                    cols="4"
+                                    class="d-flex align-center"
+                                    v-if="validators[chainIdFromRoute]?.find(v => v.operatorAddress == delegation.validatorAddress)">
+                                    {{ getValidatorInfo(chainIdFromRoute, validators[chainIdFromRoute].find(v => v.operatorAddress == delegation.validatorAddress)!)?.description.moniker }}
+                                </v-col>
+                                <v-col
+                                    cols="3"
+                                    class="d-flex align-center pr-1">
+                                    {{ numeral(delegation.delegation?.balance.displayAmount).format() }} {{ delegation.delegation?.balance.displayDenom }}
+                                </v-col>
+                                <v-col cols="5">
+                                    <v-row no-gutters v-for="reward in delegation.rewards" :key="delegation.validatorAddress + reward.baseDenom">
+                                        <v-col cols="8" class="text-right">
+                                            {{ numeral(reward.displayAmount).format('0.000000') }}
+                                        </v-col>
+                                        <v-col cols="4" class="text-right justify-end"> {{ reward.displayDenom }}
+                                        </v-col>
+                                    </v-row>
+                                </v-col>
+                                <v-divider />
+                            </v-row>
                         </v-col>
                     </v-row>
                 </base-sheet>
                 <div class="pt-2"></div>
-                <base-sheet :title="$t('account.delegations')">
+                <base-sheet :title="$t('account.transactions')">
                     <v-row no-gutters>
                         <v-col cols="12">
-                            
                         </v-col>
                     </v-row>
                 </base-sheet>
@@ -101,11 +123,14 @@ import BaseSheet from '@/components/BaseSheet.vue';
 import CopyBox from '@/components/CopyBox.vue';
 
 import { useBlockchainStore } from '@/store/blockchain';
+import { useValidatorsStore } from '@/store/validators';
 import { useAppStore } from '@/store/app';
 import { useCoinsStore } from '@/store/coins';
 import { storeToRefs } from 'pinia';
 import { fromBech32, toHex, toBech32, fromHex } from '@cosmjs/encoding';
 import { erc20Abi } from 'viem';
+import { Delegation } from '@/lib/proto/cosmos/staking/v1beta1/staking';
+import numeral from 'numeral';
 
 type DisplayBalance = {
     baseAmount: number
@@ -116,10 +141,18 @@ type DisplayBalance = {
     erc20: boolean
 }
 
+export type DisplayDelegation = {
+    validatorAddress: string,
+    delegation: {delegation: Delegation, balance: DisplayBalance }|undefined,
+    rewards: DisplayBalance[]
+}
+
 const route = useRoute()
 const { availableChains, chainClients } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 const { findAsset } = useCoinsStore();
+const { getValidatorInfo } = useValidatorsStore()
+const { keybaseAvatars, validators } = storeToRefs(useValidatorsStore())
 const { erc20Assets, isLoadingERC20Tokens } = storeToRefs(useCoinsStore());
 
 const address = computed(() => {
@@ -144,8 +177,16 @@ const hexAddress = computed(() => {
 })
 
 const displayBalances: Ref<DisplayBalance[]> = ref([])
+const displayDelegations: Ref<DisplayDelegation[]> = ref([])
 
 const erc20Balances: Ref<{display: {amount: number, denom: string}}[]> = ref([])
+
+function addPeriodBeforeEnd(str: string): string {
+  const lastEighteenChars = str.slice(-18); // Get the last 18 characters
+  const restOfString = str.slice(0, -18); // Get the rest of the string
+
+  return `${restOfString}.${lastEighteenChars}`;
+}
 
 async function loadEVMBalances() {
     const viemClient = chainClients.value[chainIdFromRoute.value]?.viemClient
@@ -176,6 +217,36 @@ async function loadCosmosBalances() {
     }
 }
 
+async function loadDelegations() {
+    const delegations = await chainClients.value[chainIdFromRoute.value]?.cosmosClients?.queryClient.extensions.staking.staking.delegatorDelegations(address.value)
+    displayDelegations.value = []
+    for(const validatorAddress of delegations?.delegationResponses.flatMap(r => r.delegation.validatorAddress) || []) {
+        const validatorDelegation = await chainClients.value[chainIdFromRoute.value]?.cosmosClients?.queryClient.extensions.distribution.distribution.delegationRewards(address.value, validatorAddress)
+        
+        const coins = []
+        let delegationsRes: {delegation: Delegation, balance: DisplayBalance }| undefined = undefined;
+        const delegationResponse = delegations?.delegationResponses.find(d => d.delegation.validatorAddress == validatorAddress)
+        if(delegationResponse) {
+            const displayCoin = await findAsset(delegationResponse?.balance, chainIdFromRoute.value)
+            delegationsRes = {
+                delegation: delegationResponse?.delegation,
+                balance: displayCoin
+            }
+        }
+
+        for(const balance of validatorDelegation?.rewards || []) {
+            balance.amount = addPeriodBeforeEnd(balance.amount);
+            const displayCoin = await findAsset(balance, chainIdFromRoute.value)
+            coins.push(displayCoin)
+        }
+        displayDelegations.value.push({
+            validatorAddress,
+            delegation: delegationsRes,
+            rewards: coins,
+        })
+    }
+}
+
 watch(isLoadingERC20Tokens.value, () => {
     if(isLoadingERC20Tokens.value[chainIdFromRoute.value] == false && isEVMChain.value) {
         loadEVMBalances()
@@ -184,7 +255,8 @@ watch(isLoadingERC20Tokens.value, () => {
 if(isLoadingERC20Tokens.value[chainIdFromRoute.value] == false && isEVMChain.value) {
     loadEVMBalances()
 }
-loadCosmosBalances()
+loadCosmosBalances();
+loadDelegations();
 
 </script>
 <style scoped>

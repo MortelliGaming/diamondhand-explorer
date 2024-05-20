@@ -94,8 +94,8 @@ const commissionAssets = ref<ExplorerAsset[]>([])
 const rewardAssets = ref<ExplorerAsset[]>([])
 
 function addPeriodBeforeEnd(str: string): string {
-  const lastEighteenChars = str.slice((-1) *(currentChainStakingCurrency.value?.coinDecimals || 0)); // Get the last 18 characters
-  const restOfString = str.slice(0, (-1) * (currentChainStakingCurrency.value?.coinDecimals || 0)); // Get the rest of the string
+  const lastEighteenChars = str.slice(-18); // Get the last 18 characters
+  const restOfString = str.slice(0, -18); // Get the rest of the string
 
   return `${restOfString}.${lastEighteenChars}`;
 }
