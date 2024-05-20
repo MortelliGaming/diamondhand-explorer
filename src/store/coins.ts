@@ -88,19 +88,20 @@ export const useCoinsStore = defineStore('coins', () => {
         return undefined;
     }
 
-    function findAssetInChainconfig(chainName: string, balance: { amount: string, denom: string}) {
+    function findAssetInChainconfig(balance: { amount: string, denom: string}) {
         const { availableChains } = storeToRefs(useBlockchainStore())
-        const denomsMetadata = availableChains.value.find(c => c.name == chainName)?.keplr?.currencies
-            .find(c => c.coinDenom == balance.denom || c.coinMinimalDenom == balance.denom)
+        const denomsMetadata = availableChains.value.flatMap(c => c.keplr?.currencies).filter(c => c != undefined)
+            .find(c => c!.coinDenom == balance.denom || c!.coinMinimalDenom == balance.denom)
         if(denomsMetadata) {
             const displayDecimals = denomsMetadata.coinMinimalDenom == balance.denom ? denomsMetadata.coinDecimals : 0
             const baseDecimals = denomsMetadata.coinMinimalDenom == balance.denom ? 0 : denomsMetadata.coinDecimals
             
-            const baseAmount = Number(balance.amount) * Math.pow(10, baseDecimals)
+            const baseAmount = parseFloat(balance.amount) * Math.pow(10, baseDecimals)
             const baseDenom = denomsMetadata.coinMinimalDenom
             const displayAmount = baseAmount  / Number(Math.pow(10, displayDecimals))
             const displayDenom = denomsMetadata.coinDenom.toUpperCase()
             const interChain: boolean = balance.denom.startsWith('ibc') || false
+
             const displayCoin = {
                 name: denomsMetadata.coinDenom,
                 description: undefined,
@@ -158,6 +159,31 @@ export const useCoinsStore = defineStore('coins', () => {
         return undefined
     }
 
+    async function findAsset(balance: {amount: string, denom: string}, chainName: string) {
+        let result: ExplorerAsset|undefined = undefined;
+        let displayCoin = findAssetInCosmosAssets(balance)
+        if(displayCoin) {
+            result = displayCoin
+        } else {
+            displayCoin = findAssetInChainconfig(balance)
+            // if still not found
+            // denom info from chainconfig
+            if(displayCoin) {
+                result = displayCoin
+            } else {
+                displayCoin = await findAssetInDenomsMetadata(chainName, balance)
+                if(displayCoin) {
+                    result = displayCoin
+                } else {
+                    // if still not found use denom and amount
+                    const displayCoin = explorerAssetFromBalance(balance);
+                    result = displayCoin
+                }
+            }
+        }
+        return result
+    }
+
     async function init() {
         const { availableChains, chainClients } = storeToRefs(useBlockchainStore())
         await chainRegistryClient.value.fetchUrls().catch(() => { /* */});
@@ -202,6 +228,7 @@ export const useCoinsStore = defineStore('coins', () => {
         findAssetInDenomsMetadata,
         findAssetInChainconfig,
         explorerAssetFromBalance,
+        findAsset,
         init
     }
 })
