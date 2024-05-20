@@ -51,6 +51,7 @@ export const en = {
         unbondingHeight: 'Unbonding Height',
         unbondingTime: 'Unbonding Time',
         commission: 'Commission',
+        rewards: 'Rewards',
         rate: 'Rate',
         max: 'Max',
         updated: 'Last Update',

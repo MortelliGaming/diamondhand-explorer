@@ -1,7 +1,6 @@
 <template>
     <v-sheet
         role="button"
-        color="grey-darken-3" 
         elevation="12"
         class="pa-2">
         <v-row no-gutters>
