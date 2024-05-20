@@ -1,8 +1,15 @@
 <template>
-    <v-row no-gutters class="d-flex flex-row" style="width: 100%;">
-        <v-col class="text-right justify-end d-flex align-center">
-            {{ assetBalance?.displayDenom.includes('/') ? assetBalance?.displayDenom.split('/')[assetBalance?.displayDenom.split('/').length -1] : assetBalance?.displayDenom }}
-            {{ numeral(assetBalance?.displayAmount).format((assetBalance?.displayAmount || 1.1) >= 1.0 ? `` : `'0.000000`) }}
+    <v-row no-gutters class="d-flex flex-row">
+        <v-col class="text-right justify-start d-flex align-center">
+            <span><b>{{ assetBalance?.displayDenom }}</b></span>
+            <span class="pl-1">{{ numeral(assetBalance?.displayAmount).format((assetBalance?.displayAmount || 1.1) >= 1.0 ? `` : `'0.000000`) }}</span>
+            <span v-if="assetBalance?.interChain" class="pl-1">
+                <v-chip label size="xx-small" color="green-lighten-4">
+                    <div class="pl-2 pr-2">
+                        IBC
+                    </div>
+                </v-chip>
+            </span>
         </v-col>
     </v-row>
 </template>

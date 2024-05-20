@@ -200,7 +200,7 @@ export const useBlockchainStore = defineStore('blockchain', () => {
             loadCosmosValidators(chainInfo.name)
         }
         isConnecting.value = false;
-        init();
+        await init();
         return Promise.resolve(true)
     }
 

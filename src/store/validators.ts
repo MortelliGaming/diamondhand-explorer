@@ -98,8 +98,9 @@ export const useValidatorsStore = defineStore('validators', () => {
                     } catch {
                         delegations.pagination = undefined
                     }
+                    await new Promise((resolve) => setTimeout(() => resolve(true), 500))
                 }
-            } catch(err) { 
+            } catch(err) {  
                 console.error('error fetching validator infos: ', err)
             }
         }

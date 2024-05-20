@@ -226,6 +226,7 @@ export const useCoinsStore = defineStore('coins', () => {
             }
             isLoadingERC20Tokens.value[chainConfig.name] = false;
         });
+        return true
     }
     return { 
         isLoadingERC20Tokens,

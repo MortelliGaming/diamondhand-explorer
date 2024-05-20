@@ -30,20 +30,24 @@
                 <div class="pt-2"></div>
                 <base-sheet :title="$t('account.balances')">
                     <v-row no-gutters style="max-height: 300px; overflow-y:scroll;">
-                        <v-col cols="12" v-for="coin in displayBalances.filter(b => !b.displayDenom.includes('/')).sort((a, b) => (a.interChain === b.interChain ? a.displayDenom.localeCompare(b.displayDenom) : a.interChain ? 1 : -1))" :key="coin.baseDenom">
+                        <v-col cols="12">
                             <v-row no-gutters>
-                                <v-col cols="6" class="break-word">
-                                    {{ coin.displayDenom }}
-                                    <span v-if="coin.interChain">
-                                        <v-chip label size="xx-small" color="green-lighten-4">
-                                            <div class="pl-2 pr-2">
-                                                IBC
-                                            </div>
-                                        </v-chip>
-                                    </span>
-                                </v-col>
-                                <v-col cols="6" class="text-right">
-                                    {{ coin.displayAmount }}
+                                <v-col cols="12" class="break-word text-left">
+                                    <asset
+                                        v-for="balance in balances.sort((a, b) => {
+                                            const aHasSlash = a.denom.includes('/');
+                                            const bHasSlash = b.denom.includes('/');
+
+                                            if (aHasSlash && !bHasSlash) {
+                                                return 1; // Move 'a' after 'b'
+                                            } else if (!aHasSlash && bHasSlash) {
+                                                return -1; // Move 'a' before 'b'
+                                            } else {
+                                                return 0; // Keep the original order
+                                            }
+                                        })"
+                                        :key="'balance' + balance.denom"
+                                        :balance="balance" />
                                 </v-col>
                             </v-row>
                         </v-col>
@@ -80,7 +84,7 @@
                                 <v-col cols="4">
                                     <b>{{ $t('validator.validator') }}</b>
                                 </v-col>
-                                <v-col cols="4" class="d-flex align-center pr-2 justify-end">
+                                <v-col cols="4" class="text-right d-flex flex-column align-end justify-center pr-2">
                                     <b>{{ $t('validator.delegation') }}</b>
                                 </v-col>
                                 <v-col cols="4" class="text-right d-flex flex-column align-end justify-center">
@@ -95,7 +99,7 @@
                                 </v-col>
                                 <v-col
                                     cols="4"
-                                    class="d-flex align-center justify-end pr-1">
+                                    class="text-right d-flex flex-column align-end justify-center pr-1">
                                     <asset :balance="delegation.balance" />
                                 </v-col>
                                 <v-col cols="4" class="text-right d-flex flex-column align-end justify-center" >
@@ -140,6 +144,7 @@ import { fromBech32, toHex, toBech32, fromHex } from '@cosmjs/encoding';
 import { erc20Abi } from 'viem';
 import { Delegation, DelegationResponse } from '@/lib/proto/cosmos/staking/v1beta1/staking';
 import { DelegationDelegatorReward } from '../../../lib/proto/cosmos/distribution/v1beta1/distribution';
+import { Coin } from '@/lib/proto/cosmos/base/v1beta1/coin';
 
 type DisplayBalance = {
     baseAmount: number
@@ -159,7 +164,6 @@ export type DisplayDelegation = {
 const route = useRoute()
 const { availableChains, chainClients } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
-const { findAsset } = useCoinsStore();
 const { validators } = storeToRefs(useValidatorsStore())
 const { erc20Assets, isLoadingERC20Tokens } = storeToRefs(useCoinsStore());
 
@@ -184,7 +188,7 @@ const hexAddress = computed(() => {
     return '0x' + toHex(fromBech32(address.value || '').data) as `0x${string}`
 })
 
-const displayBalances: Ref<DisplayBalance[]> = ref([])
+const balances: Ref<Coin[]> = ref([])
 const delegations: Ref<DelegationResponse[]> = ref([])
 const rewards: Ref<DelegationDelegatorReward[]> = ref([])
 
@@ -217,12 +221,7 @@ async function loadEVMBalances() {
 
 async function loadCosmosBalances() {
     const allBalances = await chainClients.value[chainIdFromRoute.value]?.cosmosClients?.queryClient.extensions.bank.bank.allBalances(address.value)
-    displayBalances.value = []
-    for(const balance of allBalances || []) {
-        findAsset(balance, chainIdFromRoute.value).then(displayCoin => {
-            displayBalances.value.push(displayCoin)
-        });
-    }
+    balances.value = allBalances || [];
 }
 
 async function loadDelegations() {
@@ -244,7 +243,7 @@ watch(isLoadingERC20Tokens.value, () => {
 if(isLoadingERC20Tokens.value[chainIdFromRoute.value] == false && isEVMChain.value) {
     loadEVMBalances()
 }
-
+// await init();
 loadCosmosBalances();
 loadDelegations();
 
