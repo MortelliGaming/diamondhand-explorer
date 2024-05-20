@@ -28,9 +28,7 @@ export const useProposalsStore = defineStore('proposals', () => {
         try {
 
             if(chainClients.value[chainName]?.cosmosClients?.queryClient) {
-                if(!proposals.value[chainName]) {
-                    proposals.value[chainName] = []
-                }
+                proposals.value[chainName] = []
                 const query: QueryProposalsRequest = {
                     proposalStatus: ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
                     voter: '',

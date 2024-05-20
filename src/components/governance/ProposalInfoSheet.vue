@@ -1,17 +1,23 @@
 <template>
-    <base-sheet :title="title">
+    <base-sheet :title="title || proposal?.title">
         <template v-slot:appendTitle>
             <proposal-status-chip :proposal="props.proposal" />
         </template>
-        <v-row class="d-flex align-center">
-            <v-col cols="3" class="pb-0" style="overflow-wrap: break-word;">
+
+        <v-row class="d-flex align-center pt-5" no-gutters>
+            <v-col cols="3" style="overflow-wrap: break-word;">
                 {{ t('proposal.votingEndTime') }}:
             </v-col>
-            <v-col cols="9" class="d-flex flex-column flex-sm-row pb-0">
+            <v-col cols="9" class="d-flex flex-column flex-sm-row justify-end text-right">
                 <div class="mr-sm-2">
                     {{ moment(Number(proposal?.votingEndTime?.seconds) * 1000).format('DD.MM.YY HH:mm:ss') }}
                 </div>
                 <human-readable-time :time="proposal?.votingEndTime" />
+            </v-col>
+        </v-row>
+        <v-row no-gutters v-if="proposal?.summary">
+            <v-col>
+                {{ proposal?.summary}}
             </v-col>
         </v-row>
         <component 
