@@ -119,7 +119,7 @@ type DisplayBalance = {
 const route = useRoute()
 const { availableChains, chainClients } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
-const { findAssetInCosmosAssets, findAssetInDenomsMetadata, findAssetInChainconfig, explorerAssetFromBalance } = useCoinsStore();
+const { findAsset } = useCoinsStore();
 const { erc20Assets, isLoadingERC20Tokens } = storeToRefs(useCoinsStore());
 
 const address = computed(() => {
@@ -170,26 +170,9 @@ async function loadCosmosBalances() {
     const allBalances = await chainClients.value[chainIdFromRoute.value]?.cosmosClients?.queryClient.extensions.bank.bank.allBalances(address.value)
     displayBalances.value = []
     for(const balance of allBalances || []) {
-        let displayCoin = findAssetInCosmosAssets(balance)
-        if(displayCoin) {
+        findAsset(balance, chainIdFromRoute.value).then(displayCoin => {
             displayBalances.value.push(displayCoin)
-        } else {
-            displayCoin = findAssetInChainconfig(chainIdFromRoute.value, balance)
-            // if still not found
-            // denom info from chainconfig
-            if(displayCoin) {
-                displayBalances.value.push(displayCoin)
-            } else {
-                displayCoin = await findAssetInDenomsMetadata(chainIdFromRoute.value, balance)
-                if(displayCoin) {
-                    displayBalances.value.push(displayCoin)
-                } else {
-                    // if still not found use denom and amount
-                    const displayCoin = explorerAssetFromBalance(balance);
-                    displayBalances.value.push(displayCoin)
-                }
-            }
-        }
+        });
     }
 }
 
