@@ -15,7 +15,6 @@ declare module 'vue' {
     BlockSignaturesSheet: typeof import('./src/components/blocks/BlockSignaturesSheet.vue')['default']
     BlockTransactionsSheet: typeof import('./src/components/blocks/BlockTransactionsSheet.vue')['default']
     ChainContent: typeof import('./src/components/ChainContent.vue')['default']
-    copy: typeof import('./src/components/Asset copy.vue')['default']
     CopyBox: typeof import('./src/components/CopyBox.vue')['default']
     Default: typeof import('./src/components/tx/messagerow/Default.vue')['default']
     Home: typeof import('./src/components/Home.vue')['default']
