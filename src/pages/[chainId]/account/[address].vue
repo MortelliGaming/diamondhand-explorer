@@ -95,7 +95,7 @@
                                 <v-col
                                     cols="4"
                                     class="d-flex align-center">
-                                    <validator :validator="validators[chainIdFromRoute]?.find(v => v.operatorAddress == delegation.delegation.validatorAddress)" />
+                                    <validator-header :validator="validators[chainIdFromRoute]?.find(v => v.operatorAddress == delegation.delegation.validatorAddress)" />
                                 </v-col>
                                 <v-col
                                     cols="4"
@@ -133,7 +133,7 @@ import NotFound from '@/components/404.vue'
 import BaseSheet from '@/components/BaseSheet.vue';
 import CopyBox from '@/components/CopyBox.vue';
 import Asset from '@/components/Asset.vue';
-import Validator from '@/components/Validator.vue';
+import ValidatorHeader from '@/components/ValidatorHeader.vue';
 
 import { useBlockchainStore } from '@/store/blockchain';
 import { useValidatorsStore } from '@/store/validators';

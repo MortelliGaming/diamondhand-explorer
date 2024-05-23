@@ -39,8 +39,6 @@ declare module 'vue' {
     TimeFormatter: typeof import('./src/components/TimeFormatter.vue')['default']
     TransactionHeaderInfoSheet: typeof import('./src/components/tx/TransactionHeaderInfoSheet.vue')['default']
     UnkownMessage: typeof import('./src/components/messages/cosmos/UnkownMessage.vue')['default']
-    Uptime: typeof import('./src/components/blocks/uptime.vue')['default']
-    Validator: typeof import('./src/components/Validator.vue')['default']
     ValidatorAddressesSheet: typeof import('./src/components/validator/ValidatorAddressesSheet.vue')['default']
     ValidatorBondingSheet: typeof import('./src/components/validator/ValidatorBondingSheet.vue')['default']
     ValidatorComissionSheet: typeof import('./src/components/validator/ValidatorComissionSheet.vue')['default']
