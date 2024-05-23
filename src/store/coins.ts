@@ -722,27 +722,31 @@ export const useCoinsStore = defineStore('coins', () => {
             isLoadingERC20Tokens.value[chainConfig.name] = true;
             const viemClient = chainClients.value[chainConfig.name]?.viemClient
             for(const erc20Contract of chainConfig.erc20Contracts || []) {
-                const tokenSymbol = await viemClient?.readContract({
-                    address: erc20Contract as `0x${string}`,
-                    abi: erc20Abi,
-                    functionName: 'symbol',
-                    args: [],
-                })
-                const tokenDecimals = await viemClient?.readContract({
-                    address: erc20Contract as `0x${string}`,
-                    abi: erc20Abi,
-                    functionName: 'decimals',
-                    args: [],
-                })
-                if(!erc20Assets.value[chainConfig.name]) {
-                    erc20Assets.value[chainConfig.name] = []
-                }
-                if(tokenSymbol && tokenDecimals) {
-                    erc20Assets.value[chainConfig.name].push({
-                        contract: erc20Contract as `0x${string}`,
-                        decimals: Number(tokenDecimals),
-                        symbol: tokenSymbol.toString()
+                try {
+                    const tokenSymbol = await viemClient?.readContract({
+                        address: erc20Contract as `0x${string}`,
+                        abi: erc20Abi,
+                        functionName: 'symbol',
+                        args: [],
                     })
+                    const tokenDecimals = await viemClient?.readContract({
+                        address: erc20Contract as `0x${string}`,
+                        abi: erc20Abi,
+                        functionName: 'decimals',
+                        args: [],
+                    })
+                    if(!erc20Assets.value[chainConfig.name]) {
+                        erc20Assets.value[chainConfig.name] = []
+                    }
+                    if(tokenSymbol && tokenDecimals) {
+                        erc20Assets.value[chainConfig.name].push({
+                            contract: erc20Contract as `0x${string}`,
+                            decimals: Number(tokenDecimals),
+                            symbol: tokenSymbol.toString()
+                        })
+                    }
+                } catch {
+                    console.log('err fetching token info: ' + erc20Contract)
                 }
             }
             isLoadingERC20Tokens.value[chainConfig.name] = false;

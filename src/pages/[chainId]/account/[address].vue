@@ -244,9 +244,10 @@ if(isLoadingERC20Tokens.value[chainIdFromRoute.value] == false && isEVMChain.val
     loadEVMBalances()
 }
 // await init();
+await new Promise((resolve) => setTimeout(() => resolve(true), 750))
 loadCosmosBalances();
+await new Promise((resolve) => setTimeout(() => resolve(true), 750))
 loadDelegations();
-
 </script>
 <style scoped>
 </style>
