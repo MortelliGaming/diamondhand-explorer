@@ -1,12 +1,15 @@
 <template>
   <chain-content>
-    <v-row class="pl-2 pr-2">
-      <block-validator-signatures
-        v-for="(val, i) in validators[chainIdFromRoute]?.filter((v) => v.status == BondStatus.BOND_STATUS_BONDED).sort((a,b) => Number(b.tokens) - Number(a.tokens))"
-        :key="val.operatorAddress"
-        :rank="(i + 1).toString()"
-        :validator="getValidatorInfo(chainIdFromRoute, val)" />
-    </v-row>
+    <base-sheet :title="$t('module.uptime')"  style="max-height: 80vh; overflow-y: scroll; width: 100%;">
+      <v-row class="pl-2 pr-2">
+        <block-validator-signatures
+          v-for="(val, i) in validators[chainIdFromRoute]?.filter((v) => v.status == BondStatus.BOND_STATUS_BONDED).sort((a,b) => Number(b.tokens) - Number(a.tokens))"
+          :key="val.operatorAddress"
+          :rank="(i + 1).toString()"
+          :validator="getValidatorInfo(chainIdFromRoute, val)" />
+      </v-row>
+    </base-sheet>
+    
   </chain-content>
 </template>
 
@@ -20,6 +23,7 @@ import { useValidatorsStore } from '@/store/validators';
 
 // Components
 import ChainContent from '@/components/ChainContent.vue'
+import BaseSheet from '@/components/BaseSheet.vue';
 import BlockValidatorSignatures from '@/components/blocks/BlockValidatorSignatures.vue';
 
 import { BondStatus } from '@/lib/proto/cosmos/staking/v1beta1/staking';
