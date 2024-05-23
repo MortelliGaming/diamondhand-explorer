@@ -62,6 +62,7 @@ if(!validators.value[chainIdFromRoute.value || '']) {
     max-width: 3px;
     margin-right: 2px;
     margin-top: 2px;
+    background-color: blue;
     &.green {
       background-color: green;
     }

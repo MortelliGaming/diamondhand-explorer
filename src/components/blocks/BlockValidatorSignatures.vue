@@ -4,7 +4,7 @@
     <v-card color="grey-darken-3">
       <v-card-text class="text-caption">
         <v-row>
-          <v-col cols="12" class="pa-1">
+          <v-col cols="12" class="pa-1 pb-0">
             <v-row no-gutters>
               <v-col
                 class="d-flex align-center">
@@ -13,7 +13,7 @@
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="12" class="pa-1">
+          <v-col cols="12" class="pa-1 pt-0">
             <v-row cols="100" no-gutters>
               <v-tooltip
                 v-for="(block, i) in latest100Blocks || []"
@@ -26,7 +26,7 @@
                     class="pa-0 signature">
                     <div
                       v-if="block"
-                      :class="'signature ' + (block.lastCommit!.signatures.find(s => s.validatorAddress?.toString() || '' == validatorConsensusAddress) ? 'green' : 'red')">
+                      :class="'signature ' + (block.lastCommit!.signatures.find(s => s.validatorAddress && s.validatorAddress.toString() == validatorConsensusAddress && (s.blockIdFlag == BlockIdFlag.Commit || s.blockIdFlag == BlockIdFlag.Nil))?.signature ? 'green' : 'red')">
                     </div>
                     <div
                       v-else
@@ -57,6 +57,7 @@ import { computed, PropType, ref } from 'vue';
 import { ExtendedValidator } from '../../store/validators';
 
 import { fromHex } from '@cosmjs/encoding'
+import { BlockIdFlag } from '@cosmjs/tendermint-rpc';
 
 const props = defineProps({
   validator: {
@@ -74,7 +75,7 @@ const latestChainBlocks= computed(() => {
 })
 
 const latest100Blocks = computed(() => {
-  return latestChainBlocks.value?.filter(b => b.lastCommit != null).splice(0,100)
+  return latestChainBlocks.value?.filter(b => b.lastCommit != null).splice(0,100).reverse()
 })
 const validatorConsensusAddress = ref(fromHex(props.validator.consensusHexAddress.replace('0x', ''))?.toString())
 
