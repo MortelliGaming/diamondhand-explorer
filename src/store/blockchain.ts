@@ -174,7 +174,7 @@ export const useBlockchainStore = defineStore('blockchain', () => {
                     // Add the new item at position 0 (beginning of the array)
                     // console.log(Buffer.from(block.header.proposerAddress).toString('hex'))
                     latestBlocks.value[chainInfo.name].unshift(latestBlock.block);
-                }, 2000)
+                }, 1700)
 
                 clients.cosmosClients = {
                     stargateClient,

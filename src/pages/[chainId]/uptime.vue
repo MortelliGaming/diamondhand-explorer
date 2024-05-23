@@ -42,7 +42,7 @@ const { chainIdFromRoute } = storeToRefs(useAppStore())
 const { validators } = storeToRefs(useValidatorsStore())
 const { loadCosmosValidators } = useValidatorsStore()
 
-const numPerPage = 24
+const numPerPage = 16
 const page = ref(1)
 const numPages = computed(() => {
   const numPagesDecimal = sortedActiveValidators.value?.length / numPerPage;
