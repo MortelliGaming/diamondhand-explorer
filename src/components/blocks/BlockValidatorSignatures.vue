@@ -17,8 +17,8 @@
             <v-row cols="100" no-gutters>
               <v-tooltip
                 v-for="(block, i) in latest100Blocks || []"
-                :key="(block?.header.appHash.toString() || '' + i)"
-                :text="block?.header.height.toString()">
+                :key="(block?.header.height.toString() || ('' + i))"
+                :text="(block?.header.height - 1).toString()">
                 <template v-slot:activator="{ props }">
                   <v-col
                     v-bind="props"
@@ -70,12 +70,8 @@ const props = defineProps({
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 const { latestBlocks } = storeToRefs(useBlockchainStore())
 
-const latestChainBlocks= computed(() => {
-  return latestBlocks.value[chainIdFromRoute.value || '']
-})
-
 const latest100Blocks = computed(() => {
-  return latestChainBlocks.value?.filter(b => b.lastCommit != null).splice(0,100).reverse()
+  return latestBlocks.value[chainIdFromRoute.value || '']?.filter(b => b.lastCommit != null).slice(0,50)
 })
 const validatorConsensusAddress = ref(fromHex(props.validator.consensusHexAddress.replace('0x', ''))?.toString())
 
