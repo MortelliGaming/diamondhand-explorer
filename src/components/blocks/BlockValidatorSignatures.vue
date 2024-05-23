@@ -8,33 +8,20 @@
             <v-row no-gutters>
               <v-col
                 class="d-flex align-center">
-                  <validator-header :validator="validator" />
+                  <validator-header :validator="extendedValidator" />
                   <div class="pl-1">#{{ props.rank}}</div>
               </v-col>
             </v-row>
           </v-col>
           <v-col cols="12" class="pa-1 pt-0">
-            <v-row cols="100" no-gutters>
-              <v-tooltip
-                v-for="(block, i) in latest100Blocks || []"
-                :key="(block?.header.height.toString() || ('' + i))"
-                :text="(block?.header.height - 1).toString()">
-                <template v-slot:activator="{ props }">
-                  <v-col
-                    v-bind="props"
-                    cols="1"
-                    class="pa-0 signature">
-                    <div
-                      v-if="block"
-                      :class="'signature ' + (block.lastCommit!.signatures.find(s => s.validatorAddress && s.validatorAddress.toString() == validatorConsensusAddress && (s.blockIdFlag == BlockIdFlag.Commit || s.blockIdFlag == BlockIdFlag.Nil))?.signature ? 'green' : 'red')">
-                    </div>
-                    <div
-                      v-else
-                      :class="'signature gray'">
-                    </div>
-                  </v-col>
-                </template>
-              </v-tooltip>
+            <v-row cols="100" no-gutters> 
+              <block-validator-signature-indicator 
+                v-for="(blockIdFlag, i) in latestBlockValidatorSignatures || []"
+                :key="latestBlockHeights[i]"
+                :blockIdFlag="blockIdFlag"
+                :height="latestBlockHeights[i] || 0"
+                :validatorConsensusAddress="validatorConsensusAddress"
+              />
             </v-row>
           </v-col>
         </v-row>
@@ -50,18 +37,19 @@ import { storeToRefs } from 'pinia'
 // Store
 import { useAppStore } from '@/store/app'
 import { useBlockchainStore } from '@/store/blockchain';
+import { useValidatorsStore } from '@/store/validators';
 
 // Components
 import ValidatorHeader from '@/components/ValidatorHeader.vue';
+import BlockValidatorSignatureIndicator from './BlockValidatorSignatureIndicator.vue';
 import { computed, PropType, ref } from 'vue';
-import { ExtendedValidator } from '../../store/validators';
 
 import { fromHex } from '@cosmjs/encoding'
-import { BlockIdFlag } from '@cosmjs/tendermint-rpc';
+import { Validator } from '@/lib/proto/cosmos/staking/v1beta1/staking';
 
 const props = defineProps({
   validator: {
-    type: Object as PropType<ExtendedValidator>,
+    type: Object as PropType<Validator>,
     required: true,
   },
   rank: String
@@ -69,11 +57,16 @@ const props = defineProps({
 
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 const { latestBlocks } = storeToRefs(useBlockchainStore())
+const { getValidatorInfo } = useValidatorsStore()
 
-const latest100Blocks = computed(() => {
-  return latestBlocks.value[chainIdFromRoute.value || '']?.filter(b => b.lastCommit != null).slice(0,50)
+const latestBlockValidatorSignatures = computed(() => {
+  return latestBlocks.value[chainIdFromRoute.value || '']?.slice(0,30)?.filter(b => b.lastCommit != null)?.map(b => b.lastCommit?.signatures.find(s => s.validatorAddress?.toString() == validatorConsensusAddress.value)?.blockIdFlag || undefined)
 })
-const validatorConsensusAddress = ref(fromHex(props.validator.consensusHexAddress.replace('0x', ''))?.toString())
+const latestBlockHeights = computed(() => {
+  return latestBlocks.value[chainIdFromRoute.value || '']?.slice(0,30)?.filter(b => b.lastCommit != null)?.map(b => b.lastCommit?.height)
+})
+const extendedValidator = ref(getValidatorInfo(chainIdFromRoute.value, props.validator))
+const validatorConsensusAddress = ref(fromHex(extendedValidator.value?.consensusHexAddress.replace('0x', ''))?.toString())
 
 </script>
 <style lang="scss" scoped>

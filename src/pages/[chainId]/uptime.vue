@@ -3,10 +3,19 @@
     <base-sheet :title="$t('module.uptime')"  style="max-height: 80vh; overflow-y: scroll; width: 100%;">
       <v-row class="pl-2 pr-2">
         <block-validator-signatures
-          v-for="(val, i) in sortedActiveValidators"
+          v-for="(val) in paginatedValidators"
           :key="val.operatorAddress"
-          :rank="(i + 1).toString()"
-          :validator="getValidatorInfo(chainIdFromRoute, val)" />
+          :rank="(sortedActiveValidators.indexOf(val) + 1).toString()"
+          :validator="val" />
+      </v-row>
+      <v-row>
+        <v-col cols="12">
+          <v-pagination
+              v-model="page"
+              :length="numPages"
+              rounded="circle"
+          ></v-pagination>
+        </v-col>
       </v-row>
     </base-sheet>
     
@@ -27,17 +36,41 @@ import BaseSheet from '@/components/BaseSheet.vue';
 import BlockValidatorSignatures from '@/components/blocks/BlockValidatorSignatures.vue';
 
 import { BondStatus } from '@/lib/proto/cosmos/staking/v1beta1/staking';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 const { validators } = storeToRefs(useValidatorsStore())
-const { getValidatorInfo, loadCosmosValidators } = useValidatorsStore()
+const { loadCosmosValidators } = useValidatorsStore()
+
+const numPerPage = 24
+const page = ref(1)
+const numPages = computed(() => {
+  const numPagesDecimal = sortedActiveValidators.value?.length / numPerPage;
+  return Math.ceil(numPagesDecimal);
+})
 
 if(!validators.value[chainIdFromRoute.value || '']) {
   await loadCosmosValidators(chainIdFromRoute.value || '')
 }
 
 const sortedActiveValidators = computed(() => validators.value[chainIdFromRoute.value]?.filter((v) => v.status == BondStatus.BOND_STATUS_BONDED).sort((a,b) => Number(b.tokens) - Number(a.tokens)))
+
+const paginatedValidators = computed(() => {
+    if(sortedActiveValidators.value) {
+        return getElements(sortedActiveValidators.value, numPerPage, (page.value - 1) * numPerPage)
+    } else {
+        return []
+    }
+})
+
+function getElements<T>(arr: T[], x: number, y: number): T[] {
+    const maxIndex = arr.length - 1;
+    if (y + x > maxIndex) {
+        return arr.slice(y);
+    } else {
+        return arr.slice(y, y + x);
+    }
+}
 
 </script>
 <style lang="scss" scoped>

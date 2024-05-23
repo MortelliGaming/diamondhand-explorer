@@ -5,7 +5,7 @@ import { useRoute } from 'vue-router';
 export const useAppStore = defineStore('app', () => {
     const isNavigationDrawerOpen = ref(false)
     const isTestnet = computed(() => {
-      return window.location.href.toLowerCase().includes('testnet')
+      return window.location.href.toLowerCase().includes('testnet') as boolean
     })
 
     const route = useRoute()
