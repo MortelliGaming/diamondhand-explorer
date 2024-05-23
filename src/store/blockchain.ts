@@ -81,7 +81,7 @@ export const useBlockchainStore = defineStore('blockchain', () => {
     const availableChains: ComputedRef<ExplorerChainInfo[]> = computed(() => {
         const { isTestnet } = storeToRefs(useAppStore())
         return Object.values(blockchainConfigs.networks)
-            .filter(chainConfig => isTestnet.value 
+            .filter(chainConfig => isTestnet.value == true
                 ? chainConfig.isTestnet === true 
                 : chainConfig.isTestnet === false)
     })

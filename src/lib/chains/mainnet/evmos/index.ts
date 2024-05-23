@@ -3,7 +3,7 @@ import { evm } from './evm'
 import { keplr } from './keplr'
 import { erc20Contracts } from './erc20'
 
-export const crossfi: ExplorerChainInfo = {
+export const evmos: ExplorerChainInfo = {
   name: 'evmos',
   evm,
   keplr,

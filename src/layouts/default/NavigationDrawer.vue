@@ -93,6 +93,11 @@
             {{ $t('module.blocks')}}
           </router-link>
         </v-list-item>
+        <v-list-item class="link-item" role="button" :active="'/' + chainName + '/uptime' === router.currentRoute.value.fullPath" style="padding-left: 25px !important; font-size: small;" prepend-icon="mdi-connection">
+          <router-link class="routerlink" :to="'/' + chainName + '/uptime'">
+            {{ $t('module.uptime')}}
+          </router-link>
+        </v-list-item>
         <v-divider />
       </v-list-group>
         <!--
@@ -107,11 +112,6 @@
           </router-link>
         </v-list-item>
         <v-divider />
-        <v-list-item class="link-item" role="button" :active="'/' + chainName + '/uptime' === router.currentRoute.value.fullPath" style="padding-left: 25px !important; font-size: small;" prepend-icon="mdi-connection">
-          <router-link class="routerlink" :to="'/' + chainName + '/uptime'">
-            {{ $t('module.uptime')}}
-          </router-link>
-        </v-list-item>
         <v-list-item class="link-item" role="button" :active="'/' + chainName + '/consensus' === router.currentRoute.value.fullPath" style="padding-left: 25px !important; font-size: small;" prepend-icon="mdi-resistor-nodes">
           <router-link class="routerlink" :to="'/' + chainName + '/consensus'">
             {{ $t('module.consensus')}}
