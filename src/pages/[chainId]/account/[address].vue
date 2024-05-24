@@ -114,12 +114,7 @@
                     </v-row>
                 </base-sheet>
                 <div class="pt-2"></div>
-                <base-sheet :title="$t('account.transactions')">
-                    <v-row no-gutters>
-                        <v-col cols="12">
-                        </v-col>
-                    </v-row>
-                </base-sheet>
+                <account-transactions :account="address"/>
             </v-responsive>
         </v-container>
     </div>
@@ -134,6 +129,7 @@ import BaseSheet from '@/components/BaseSheet.vue';
 import CopyBox from '@/components/CopyBox.vue';
 import Asset from '@/components/Asset.vue';
 import ValidatorHeader from '@/components/ValidatorHeader.vue';
+import AccountTransactions from './AccountTransactions.vue';
 
 import { useBlockchainStore } from '@/store/blockchain';
 import { useValidatorsStore } from '@/store/validators';
@@ -176,16 +172,16 @@ const address = computed(() => {
     }
 })
 
+const hexAddress = computed(() => {
+    return '0x' + toHex(fromBech32(address.value || '').data) as `0x${string}`
+})
+
 const chainConfig = computed(() => {
     return availableChains.value.find(c => c.name == chainIdFromRoute.value)
 })
 
 const isEVMChain = computed(() => {
     return chainConfig.value?.evm != null ? true : false
-})
-
-const hexAddress = computed(() => {
-    return '0x' + toHex(fromBech32(address.value || '').data) as `0x${string}`
 })
 
 const balances: Ref<Coin[]> = ref([])
