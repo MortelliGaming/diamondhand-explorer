@@ -1,5 +1,5 @@
 <template>
-    <base-sheet :title="$t('account.transactions')">
+    <base-sheet :title="$t('account.transactions') + ' ' + accountTxs.length">
         <v-row
             style="max-height: 350px;overflow-y: scroll; overflow-x: hide;"
             no-gutters>
@@ -64,7 +64,7 @@ const querySent: SearchTxQuery = [{
 const txsSent = await chainClient.value?.cosmosClients?.stargateClient.searchTx(querySent)
 const txsReceived = await chainClient.value?.cosmosClients?.stargateClient.searchTx(queryReceived)
 
-const accountTxs = ref((txsSent || []).concat(txsReceived || []).sort((a,b) => b.height - a.height))
+const accountTxs = ref((txsSent || []).concat(txsReceived?.filter(r => !(txsSent || []).map(t => t.hash).includes(r.hash)) || []).sort((a,b) => b.height - a.height))
 const paginatedTxs = computed(() => {
     return accountTxs.value.slice((pageNum.value - 1) * numTxsPerPage, ((pageNum.value - 1) * numTxsPerPage) + numTxsPerPage)
 })
