@@ -159,14 +159,14 @@ export const useBlockchainStore = defineStore('blockchain', () => {
                 const queryClient = QueryClient.withExtensions(tendermintClient);
                 console.log('rpc connected, subscribe block stream')
                 const blockHeaderFetchInterval = setInterval(async () => {
-                    const latestBlock = await tendermintClient.block();
-
-                    if(latestBlocks.value[chainInfo.name]?.map(b => b.header.height).includes(latestBlock.block.header.height)) {
-                        return;
-                    }
                     if(!latestBlocks.value[chainInfo.name]) {
                         latestBlocks.value[chainInfo.name] = []
                     }
+                    const latestBlockHeight = await stargateClient.getHeight()
+                    if(latestBlocks.value[chainInfo.name]?.map(b => b.header.height).includes(latestBlockHeight)) {
+                        return;
+                    }
+                    const latestBlock = await tendermintClient.block()
                     // keep 100 blocks
                     if (latestBlocks.value[chainInfo.name].length >= 100) {
                         latestBlocks.value[chainInfo.name].pop();
