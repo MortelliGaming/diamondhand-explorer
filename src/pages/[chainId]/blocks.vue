@@ -3,7 +3,7 @@
     <base-sheet :title="t('blocks.blocks')"  style="max-height: 80vh; overflow-y: scroll; width: 100%;">
       <v-row  style="overflow-y: scroll; overflow-x:hidden;">
         <transition-group name="list">
-          <v-col cols="6" sm="4" md="3" v-for="block in latestChainBlocks" :key="block.header.appHash.toString()" >
+          <v-col cols="6" sm="4" md="3" v-for="block in paginatedBlocks" :key="block.header.appHash.toString()" >
             <v-sheet
               @click="$router.push('./block/'+block.header.height)"
               role="button"
@@ -40,6 +40,15 @@
           </v-col>
         </transition-group>
       </v-row>
+      <v-row>
+        <v-col cols="12">
+          <v-pagination
+              v-model="pageNum"
+              :length="numPages"
+              rounded="circle"
+          ></v-pagination>
+        </v-col>
+      </v-row>
       </base-sheet>
   </chain-content>
 </template>
@@ -58,7 +67,7 @@ import { useValidatorsStore } from '@/store/validators';
 // Components
 import ChainContent from '@/components/ChainContent.vue'
 import BaseSheet from '@/components/BaseSheet.vue';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import moment from 'moment';
 
 const { t } = useI18n()
@@ -68,8 +77,19 @@ const { latestBlocks } = storeToRefs(useBlockchainStore())
 const { validators, keybaseAvatars } = storeToRefs(useValidatorsStore())
 const { getValidatorInfo, loadCosmosValidators } = useValidatorsStore()
 
+
+const numBlockPerPage = 12
+const pageNum = ref(1)
+const numPages = computed(() => {
+    return Math.ceil(latestChainBlocks.value.length / numBlockPerPage)
+})
+
 const latestChainBlocks= computed(() => {
   return latestBlocks.value[chainIdFromRoute.value || '']
+})
+
+const paginatedBlocks = computed(() => {
+    return latestChainBlocks.value.slice((pageNum.value - 1) * numBlockPerPage, ((pageNum.value - 1) * numBlockPerPage) + numBlockPerPage)
 })
 
 function getValidator(proposerAddressBytes: Uint8Array) {
