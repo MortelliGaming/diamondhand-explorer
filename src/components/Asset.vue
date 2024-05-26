@@ -1,7 +1,7 @@
 <template>
     <span>
         <span><b>{{ assetBalance?.displayDenom }}</b></span>
-        <span class="pl-1">{{ assetBalance?.displayAmount }}</span>
+        <span class="pl-1">{{ (assetBalance?.displayAmount || 0) > 10 ? assetBalance?.displayAmount.toFixed(0) : assetBalance?.displayAmount.toFixed(5) }}</span>
         <span v-if="assetBalance?.interChain" class="pl-1">
             <v-chip label size="xx-small" color="green-lighten-4">
                 <div class="pl-2 pr-2">
