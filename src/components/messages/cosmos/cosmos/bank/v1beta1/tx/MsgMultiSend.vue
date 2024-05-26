@@ -1,52 +1,39 @@
 <template>
     <v-row no-gutters>
-        <v-col cols="12" class="pb-2">
-            <b>{{ props.message?.typeUrl }}</b>
-        </v-col>
-        <v-col cols="4" style="overflow-wrap: break-word;" class="pr-2">
-            <b>{{ t('message.from') }} </b>
-        </v-col>
-        <v-col cols="5" style="overflow-wrap: break-word;" class="pr-2">
-            <b>{{ t('message.to') }} </b>
-        </v-col>
-        <v-col
-            cols="3" style="overflow-wrap: break-word;" class="pr-2 text-right">
-            <b>{{ t('message.amount') }} </b>
-        </v-col>
-        <v-col
-            v-for="inputAmount in decodedMessage?.inputs"
-            :key="inputAmount.address"
-            cols="4" style="overflow-wrap: break-word;" class="pr-2">
-            <v-row no-gutters>
-                <v-col cols="12">
-                    {{ inputAmount.address }}
-                </v-col>
-            </v-row>
-            <v-row no-gutters>
-                <v-col
-                    v-for="asset in inputAmount.coins"
-                    :key="inputAmount.address + asset.denom + 'in'"
-                    cols="12">
-                    <asset :balance="asset" />
-                </v-col>
-            </v-row>
-        </v-col><v-col
-            v-for="outputAmount in decodedMessage?.outputs"
-            :key="outputAmount.address"
-            cols="4" style="overflow-wrap: break-word;" class="pr-2">
-            <v-row no-gutters>
-                <v-col cols="12">
-                    {{ outputAmount.address }}
-                </v-col>
-            </v-row>
-            <v-row no-gutters>
-                <v-col
+        <v-col cols="12" class="pt-0">
+            <v-row
+                class="pt-2"
+                v-for="outputAmount in decodedMessage?.outputs"
+                :key="outputAmount.address"
+                no-gutters>
+                <v-row no-gutters
                     v-for="asset in outputAmount.coins"
-                    :key="outputAmount.address + asset.denom + 'in'"
-                    cols="12">
-                    {{ asset }}
-                    <asset :balance="asset" />
-                </v-col>
+                    :key="outputAmount.address + asset.denom + 'in'">
+                    <v-col cols="12" class="">
+                        <span class="d-flex">
+                            <b class="pr-1">{{ t('transaction.transfer') }}</b>
+                            <asset :balance="asset" />
+                        </span>
+                        <span class="d-flex">
+                            <b class="pr-1">{{ t('transaction.from') }}</b>
+                            <copy-box role="button"
+                                v-for="input in decodedMessage?.inputs"
+                                :key="input.address"
+                                @click="$router.push('../account/'+input.address)"
+                                :show-qr="true"
+                                :short="$vuetify.display.xs ? 12 : undefined"
+                                :text="input.address" />
+                        </span>
+                        <span class="d-flex">
+                            <b class="pr-1">{{ t('transaction.to') }}</b>
+                            <copy-box role="button"
+                                @click="$router.push('../account/'+outputAmount.address)"
+                                :show-qr="true"
+                                :short="$vuetify.display.xs ? 12 : undefined"
+                                :text="outputAmount.address" />
+                        </span>
+                    </v-col>
+                </v-row>
             </v-row>
         </v-col>
     </v-row>
@@ -60,6 +47,7 @@ import { computed, type PropType } from 'vue';
 import { MsgMultiSend } from '@/lib/proto/cosmos/bank/v1beta1/tx';
 
 import Asset from '@/components/Asset.vue';
+import CopyBox from '@/components/CopyBox.vue';
 
 
 const props = defineProps({

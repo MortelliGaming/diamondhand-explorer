@@ -1,6 +1,6 @@
 <template>
     <base-sheet :title="$t('transaction.messages')">
-        <v-row>
+        <v-row no-gutters>
             <v-col cols="12" v-for="msg in props.tx.tx?.body?.messages" :key="msg.toString" style="overflow-wrap: break-word;">
                 <component :is="getMessageComponent(msg.typeUrl)" :message="msg" />
             </v-col>

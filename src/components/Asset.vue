@@ -1,6 +1,6 @@
 <template>
     <v-row no-gutters class="d-flex flex-row">
-        <v-col class="text-right justify-start d-flex align-center">
+        <v-col class="text-right d-flex align-center">
             <span><b>{{ assetBalance?.displayDenom }}</b></span>
             <span class="pl-1">{{ assetBalance?.displayAmount }}</span>
             <span v-if="assetBalance?.interChain" class="pl-1">

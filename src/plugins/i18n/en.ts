@@ -155,6 +155,8 @@ export const en = {
         inspectEvmTx: 'Check EVM Tx',
         send: 'send',
         fees: 'fees',
+        transfer: 'Transfer',
+        messages: 'Messages'
     },
     account: {
         addresses: 'Addresses',
