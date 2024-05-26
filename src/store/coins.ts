@@ -613,7 +613,7 @@ export const useCoinsStore = defineStore('coins', () => {
             
             const baseAmount = parseFloat(balance.amount) * Math.pow(10, baseDecimals)
             const baseDenom = denomsMetadata.coinMinimalDenom
-            const displayAmount = baseAmount  / Number(Math.pow(10, displayDecimals))
+            const displayAmount = baseAmount / Number(Math.pow(10, displayDecimals))
             const displayDenom = denomsMetadata.coinDenom.toUpperCase()
             const interChain: boolean = balance.denom.startsWith('ibc') || false
 
