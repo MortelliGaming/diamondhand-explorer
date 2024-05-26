@@ -81,21 +81,8 @@ const numPages = computed(() => {
   return Math.ceil(numPagesDecimal);
 })
 
-function getElements<T>(arr: T[], x: number, y: number): T[] {
-    const maxIndex = arr.length - 1;
-    if (y + x > maxIndex) {
-        return arr.slice(y);
-    } else {
-        return arr.slice(y, y + x);
-    }
-}
-
 const paginatedVotes = computed(() => {
-    if(votes.value) {
-        return getElements(votes.value, numVotesPerPage.value, (page.value - 1) * numVotesPerPage.value)
-    } else {
-        return []
-    }
+    return votes.value.slice((page.value - 1) * numVotesPerPage.value, (page.value - 1) * numVotesPerPage.value + numVotesPerPage.value)
 })
 
 isLoadingVotes.value = true;

@@ -109,22 +109,12 @@ const proposalsToDisplay = computed(() => {
       return endedProposals.value?.toSorted((a,b) => Number(b.id - a.id));
   }
 })
-function getElements<T>(arr: T[], x: number, y: number): T[] {
-    const maxIndex = arr.length - 1;
-    if (y + x > maxIndex) {
-        return arr.slice(y);
-    } else {
-        return arr.slice(y, y + x);
-    }
-}
 
+const numProposalsPerPage = 50
 const paginatedProposals = computed(() => {
-    if(proposalsToDisplay.value) {
-        return getElements(proposalsToDisplay.value, 50, (page.value - 1) * 50)
-    } else {
-        return []
-    }
+  return proposalsToDisplay.value.slice((page.value - 1) * numProposalsPerPage, (page.value - 1) * numProposalsPerPage + numProposalsPerPage)
 })
+
 setTimeout(() => {
   loadCosmosProposals(chainIdFromRoute.value || '').then(() => {
     activeTab.value = votingProposals.value?.length > 0 

@@ -79,21 +79,8 @@ const allDelegations = computed(() => {
 })
 
 const delegationsToShow = computed(() => {
-    if(validatorDelegations.value[chainIdFromRoute.value || '']) {
-        return getElements(allDelegations.value, numDelegationPerPage.value, (page.value - 1) * numDelegationPerPage.value)
-    } else {
-        return []
-    }
+    return allDelegations.value.slice((page.value - 1) * numDelegationPerPage.value, (page.value - 1) * numDelegationPerPage.value + numDelegationPerPage.value)
 })
-
-function getElements<T>(arr: T[], x: number, y: number): T[] {
-    const maxIndex = arr.length - 1;
-    if (y + x > maxIndex) {
-        return arr.slice(y);
-    } else {
-        return arr.slice(y, y + x);
-    }
-}
 
 </script>
 <style>

@@ -56,11 +56,7 @@ if(!validators.value[chainIdFromRoute.value || '']) {
 const sortedActiveValidators = computed(() => validators.value[chainIdFromRoute.value]?.filter((v) => v.status == BondStatus.BOND_STATUS_BONDED).sort((a,b) => Number(b.tokens) - Number(a.tokens)))
 
 const paginatedValidators = computed(() => {
-    if(sortedActiveValidators.value) {
-        return getElements(sortedActiveValidators.value, numPerPage, (page.value - 1) * numPerPage)
-    } else {
-        return []
-    }
+  return sortedActiveValidators.value.slice((page.value - 1) * numPerPage, (page.value - 1) * numPerPage + numPerPage)
 })
 
 function getElements<T>(arr: T[], x: number, y: number): T[] {
