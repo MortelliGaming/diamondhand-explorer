@@ -15,8 +15,9 @@ import { GetTxResponse } from '@/lib/proto/cosmos/tx/v1beta1/service';
 
 import UnkownMessage from '@/components/messages/cosmos/UnkownMessage.vue';
 
-import { MsgSend } from '@/lib/proto/cosmos/bank/v1beta1/tx';
+import { MsgSend, MsgMultiSend } from '@/lib/proto/cosmos/bank/v1beta1/tx';
 import MsgSendTx from '@/components/messages/cosmos/cosmos/bank/v1beta1/tx/MsgSend.vue'
+import MsgMultiSendTx from '@/components/messages/cosmos/cosmos/bank/v1beta1/tx/MsgMultiSend.vue'
 
 const props = defineProps({
     tx: {
@@ -26,7 +27,8 @@ const props = defineProps({
 })
 
 const messageMapper = {
-    [MsgSend.typeUrl]: MsgSendTx
+    [MsgSend.typeUrl]: MsgSendTx,
+    [MsgMultiSend.typeUrl]: MsgMultiSendTx,
 } as Record<string,any>
 
 function getMessageComponent(typeUrl: string) {

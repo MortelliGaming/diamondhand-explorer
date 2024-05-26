@@ -1,56 +1,52 @@
 <template>
-    <chain-content>
-        <loading v-if="isLoading" />
-        <not-found v-else-if="!tx"/>
-        <div v-else  style="width: 100%; height: 100%;">
-            <tx-info-sheet :tx="tx" :isSmartcontractInteraction="isSmartcontractInteraction"/>
-            <div class="pt-2"></div>
-            <base-sheet v-if="Number(tx.value) == 0" :title="$t('transaction.input')">
-                <v-row no-gutters>
-                    <v-col cols="12" class="break-word" v-if="isSmartcontractInteraction && decodedInput">
-                        <v-row no-gutters>
-                            <v-col cols="12">
-                                <v-row no-gutters>
-                                    <v-col><b>{{ $t('transaction.smartContractFunction') }}:</b></v-col>
-                                    <v-col><b>{{ decodedInput?.function }}</b></v-col>
-                                </v-row>
-                            </v-col>
-                            <v-col cols="12" sm="6" v-for="attribute in decodedInput?.attributes" :key="attribute.name">
-                                <div>
-                                    <b>{{ attribute.name || attribute.type }}: </b>
-                                </div>
-                                <div v-if="decodedInput?.function == 'transfer' && attribute.name == 'amount'">
-                                    {{ Number(attribute.value) / Math.pow(10, erc20TokenDecimals)  }} {{ erc20TokenSymbol  }}
-                                </div>
-                                <div v-else-if="attribute.type == 'address'" @click="$router.push('../../account/' + attribute.value)">
-                                    <copy-box :show-qr="true" :text="attribute.value" :short="$vuetify.display.xs ? 12 : undefined" />
-                                </div>
-                                <div v-else>
-                                    {{ attribute.value }}
-                                </div>
-                            </v-col>
-                        </v-row>
-                    </v-col>
-                    <v-col cols="12" class="break-word" v-if="isSmartcontractInteraction && !decodedInput">
-                        <b>{{ $t('transaction.inputRaw') }}</b>
-                    </v-col>
-                    <v-col cols="12" class="break-word" v-if="isSmartcontractInteraction && !decodedInput">
-                        {{ tx.input }}
-                    </v-col>
-                </v-row>
-            </base-sheet>
-        </div>
-    </chain-content>
+   <loading v-if="isLoading" />
+    <not-found v-else-if="!tx"/>
+    <div v-else  style="width: 100%; height: 100%;">
+        <tx-info-sheet :tx="tx" :isSmartcontractInteraction="isSmartcontractInteraction"/>
+        <div class="pt-2"></div>
+        <base-sheet v-if="Number(tx.value) == 0" :title="$t('transaction.input')">
+            <v-row no-gutters>
+                <v-col cols="12" class="break-word" v-if="isSmartcontractInteraction && decodedInput">
+                    <v-row no-gutters>
+                        <v-col cols="12">
+                            <v-row no-gutters>
+                                <v-col><b>{{ $t('transaction.smartContractFunction') }}:</b></v-col>
+                                <v-col><b>{{ decodedInput?.function }}</b></v-col>
+                            </v-row>
+                        </v-col>
+                        <v-col cols="12" sm="6" v-for="attribute in decodedInput?.attributes" :key="attribute.name">
+                            <div>
+                                <b>{{ attribute.name || attribute.type }}: </b>
+                            </div>
+                            <div v-if="decodedInput?.function == 'transfer' && attribute.name == 'amount'">
+                                {{ Number(attribute.value) / Math.pow(10, erc20TokenDecimals)  }} {{ erc20TokenSymbol  }}
+                            </div>
+                            <div v-else-if="attribute.type == 'address'" @click="$router.push('../account/' + attribute.value)">
+                                <copy-box role="button" :show-qr="true" :text="attribute.value" :short="$vuetify.display.xs ? 12 : undefined" />
+                            </div>
+                            <div v-else>
+                                {{ attribute.value }}
+                            </div>
+                        </v-col>
+                    </v-row>
+                </v-col>
+                <v-col cols="12" class="break-word" v-if="isSmartcontractInteraction && !decodedInput">
+                    <b>{{ $t('transaction.inputRaw') }}</b>
+                </v-col>
+                <v-col cols="12" class="break-word" v-if="isSmartcontractInteraction && !decodedInput">
+                    {{ tx.input }}
+                </v-col>
+            </v-row>
+        </base-sheet>
+    </div>
 </template>
 
 <script lang="ts" setup>
-import { Ref, computed, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { Ref, ref } from 'vue';
 import { GetTransactionReturnType, decodeFunctionData, GetBytecodeReturnType, erc20Abi } from 'viem';
 import { whatsabi } from "@shazow/whatsabi";
 
 import NotFound from '@/components/404.vue'
-import ChainContent from '@/components/ChainContent.vue';
 import Loading from '@/components/Loading.vue';
 import BaseSheet from '@/components/BaseSheet.vue';
 import CopyBox from '@/components/CopyBox.vue';
@@ -68,12 +64,17 @@ type DecodedTxInput = {
     attributes: { name: string, value: string, type: string}[]
 }
 
-const route = useRoute()
 const { chainClients } = storeToRefs(useBlockchainStore())
 const { chainIdFromRoute } = storeToRefs(useAppStore())
 
+const props = defineProps({
+    txHash: {
+        type: String,
+        required: true,
+    }
+})
+
 const isSmartcontractInteraction = ref(false)
-const ethTxHash = computed(() => (route.params as {ethTxHash: `0x${string}`}).ethTxHash)
 const tx: Ref<GetTransactionReturnType|undefined> = ref()
 const decodedInput: Ref<DecodedTxInput|undefined> = ref()
 const erc20TokenSymbol: Ref<string> = ref('')
@@ -164,7 +165,7 @@ function loadAndDecodeTxInput() {
     })
 }
 
-await loadTransaction(ethTxHash.value)
+await loadTransaction(props.txHash as `0x${string}`)
 
 </script>
 <style>

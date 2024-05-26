@@ -1,19 +1,19 @@
 <template>
     <div style="visibility: hidden;"></div>
+    <cosmos-tx
+        v-if="!txHash.startsWith('0x')"
+        :txHash="txHash" />
+    <evm-tx
+        v-if="txHash.startsWith('0x')"
+        :txHash="txHash" />
 </template>
 <script lang="ts" setup>
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
+import CosmosTx from './cosmos/CosmosTx.vue';
+import EvmTx from './evm/EvmTx.vue';
 
 const route = useRoute()
-const router = useRouter()
 
 const txHash = (route.params as {txHash: string|undefined}).txHash || ''
-
-if((route.params as {txHash: string|undefined}).txHash?.startsWith('0x')) {
-    router.push('./evm/' + txHash)
-} else {
-    router.push('./cosmos/' + txHash)
-}
-
 </script>
   

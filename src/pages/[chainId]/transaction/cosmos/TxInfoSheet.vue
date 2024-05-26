@@ -29,7 +29,8 @@
                 <b>{{  $t('transaction.signers') }}</b>
             </v-col>
             <v-col cols="12" role="button" v-for="signer in signers" :key="signer.bech32">
-                <copy-box 
+                <copy-box
+                    @click="$router.push('../account/' + signer.bech32)"
                     :show-qr="true"
                     :text="signer.bech32" :short="$vuetify.display.xs ? 12 : undefined" />
                 <!-- <copy-box
@@ -47,7 +48,6 @@
             </v-col>
             <v-col cols="12" v-if="txEthHash" style="overflow-wrap: break-word;">
                 <copy-box :text="txEthHash" :short="$vuetify.display.xs ? 12 : undefined" />
-                <router-link role="button" color="orange-darken-4" :to="'../evm/'+txEthHash">{{ $t('transaction.inspectEvmTx') }}</router-link>
             </v-col>
         </v-row>
     </base-sheet>

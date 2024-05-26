@@ -20,12 +20,12 @@
 
                 <v-row no-gutters>
                     <v-col class="flex-column" @click="navigateToAccount">
-                        <copy-box 
+                        <copy-box role="button" 
                             :show-qr="true"
                             :short="$vuetify.display.xs ? 12 : undefined"
                             :text="tx?.from?.toString()" />
                         <div v-if="chainConfig?.keplr && tx.value > 0" class="d-flex flex-row">
-                            (<copy-box
+                            (<copy-box role="button"
                             :show-qr="true"
                             :short="$vuetify.display.xs ? 12 : undefined"
                             :text="toBech32(chainConfig?.keplr?.bech32Config.bech32PrefixAccAddr || '', fromHex(tx?.from.replace('0x', '')))" />)
@@ -39,12 +39,12 @@
             <v-col cols="12" class="break-word" v-if="tx.to">
                 <v-row no-gutters>
                     <v-col class="flex-column" @click="navigateToAccount">
-                        <copy-box 
+                        <copy-box role="button" 
                             :show-qr="true"
                             :short="$vuetify.display.xs ? 12 : undefined"
                             :text="tx.to?.toString()" />
                         <div v-if="chainConfig?.keplr && tx.value > 0" class="d-flex flex-row">
-                            (<copy-box
+                            (<copy-box role="button"
                             :show-qr="true"
                             :short="$vuetify.display.xs ? 12 : undefined"
                             :text="toBech32(chainConfig?.keplr?.bech32Config.bech32PrefixAccAddr || '', fromHex(tx?.to.replace('0x', '')))" />)
@@ -62,7 +62,7 @@
                 <b>{{  $t('transaction.hash') }}</b>
             </v-col>
             <v-col cols="12" style="overflow-wrap: break-word;">
-                <copy-box :text="tx.hash" />
+                <copy-box role="button" :text="tx.hash" />
             </v-col>
         </v-row>
     </base-sheet>
@@ -104,7 +104,7 @@ const nativeCurrency = computed(() => {
 })
 
 function navigateToAccount() {
-    router.push('../../account/' + (chainConfig.value?.keplr ? toBech32(chainConfig.value?.keplr?.bech32Config.bech32PrefixAccAddr || '', fromHex(props.tx?.from.replace('0x', ''))) : props.tx?.from))
+    router.push('../account/' + (chainConfig.value?.keplr ? toBech32(chainConfig.value?.keplr?.bech32Config.bech32PrefixAccAddr || '', fromHex(props.tx?.from.replace('0x', ''))) : props.tx?.from))
 }
 
 </script>

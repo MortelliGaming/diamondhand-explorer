@@ -2,7 +2,7 @@
     <v-row no-gutters class="d-flex flex-row">
         <v-col class="text-right justify-start d-flex align-center">
             <span><b>{{ assetBalance?.displayDenom }}</b></span>
-            <span class="pl-1">{{ numeral(assetBalance?.displayAmount).format((assetBalance?.displayAmount || 1.1) >= 1.0 ? `` : `'0.000000`) }}</span>
+            <span class="pl-1">{{ assetBalance?.displayAmount }}</span>
             <span v-if="assetBalance?.interChain" class="pl-1">
                 <v-chip label size="xx-small" color="green-lighten-4">
                     <div class="pl-2 pr-2">
@@ -16,7 +16,6 @@
 <script lang="ts" setup>
 import { PropType, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import numeral from 'numeral';
 import { ExplorerAsset, useCoinsStore } from '@/store/coins';
 import { useAppStore } from '@/store/app';
 
