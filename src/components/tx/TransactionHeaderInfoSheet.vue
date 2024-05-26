@@ -20,6 +20,7 @@ import { type Component, PropType, computed, markRaw } from 'vue';
 import { decodeTxRaw } from '@cosmjs/proto-signing';
 
 import MsgSend from './messagerow/MsgSend.vue';
+import MsgMultiSend from './messagerow/MsgMultiSend.vue';
 import Default from './messagerow/Default.vue';
 import { sha256 } from '@cosmjs/crypto';
 import CopyBox from '@/components/CopyBox.vue';
@@ -33,6 +34,7 @@ const props = defineProps({
 
 const componentMapping: Record<string, Component> = {
     '/cosmos.bank.v1beta1.MsgSend': markRaw(MsgSend),
+    '/cosmos.bank.v1beta1.MsgMultiSend': markRaw(MsgMultiSend),
 }
 const decodedTx = computed(() => {
     return decodeTxRaw(props.tx)
