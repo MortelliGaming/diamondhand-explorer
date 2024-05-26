@@ -32,21 +32,22 @@
                     <v-row no-gutters style="max-height: 300px; overflow-y:scroll;">
                         <v-col cols="12">
                             <v-row no-gutters>
-                                <v-col cols="12" class="break-word text-left">
-                                    <asset
-                                        v-for="balance in balances.sort((a, b) => {
-                                            const aHasSlash = a.denom.includes('/');
-                                            const bHasSlash = b.denom.includes('/');
+                                <v-col
+                                    v-for="balance in balances.sort((a, b) => {
+                                        const aHasSlash = a.denom.includes('/');
+                                        const bHasSlash = b.denom.includes('/');
 
-                                            if (aHasSlash && !bHasSlash) {
-                                                return 1; // Move 'a' after 'b'
-                                            } else if (!aHasSlash && bHasSlash) {
-                                                return -1; // Move 'a' before 'b'
-                                            } else {
-                                                return 0; // Keep the original order
-                                            }
-                                        })"
-                                        :key="'balance' + balance.denom"
+                                        if (aHasSlash && !bHasSlash) {
+                                            return 1; // Move 'a' after 'b'
+                                        } else if (!aHasSlash && bHasSlash) {
+                                            return -1; // Move 'a' before 'b'
+                                        } else {
+                                            return 0; // Keep the original order
+                                        }
+                                    })"
+                                    :key="'balance' + balance.denom"
+                                    cols="12" class="break-word text-left">
+                                    <asset
                                         :balance="balance" />
                                 </v-col>
                             </v-row>
