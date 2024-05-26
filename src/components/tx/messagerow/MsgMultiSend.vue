@@ -8,7 +8,7 @@
         <span class="pr-1">{{ $t('transaction.send') }}</span>
         <asset :balance="asset"/>
         <span class="pl-1 pr-1">{{ $t('transaction.to') }}</span>
-        <copy-box :text="output.address" :short="8" />
+        <copy-box :text="output.address" :short="6" />
     </v-col>
 </v-row>
 </template>
