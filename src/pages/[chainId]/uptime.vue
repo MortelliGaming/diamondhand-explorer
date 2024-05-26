@@ -1,6 +1,7 @@
 <template>
   <chain-content>
-    <base-sheet :title="$t('module.uptime')"  style="max-height: 80vh; overflow-y: scroll; width: 100%;">
+    <base-sheet
+      :title="$t('module.uptime')"  style="max-height: 80vh; overflow-y: scroll; overflow-x:hidden; width: 100%;">
       <v-row class="pl-2 pr-2">
         <block-validator-signatures
           v-for="(val) in paginatedValidators"
@@ -59,14 +60,6 @@ const paginatedValidators = computed(() => {
   return sortedActiveValidators.value.slice((page.value - 1) * numPerPage, (page.value - 1) * numPerPage + numPerPage)
 })
 
-function getElements<T>(arr: T[], x: number, y: number): T[] {
-    const maxIndex = arr.length - 1;
-    if (y + x > maxIndex) {
-        return arr.slice(y);
-    } else {
-        return arr.slice(y, y + x);
-    }
-}
 
 </script>
 <style lang="scss" scoped>
