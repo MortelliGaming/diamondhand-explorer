@@ -39,7 +39,7 @@ const { latestBlocks } = storeToRefs(useBlockchainStore())
 const numTxsPerPage = 12
 const pageNum = ref(1)
 const numPages = computed(() => {
-    return Math.ceil(transactions.value.length / numTxsPerPage)
+    return Math.ceil(transactions.value?.length / numTxsPerPage)
 })
 
 const transactions = computed(() => {
@@ -47,7 +47,7 @@ const transactions = computed(() => {
 })
 
 const paginatedTxs = computed(() => {
-    return transactions.value.slice((pageNum.value - 1) * numTxsPerPage, ((pageNum.value - 1) * numTxsPerPage) + numTxsPerPage)
+    return transactions.value?.slice((pageNum.value - 1) * numTxsPerPage, ((pageNum.value - 1) * numTxsPerPage) + numTxsPerPage)
 })
 
 function calcTxHash(tx: Uint8Array) {

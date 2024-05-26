@@ -4,13 +4,13 @@
         cols="12"
         class="d-flex">
         <b>
-            {{ props.message.typeUrl.split('.')[message.typeUrl.split('.').length -1]}}
+            {{ $t('message.' + displayMessage)?.replace('message.','') }}
         </b>
     </v-col>
 </v-row>
 </template>
 <script lang="ts" setup>
-import { PropType } from 'vue';
+import { PropType, ref } from 'vue';
 import { DecodeObject } from '@cosmjs/proto-signing';
 
 const props = defineProps({
@@ -19,4 +19,6 @@ const props = defineProps({
         required: true,
     }
 })
+
+const displayMessage = ref(props.message.typeUrl.split('.')[props.message.typeUrl.split('.').length -1])
 </script>

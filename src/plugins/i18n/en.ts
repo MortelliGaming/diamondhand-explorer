@@ -119,7 +119,8 @@ export const en = {
         language: 'Language',
         from: 'From',
         to: 'To',
-        amount: 'Amount'
+        amount: 'Amount',
+        MsgEthereumTx: 'EVM Transaction'
     },
     blocks: {
         blocks: 'Blocks',
