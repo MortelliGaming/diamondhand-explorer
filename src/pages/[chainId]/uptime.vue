@@ -5,7 +5,7 @@
       <v-row class="pl-2 pr-2">
         <block-validator-signatures
           v-for="(val) in paginatedValidators"
-          :key="val.operatorAddress"
+          :key="val.operatorAddress + '_i'"
           :rank="(sortedActiveValidators.indexOf(val) + 1).toString()"
           :validator="val" />
       </v-row>
@@ -47,7 +47,7 @@ const numPerPage = 16
 const page = ref(1)
 const numPages = computed(() => {
   const numPagesDecimal = sortedActiveValidators.value?.length / numPerPage;
-  return Math.ceil(numPagesDecimal);
+  return Math.ceil(numPagesDecimal  || 0);
 })
 
 if(!validators.value[chainIdFromRoute.value || '']) {
@@ -57,7 +57,7 @@ if(!validators.value[chainIdFromRoute.value || '']) {
 const sortedActiveValidators = computed(() => validators.value[chainIdFromRoute.value]?.filter((v) => v.status == BondStatus.BOND_STATUS_BONDED).sort((a,b) => Number(b.tokens) - Number(a.tokens)))
 
 const paginatedValidators = computed(() => {
-  return sortedActiveValidators.value.slice((page.value - 1) * numPerPage, (page.value - 1) * numPerPage + numPerPage)
+  return sortedActiveValidators.value?.slice((page.value - 1) * numPerPage, (page.value - 1) * numPerPage + numPerPage)
 })
 
 
