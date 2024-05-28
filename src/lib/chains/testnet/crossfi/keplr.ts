@@ -6,7 +6,7 @@ export const keplr: ChainInfo = {
   "rest": "https://crossfitestnetapi.diamondhand.capital",
   "chainId": "crossfi-evm-testnet-1",
   "chainName": "CrossFi Testnet",
-  "chainSymbolImageUrl": "https://media.licdn.com/dms/image/D4E0BAQEs0PUwKhAw9g/company-logo_200_200/0/1699597847512/crossfichain_logo?e=2147483647&v=beta&t=36793GMlIOqcltdR6gIdZhOpT8OpANC52XwQ4gewqmg",
+  "chainSymbolImageUrl": "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/crossfi-evm-testnet/crossfi.png",
   "nodeProvider": {
     "name": "CrossFi Foundation",
     "website":"https://crossfi.org/",
@@ -30,28 +30,13 @@ export const keplr: ChainInfo = {
   },
   "currencies": [
     {
-      "coinDenom": "MPX",
-      "coinMinimalDenom": "mpx",
-      "coinDecimals": 18
-    },{
       "coinDenom": "XFI",
       "coinMinimalDenom": "xfi",
       "coinDecimals": 18
-    },{
-      "coinDenom": "XFT",
-      "coinMinimalDenom": "xft",
-      "coinDecimals": 18
-    },{
-      "coinDenom": "eMPX",
-      "coinMinimalDenom": "empx",
-      "coinDecimals": 18
-    },{
-      "coinDenom": "exe",
-      "coinMinimalDenom": "EXE",
-      "coinDecimals": 18
-    },{
-      "coinDenom": "xUSD",
-      "coinMinimalDenom": "xusd",
+    },
+    {
+      "coinDenom": "MPX",
+      "coinMinimalDenom": "mpx",
       "coinDecimals": 18
     }
   ],
@@ -77,9 +62,5 @@ export const keplr: ChainInfo = {
       }
     }
   ],
-  "features": ["eth-address-gen", "eth-key-sign", "ibc-transfer", "ibc-go", "cosmwasm"],
-  "evm": {
-    "rpc": "https://evmrpc-crossfi-testnet.diamondhand.capital",
-    "chainId": 4157,
-  }
+  "features": ["eth-address-gen", "eth-key-sign"]
 }
