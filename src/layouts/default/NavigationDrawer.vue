@@ -98,7 +98,6 @@
             {{ $t('module.uptime')}}
           </router-link>
         </v-list-item>
-        <v-divider />
       </v-list-group>
         <!--
         <v-list-item class="link-item" role="button" :active="'/' + chainName + '/supply' === router.currentRoute.value.fullPath" style="padding-left: 25px !important; font-size: small;" prepend-icon="mdi-hand-coin">
@@ -120,6 +119,7 @@
       </v-list-group>
       <v-divider />
     -->
+      <v-divider />
       <v-list-group :value="'tools'">
         <template v-slot:activator="{ props }">
           <v-list-item

@@ -1,8 +1,8 @@
 <template>
   <v-container>
-    <base-sheet>
+    <base-sheet :title="$t('module.wallethelper')">
       <v-row no-gutters
-        class="d-flex align-center"
+        class="d-flex align-center pt-2"
         v-for="chain in availableChains"
         :key="chain.name">
         <v-col cols="4">
@@ -27,7 +27,71 @@
                 style="height: 25px;width: 25px;"
                 src="https://assets-global.website-files.com/63eb7ddf41cf5b1c8fdfbc74/63fc1eaf76d6a3bd547b017c_Keplr_icon_ver.1.3_2.svg" />
             </v-btn>
-            <v-btn flat :icon="'mdi-eye'"></v-btn>
+            <v-dialog max-width="500">
+              <template v-slot:activator="{ props: activatorProps }">
+                <v-btn
+                  flat
+                  v-bind="activatorProps"
+                  icon="mdi-eye-outline"
+                ></v-btn>
+              </template>
+
+              <template v-slot:default="{ isActive }">
+                <v-card>
+                  <v-card-title>
+                    <div class="d-flex pl-5 align-center">
+                      <div>{{ chain.name }}</div>
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        :icon="'mdi-close'"
+                        flat
+                        @click="isActive.value = false"
+                      ></v-btn>
+                    </div>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-container>
+                      <div v-if="chain.keplr">
+                        <div class="d-flex align-center">
+                          <div class="pr-2"><b>{{ 'Keplr' }}</b></div>
+                          <v-btn
+                            flat v-if="chain.keplr"
+                            @click="() =>suggestKeplrchain(chain.keplr!)">
+                            <v-img
+                              style="height: 25px;width: 25px;"
+                              src="https://assets-global.website-files.com/63eb7ddf41cf5b1c8fdfbc74/63fc1eaf76d6a3bd547b017c_Keplr_icon_ver.1.3_2.svg" />
+                              <div class="pl-1">{{ $t('walletHelper.add') }}</div>
+                          </v-btn>
+                        </div>
+                        <div style="max-height: 150px; overflow-y: scroll;">
+                          <pre class="text-caption">
+                            {{ '\n' + JSON.stringify(chain.keplr, null, 2) }}
+                          </pre>
+                        </div>
+                      </div>
+                      <div v-if="chain.evm" class="pt-1">
+                        <v-divider class="pt-1 pb-1" />
+                        <div class="d-flex align-center">
+                          <div class="pr-2"><b>{{ 'Metamask' }}</b></div>
+                          <v-btn flat v-if="chain.evm"
+                            @click="() =>suggestMetaMaskChain(chain.evm!)">
+                            <v-img
+                              style="height: 25px;width: 25px;"
+                              src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/2048px-MetaMask_Fox.svg.png" />
+                               <div class="pl-1">{{ $t('walletHelper.add') }}</div>
+                          </v-btn>
+                        </div>
+                        <div style="max-height: 150px; overflow-y: scroll;">
+                          <pre class="text-caption">
+                            {{ '\n' + JSON.stringify(chain.evm, null, 2) }}
+                          </pre>
+                        </div>
+                      </div>
+                    </v-container>
+                  </v-card-text>
+                </v-card>
+              </template>
+            </v-dialog>
           </v-responsive>
         </v-col>
         <v-col cols="12">

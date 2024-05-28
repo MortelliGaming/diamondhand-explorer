@@ -166,5 +166,8 @@ export const en = {
         balances: 'Balances',
         delegations: 'Delegations',
         transactions: 'Transactions',
+    },
+    walletHelper: {
+        add: 'Add'
     }
 }
