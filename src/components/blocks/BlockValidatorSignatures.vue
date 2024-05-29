@@ -17,7 +17,7 @@
             <v-row cols="100" no-gutters class="fill-height" style="margin-right: -2px;"> 
               <block-validator-signature-indicator 
                 v-for="(blockIdFlag, i) in latestBlockValidatorSignatures || []"
-                :key="latestBlockHeights[i]"
+                :key="latestBlockHeights[i] + validator.operatorAddress"
                 :blockIdFlag="blockIdFlag"
                 :height="latestBlockHeights[i] || 0"
                 :validatorConsensusAddress="validatorConsensusAddress"

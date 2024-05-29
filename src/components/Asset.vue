@@ -20,7 +20,7 @@
     </span>
 </template>
 <script lang="ts" setup>
-import { PropType, computed, ref } from 'vue';
+import { PropType, computed, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { ExplorerAsset, useCoinsStore } from '@/store/coins';
 import { useAppStore } from '@/store/app';
@@ -51,7 +51,9 @@ const formatScientificNotation= computed(() => {
     ? longAmountString.value.split('0.')[1].match(/^0+/)![0].length
     : 0
     const append = longAmountString.value.split('0.')[1].substring(numZeros, numZeros + 4).replace(/0+$/, '').replace(/\.+$/, '')
-    return `0.0<sub><b>${numZeros}</b></sub>${append}`;
+    const append2 = roundLastDecimal(parseFloat('0.' + append))
+    console.log(roundLastDecimal(parseFloat('0.' + append)))
+    return `0.0<sub><b>${numZeros}</b></sub>${append2.toString().replace('0.', '')}`;
   }
 
   const [mantissa, exponent] = (assetBalance.value?.displayAmount || 0).toString().split('e-');
@@ -65,8 +67,15 @@ const formatScientificNotation= computed(() => {
   return `0.0<sub><b>${exponentValue - addExponent}</b></sub>${lastFiveDigits}`;
 })
 
-findAsset(props.balance, chainIdFromRoute.value).then((res) => {
-    assetBalance.value = res;
+function roundLastDecimal(num: number): number {
+    return Math.round(num * 1000) / 1000;
+}
+
+watch(props, () => {
+    console.log('asset updated')
+    findAsset(props.balance, chainIdFromRoute.value).then((res) => {
+        assetBalance.value = res;
+    })
 })
 
 </script>

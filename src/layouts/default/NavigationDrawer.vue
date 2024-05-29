@@ -135,6 +135,21 @@
         </v-list-item>
       </v-list-group>
       <v-divider />
+      <v-list-group :value="'meme'">
+        <template v-slot:activator="{ props }">
+          <v-list-item
+            v-bind="props"
+            :title="$t('module.memeTokens')"
+            prepend-icon="mdi-teddy-bear"
+          ></v-list-item>
+        </template>
+        <v-list-item class="link-item" role="button" :active="router.currentRoute.value.path == '/memecoin/sloth'" style="padding-left: 25px !important; font-size: small;" prepend-icon="mdi-mushroom-outline">
+          <router-link class="routerlink" :to="'/memecoin/sloth'">
+            {{ $t('module.sloth')}}
+          </router-link>
+        </v-list-item>
+      </v-list-group>
+      <v-divider />
       <v-list-group :value="'links'">
         <template v-slot:activator="{ props }">
           <v-list-item

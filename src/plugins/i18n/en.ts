@@ -30,6 +30,8 @@ export const en = {
         wallethelper: 'Wallet Helper',
         website: 'Website',
         twitter: 'X (Twitter)',
+        sloth: 'Sloth Meme Token',
+        memeTokens: 'Meme'
     },
     validator: {
         rank: 'Rank',
@@ -169,5 +171,10 @@ export const en = {
     },
     walletHelper: {
         add: 'Add'
+    },
+    sloth: {
+        sale: 'Get Yourself Some Sloths Before',
+        ends: 'Sale End:',
+        addresses: 'Team And Token Addresses'
     }
 }

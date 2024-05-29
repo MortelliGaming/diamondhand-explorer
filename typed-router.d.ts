@@ -64,6 +64,7 @@ declare module 'vue-router/auto/routes' {
     '/[chainId]/transactions': RouteRecordInfo<'/[chainId]/transactions', '/:chainId/transactions', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,
     '/[chainId]/uptime': RouteRecordInfo<'/[chainId]/uptime', '/:chainId/uptime', { chainId: ParamValue<true> }, { chainId: ParamValue<false> }>,
     '/[chainId]/validator/[valoper]': RouteRecordInfo<'/[chainId]/validator/[valoper]', '/:chainId/validator/:valoper', { chainId: ParamValue<true>, valoper: ParamValue<true> }, { chainId: ParamValue<false>, valoper: ParamValue<false> }>,
+    '/memecoin/sloth': RouteRecordInfo<'/memecoin/sloth', '/memecoin/sloth', Record<never, never>, Record<never, never>>,
     '/tools/[...all]': RouteRecordInfo<'/tools/[...all]', '/tools/:all(.*)', { all: ParamValue<true> }, { all: ParamValue<false> }>,
     '/tools/wallethelper': RouteRecordInfo<'/tools/wallethelper', '/tools/wallethelper', Record<never, never>, Record<never, never>>,
     '/wallet/[...all]': RouteRecordInfo<'/wallet/[...all]', '/wallet/:all(.*)', { all: ParamValue<true> }, { all: ParamValue<false> }>,
