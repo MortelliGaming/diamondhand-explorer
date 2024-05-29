@@ -135,6 +135,7 @@
         </v-list-item>
       </v-list-group>
       <v-divider />
+      <!--
       <v-list-group :value="'meme'">
         <template v-slot:activator="{ props }">
           <v-list-item
@@ -150,6 +151,7 @@
         </v-list-item>
       </v-list-group>
       <v-divider />
+      -->
       <v-list-group :value="'links'">
         <template v-slot:activator="{ props }">
           <v-list-item

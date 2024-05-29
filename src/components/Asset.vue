@@ -77,5 +77,8 @@ watch(props, () => {
         assetBalance.value = res;
     })
 })
+findAsset(props.balance, chainIdFromRoute.value).then((res) => {
+    assetBalance.value = res;
+})
 
 </script>
