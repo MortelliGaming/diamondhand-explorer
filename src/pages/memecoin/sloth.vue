@@ -19,7 +19,7 @@
                 <v-col cols="12" style="max-height: 250px; overflow-y:scroll; overflow-x: hidden;">
                    <pre
                     style="white-space: pre-wrap;"
-                    v-html="marked(slothDescription)"></pre>
+                    v-html="marked(t('tokenDescription'))"></pre>
                 </v-col>
             </v-row>
         </base-sheet>
@@ -154,21 +154,23 @@ import { marked } from 'marked';
 import BaseSheet from '@/components/BaseSheet.vue';
 import TimeFormatter from '@/components/TimeFormatter.vue';
 import Asset from '@/components/Asset.vue';
+import { messages } from './texts';
 // import { cronos } from 'viem/chains'
 import { crossfi } from '@/lib/chains/testnet'
 
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { createPublicClient, createWalletClient, custom, erc20Abi, http } from 'viem';
 import { saleContractABI } from './saleContract';
-
-
-import { slothDescription } from './slothDescription';
 
 import slothTokenImage from '@/assets/slothToken.webp'
 
 const tokenAddress = '0xeaAc935906F34C0B3ca090E74B48a4EE8C2F9945'
 const presaleAddress = '0xe71fEc2Bbb4155E31aA8F6D75De9e5DB8a5e7DFc'
 
+const { t } = useI18n({
+    messages
+})
 
 const totalTokenSupply = ref(0n)
 const tokenDecimals = ref(18)

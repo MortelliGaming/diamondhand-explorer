@@ -1,4 +1,4 @@
-export const slothDescription = `
+export const en = `
 ## The Sloth Awakens: Unleash Your Inner Diamond Hands 💎🙌
 
 Introducing the **SlothToken** - a revolutionary meme token that celebrates the carefree lifestyle of sloths, brought to you by the unstoppable hustlers at DiamondHand. This token is set to take the CrossFi EVM testnet by storm, proving that even the laziest of creatures can achieve greatness (with a little help from some diamond-handed legends).
