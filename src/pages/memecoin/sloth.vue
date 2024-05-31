@@ -131,7 +131,7 @@
                         <v-col>Reserve Wallet</v-col>
                         <v-col class="text-right">
                             <a target="_blank" :href="`https://cronoscan.com/address/${'0x35781255CCbF27F97bD56590eaE4Cf1B9334fC32'}`">
-                                {{ '0x35781255CCbF27F97bD56590eaE4Cf1B9334fC32' }}
+                                {{ '0xeaAc935906F34C0B3ca090E74B48a4EE8C2F9945' }}
                             </a>
                         </v-col>
                     </v-row>
@@ -139,7 +139,7 @@
                         <v-col>Dev Wallet</v-col>
                         <v-col class="text-right">
                             <a target="_blank" :href="`https://cronoscan.com/address/${'0xE2e820b096AFC22D53ACD49560bfEEc301FC5F5d'}`">
-                                {{ '0xE2e820b096AFC22D53ACD49560bfEEc301FC5F5d' }}
+                                {{ '0xeaAc935906F34C0B3ca090E74B48a4EE8C2F9945' }}
                             </a>
                         </v-col>
                     </v-row>
