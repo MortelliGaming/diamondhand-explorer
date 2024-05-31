@@ -276,7 +276,7 @@ const BLOCK_TIME_SAMPLE_SIZE = 10;
 
 const publicClient = createPublicClient({
     chain: tokenChain,
-    transport: custom(window.ethereum!)
+    transport: http()
 });
 
 async function getAverageBlockTime(): Promise<number> {
