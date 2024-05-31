@@ -6,7 +6,7 @@ export const keplr: ChainInfo = {
   "rest": "https://crossfitestnetapi.diamondhand.capital",
   "chainId": "crossfi-evm-testnet-1",
   "chainName": "CrossFi Testnet",
-  "chainSymbolImageUrl": "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/crossfi-evm-testnet/crossfi.png",
+  "chainSymbolImageUrl": "https://crossfi.org/wp-content/uploads/2024/03/Icon-version-%E2%80%93-Color-CROSSFI-CHAIN.png",
   "nodeProvider": {
     "name": "CrossFi Foundation",
     "website":"https://crossfi.org/",
