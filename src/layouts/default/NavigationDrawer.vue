@@ -135,8 +135,7 @@
         </v-list-item>
       </v-list-group>
       <v-divider />
-      <!--
-      <v-list-group :value="'meme'">
+      <v-list-group :value="'meme'" v-if="isTestnet">
         <template v-slot:activator="{ props }">
           <v-list-item
             v-bind="props"
@@ -151,7 +150,6 @@
         </v-list-item>
       </v-list-group>
       <v-divider />
-      -->
       <v-list-group :value="'links'">
         <template v-slot:activator="{ props }">
           <v-list-item
@@ -190,7 +188,7 @@ import SearchComponent from './SearchComponent.vue';
 
 const router = useRouter();
 
-const { isNavigationDrawerOpen } = storeToRefs(useAppStore())
+const { isNavigationDrawerOpen, isTestnet } = storeToRefs(useAppStore())
 const { availableChains, availableChainNames } = storeToRefs(useBlockchainStore())
 
 const open = ref(['wallet'])

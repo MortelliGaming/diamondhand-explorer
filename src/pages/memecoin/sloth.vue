@@ -3,11 +3,11 @@
         <div class="text-h6">
             {{ $t('module.sloth') }}
             {{ 'on' }}
-            <v-avatar>
-                <v-img src="https://cryptologos.cc/logos/cronos-cro-logo.png" />
+            <v-avatar size="x-large">
+                <v-img src="https://crossfi.org/wp-content/uploads/2024/03/Icon-version-%E2%80%93-Color-CROSSFI-CHAIN.png" />
             </v-avatar>
         </div>
-        <div class="text-right flex-grow-1">
+        <div class="text-right flex-grow-1 d-flex align-center justify-end">
             <v-avatar>
                 <v-img class="sloth-token" :src="slothTokenImage" />
             </v-avatar>
@@ -56,14 +56,14 @@
                         <v-col>Current Presale Price</v-col>
                         <v-col>
                             <asset
-                                :balance="{ amount: (Number(presaleCurrentPrice) / Math.pow(10, Number(tokenChain.nativeCurrency.decimals))).toString(), denom: tokenChain.nativeCurrency.symbol}" />
+                                :balance="{ amount: (Number(presaleCurrentPrice)).toString(), denom: tokenChain.nativeCurrency.symbol.toLowerCase()}" />
                         </v-col>
                    </v-row>
                    <v-row no-gutters>
-                        <v-col>Total CRO spent</v-col>
+                        <v-col>Total {{ tokenChain.nativeCurrency.symbol }} spent</v-col>
                         <v-col>
                             <asset
-                                :balance="{ amount: (Number(presaleCroSpent || 0) / Math.pow(10, Number(tokenChain.nativeCurrency.decimals))).toString(), denom: tokenChain.nativeCurrency.symbol}" />
+                                :balance="{ amount: (Number(presaleCroSpent || 0)).toString(), denom: tokenChain.nativeCurrency.symbol.toLowerCase()}" />
                         </v-col>
                    </v-row>
                    <v-row no-gutters>
@@ -91,7 +91,7 @@
                                 <div class="pl-1">
                                     (<asset
                                         :balance="{
-                                            amount: (parseInt(croPrice.amount) / Math.pow(10, tokenChain.nativeCurrency.decimals)).toString(),
+                                            amount: (parseInt(croPrice.amount)).toString(),
                                             denom: croPrice.denom
                                         }" />)
                                 </div>
@@ -154,7 +154,9 @@ import { marked } from 'marked';
 import BaseSheet from '@/components/BaseSheet.vue';
 import TimeFormatter from '@/components/TimeFormatter.vue';
 import Asset from '@/components/Asset.vue';
-import { cronos } from 'viem/chains'
+// import { cronos } from 'viem/chains'
+import { crossfi } from '@/lib/chains/testnet'
+
 import { computed, ref } from 'vue';
 import { createPublicClient, createWalletClient, custom, erc20Abi, http } from 'viem';
 import { saleContractABI } from './saleContract';
@@ -164,12 +166,12 @@ import { slothDescription } from './slothDescription';
 
 import slothTokenImage from '@/assets/slothToken.webp'
 
-const tokenAddress = '0xa3f16e70a4e7fd74e017b10ec1f7db4b58f54b72'
-const presaleAddress = '0x2555e0bf3ea854ee5e4188d91a9c428fac961da2'
+const tokenAddress = '0xeaAc935906F34C0B3ca090E74B48a4EE8C2F9945'
+const presaleAddress = '0xe71fEc2Bbb4155E31aA8F6D75De9e5DB8a5e7DFc'
 
 
 const totalTokenSupply = ref(0n)
-const tokenDecimals = ref(0)
+const tokenDecimals = ref(18)
 const tokenSymbol = ref('')
 
 const presaleCurrentPrice = ref(0n)
@@ -182,12 +184,15 @@ const presaleEnddate = ref(new Date())
 
 const buyAmount = ref(0)
 const croPrice = computed(() => {
-    return { amount: (buyAmount.value * Number(presaleCurrentPrice.value)).toString(), denom: tokenChain.nativeCurrency.symbol }
+    return { amount: (buyAmount.value * Number(presaleCurrentPrice.value)).toString(), denom: tokenChain.nativeCurrency.symbol.toLowerCase() }
 })
 
-const tokenChain = cronos;
+const tokenChain = crossfi.evm!;
 
 async function loadTokenInfo() {
+    if(!tokenChain) {
+        return;
+    }
     const viemClient =  createPublicClient({
         transport: http(),
         chain: tokenChain
@@ -200,14 +205,7 @@ async function loadTokenInfo() {
         
         tokenSymbol.value = symbol
     })
-    await viemClient.readContract({
-        address: tokenAddress,
-        abi: erc20Abi,
-        functionName: 'decimals'
-    }).then(decimals => {
-        
-        tokenDecimals.value = decimals
-    })
+
     viemClient.readContract({
         address: tokenAddress,
         abi: erc20Abi,

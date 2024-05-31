@@ -73,5 +73,6 @@ export const erc20Contracts = [
     "0x6ece61605749e3724859cb0d60c15724993c9459",
     "0x9c10cc07df185ccb59f064e4b5e860330fed7326",
     "0x7d905c66305def0007d4e1e2a24d5ec9eff443a5",
-    "0xdbe735426c7dc01f0f153f9c769582a3b48784ec"
+    "0xdbe735426c7dc01f0f153f9c769582a3b48784ec",
+    "0xeaAc935906F34C0B3ca090E74B48a4EE8C2F9945" // Diamondhanded Sloth
   ]
