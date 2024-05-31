@@ -114,7 +114,7 @@
                     <v-row no-gutters>
                         <v-col>Sale Contract</v-col>
                         <v-col class="text-right">
-                            <a target="_blank" :href="`https://cronoscan.com/address/${presaleAddress}`">
+                            <a target="_blank" :href="`https://test.xfiscan.com/contracts/${presaleAddress}`">
                                 {{ presaleAddress }}
                             </a>
                         </v-col>
@@ -122,7 +122,7 @@
                     <v-row no-gutters class="pt-1">
                         <v-col>Sale Token Contract</v-col>
                         <v-col class="text-right">
-                            <a target="_blank" :href="`https://cronoscan.com/token/${tokenAddress}`">
+                            <a target="_blank" :href="`https://test.xfiscan.com/tokens/${tokenAddress}`">
                                 {{ tokenAddress }}
                             </a>
                         </v-col>
@@ -130,16 +130,16 @@
                     <v-row no-gutters class="pt-1">
                         <v-col>Reserve Wallet</v-col>
                         <v-col class="text-right">
-                            <a target="_blank" :href="`https://cronoscan.com/address/${'0x35781255CCbF27F97bD56590eaE4Cf1B9334fC32'}`">
-                                {{ '0xeaAc935906F34C0B3ca090E74B48a4EE8C2F9945' }}
+                            <a target="_blank" :href="`https://test.xfiscan.com/addresses/${'0x2277a2089C2d90Cd342B1ed3670Ed0eF3030EaE8'}`">
+                                {{ '0x2277a2089C2d90Cd342B1ed3670Ed0eF3030EaE8' }}
                             </a>
                         </v-col>
                     </v-row>
                     <v-row no-gutters class="pt-1">
                         <v-col>Dev Wallet</v-col>
                         <v-col class="text-right">
-                            <a target="_blank" :href="`https://cronoscan.com/address/${'0xE2e820b096AFC22D53ACD49560bfEEc301FC5F5d'}`">
-                                {{ '0xeaAc935906F34C0B3ca090E74B48a4EE8C2F9945' }}
+                            <a target="_blank" :href="`https://test.xfiscan.com/addresses/${'0x2277a2089C2d90Cd342B1ed3670Ed0eF3030EaE8'}`">
+                                {{ '0x2277a2089C2d90Cd342B1ed3670Ed0eF3030EaE8' }}
                             </a>
                         </v-col>
                     </v-row>
