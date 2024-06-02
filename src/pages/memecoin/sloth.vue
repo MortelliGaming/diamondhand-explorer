@@ -9,7 +9,7 @@
         </div>
         <div class="text-right flex-grow-1 d-flex align-center justify-end">
             <v-avatar>
-                <v-img class="sloth-token" :src="slothTokenImage" />
+                <v-img :src="slothTokenImage" />
             </v-avatar>
         </div>
     </v-container>
@@ -73,7 +73,7 @@
                                 :balance="{ amount: (Number(presaleMaxTokensPerTx) / Math.pow(10, Number(tokenDecimals))).toString(), denom: tokenSymbol}" />
                         </v-col>
                    </v-row>
-                   <v-row no-gutters class="pt-2">
+                   <v-row v-if="!hasEnded" no-gutters class="pt-2">
                         <v-col cols="12">
                             <div class="d-flex align-center">
                                 <v-text-field
@@ -99,6 +99,11 @@
                             <v-btn @click="handleTokenBuy">buy</v-btn>
                         </v-col>
                    </v-row>
+                    <v-row no-gutters v-else>
+                        <v-col col="12" class="text-h6">
+                            {{  $t('sloth.saleEnded') }}
+                        </v-col>
+                    </v-row>
                 </v-col>
             </v-row>
         </base-sheet>
@@ -148,29 +153,34 @@
         </base-sheet>
         <div class="pt-2"></div>
     </v-container>
+    <sloth-tx-dialog :txHash="txHash" ref="txDialog" @close="txHash = ''" />
 </template>
 <script setup lang="ts">
 import { marked } from 'marked';
 import BaseSheet from '@/components/BaseSheet.vue';
 import TimeFormatter from '@/components/TimeFormatter.vue';
 import Asset from '@/components/Asset.vue';
-import { messages } from './texts';
+import { messages } from '@/components/memecoin/sloth/texts';
 // import { cronos } from 'viem/chains'
 import { crossfi } from '@/lib/chains/testnet'
 
-import { computed, ref } from 'vue';
+import { computed, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { createPublicClient, createWalletClient, custom, erc20Abi, http } from 'viem';
-import { saleContractABI } from './saleContract';
+import { saleContractABI } from '@/components/memecoin/sloth/saleContract';
 
 import slothTokenImage from '@/assets/slothToken.webp'
+import SlothTxDialog from '@/components/memecoin/sloth/SlothTxDialog.vue';
 
 const tokenAddress = '0xeaAc935906F34C0B3ca090E74B48a4EE8C2F9945'
-const presaleAddress = '0xe71fEc2Bbb4155E31aA8F6D75De9e5DB8a5e7DFc'
+const presaleAddress = '0x8f83B8DAa3e3B6C61554C33FE66a39c1B4eE0209'
 
 const { t } = useI18n({
     messages
 })
+
+const txDialog = ref<InstanceType<typeof SlothTxDialog>>();
+const txHash = ref('')
 
 const totalTokenSupply = ref(0n)
 const tokenDecimals = ref(18)
@@ -190,6 +200,7 @@ const croPrice = computed(() => {
 })
 
 const tokenChain = crossfi.evm!;
+const hasEnded = ref(false)
 
 async function loadTokenInfo() {
     if(!tokenChain) {
@@ -221,17 +232,9 @@ async function loadTokenInfo() {
         abi: saleContractABI,
         functionName: 'getCurrentPrice'
     }).then(price  => {
-        
         presaleCurrentPrice.value = price as bigint
     })
-    viemClient.readContract({
-        address: presaleAddress,
-        abi: saleContractABI,
-        functionName: 'tokensSold'
-    }).then(tokensSold  => {
-        
-        presaleSoldTokens.value = tokensSold as bigint
-    })
+    
     viemClient.readContract({
         address: presaleAddress,
         abi: saleContractABI,
@@ -240,14 +243,37 @@ async function loadTokenInfo() {
         
         presaleSupply.value = price as bigint
     })
-    viemClient.readContract({
-        address: presaleAddress,
-        abi: saleContractABI,
-        functionName: 'croSpent'
-    }).then(spentCro  => {
-        
-        presaleCroSpent.value = spentCro as bigint
-    })
+
+    const refreshInterval = setInterval(() => {
+        if(!hasEnded.value) {
+            viemClient.readContract({
+                address: presaleAddress,
+                abi: saleContractABI,
+                functionName: 'getCurrentPrice'
+            }).then(price  => {
+                presaleCurrentPrice.value = price as bigint
+            })
+        }
+        viemClient.readContract({
+            address: presaleAddress,
+            abi: saleContractABI,
+            functionName: 'tokensSold'
+        }).then(tokensSold  => {
+            
+            presaleSoldTokens.value = tokensSold as bigint
+        })
+        viemClient.readContract({
+            address: presaleAddress,
+            abi: saleContractABI,
+            functionName: 'croSpent'
+        }).then(spentCro  => {
+            
+            presaleCroSpent.value = spentCro as bigint
+        })
+    }, 2000)
+
+
+    
     viemClient.readContract({
         address: presaleAddress,
         abi: saleContractABI,
@@ -267,6 +293,10 @@ async function loadTokenInfo() {
             
             presaleEnddate.value = date
         })
+    })
+
+    onUnmounted(() => {
+        clearInterval(refreshInterval);
     })
 }
 
@@ -307,6 +337,9 @@ async function getAverageBlockTime(): Promise<number> {
  */
 async function estimateFutureBlockDate(futureBlockNumber: number): Promise<Date> {
   const currentBlockNumber = await publicClient.getBlockNumber();
+  if(presaleEndBlock.value < currentBlockNumber) {
+    hasEnded.value = true;
+  }
   const currentBlockHeader = await publicClient.getBlock({
         blockNumber: currentBlockNumber
     });
@@ -324,6 +357,9 @@ async function buyTokens() {
     if(!window.ethereum) {
         return
     }
+    console.log(txDialog.value)
+    txDialog.value?.show();
+
     const address = await window.ethereum.request({ method: 'eth_requestAccounts' });
        
     const walletClient = createWalletClient({
@@ -343,7 +379,7 @@ async function buyTokens() {
             value: BigInt(croPrice.value?.amount || 0n)
         })
        
-        await walletClient.writeContract({
+        txHash.value = await walletClient.writeContract({
             gas,
             account: address[0],
             address: presaleAddress,
@@ -351,7 +387,7 @@ async function buyTokens() {
             functionName: 'buyTokens',
             args: [(BigInt(buyAmount.value) * BigInt(Math.pow(10, tokenDecimals.value))).toString().replace('n','')],
             value: BigInt(croPrice.value?.amount || 0n)
-        })
+        });
     } catch (err: any) {
         
         if(!err.toString().includes('User rejected the request')) {
@@ -376,22 +412,4 @@ loadTokenInfo()
     width: 100%;
 }
 
-.sloth-token img {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%; /* Makes the image circular */
-  animation: rotate3d 3s infinite linear; /* Applies the animation */
-}
-
-@keyframes rotate3d {
-  0% {
-    transform: rotateY(0deg); /* Starts with the front side visible */
-  }
-  50% {
-    transform: rotateY(180deg); /* Flips to the back side */
-  }
-  100% {
-    transform: rotateY(360deg); /* Completes the full rotation */
-  }
-}
 </style>

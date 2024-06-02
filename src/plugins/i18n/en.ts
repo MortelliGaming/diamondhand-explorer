@@ -175,6 +175,19 @@ export const en = {
     sloth: {
         sale: 'Get Yourself Some Sloths Before',
         ends: 'Sale End:',
-        addresses: 'Team And Token Addresses'
+        addresses: 'Team And Token Addresses',
+        saleEnded: 'All Sloths found their way. The Sale has Ended!',
+        waitForTxConfirm: 'Confirming Tx',
+        tokensBought: 'Tx Succesful'
+    },
+    text: {
+        close: 'Close'
+    },
+    search: {
+        block: 'Search Block',
+        selectChain: 'Select Chain To Search',
+        evmTx: 'Search EVM Tx',
+        evmAccount: 'Search EVM Address',
+        cosmosTx: 'Search Cosmos Tx'
     }
 }

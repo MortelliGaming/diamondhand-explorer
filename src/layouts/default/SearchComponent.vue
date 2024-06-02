@@ -22,10 +22,12 @@
         :text="dialogText"
         :title="dialogTitle"
       >
-        <v-card-text>
+        <v-card-text class="pt-0">
           <v-responsive>
             <v-row no-gutters>
               <v-col
+                class="pa-2 d-flex justify-center flex-column align-center"
+                cols="4"
                 role="button"
                 v-for="chain of availableChains" :key="chain.name"
                 @click="confirmChain(chain.name)">
@@ -53,6 +55,7 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useBlockchainStore } from '@/store/blockchain'
 import { useValidatorsStore } from '@/store/validators'
 import { storeToRefs } from 'pinia';
@@ -62,6 +65,7 @@ const { availableChains } = storeToRefs(useBlockchainStore())
 const { getValidatorInfo } = useValidatorsStore()
 const { validators } = storeToRefs(useValidatorsStore())
 const router = useRouter()
+const { t } = useI18n()
 
 const dialog = ref(false)
 const dialogTitle = ref('')
@@ -96,20 +100,18 @@ function checkSearchStringAndNavigate() {
     if(searchText.value.length == 66) {
       if(!selectedChain.value) {
         dialog.value = true;
-        dialogTitle.value = 'search.selectChain'
-        dialogText.value = 'search.evmTx'
+        dialogTitle.value = t('search.selectChain')
+        dialogText.value = t('search.evmTx')
       } else {
         router.push(`/${selectedChain.value}/transaction/${searchText.value}`)
         searchText.value = '';
         selectedChain.value = '';
       }
-      // evm tx hash
-      console.log(`navigate to evm tx ${searchText.value}`)
     } else if(searchText.value.length == 42) {
       if(!selectedChain.value) {
         dialog.value = true;
-        dialogTitle.value = 'search.selectChain'
-        dialogText.value = 'search.evmAccount'
+        dialogTitle.value = t('search.selectChain')
+        dialogText.value = t('search.evmAccount')
       } else {
         router.push(`/${selectedChain.value}/account/${searchText.value}`)
         searchText.value = '';
@@ -123,8 +125,8 @@ function checkSearchStringAndNavigate() {
     if(searchText.value.length == 64) {
       if(!selectedChain.value) {
         dialog.value = true;
-        dialogTitle.value = 'search.selectChain'
-        dialogText.value = 'search.cosmosTx'
+        dialogTitle.value = t('search.selectChain')
+        dialogText.value = t('search.cosmosTx')
       } else {
         router.push(`/${selectedChain.value}/transaction/${searchText.value}`)
         searchText.value = '';
@@ -166,8 +168,8 @@ function checkSearchStringAndNavigate() {
   } else {
     if(!selectedChain.value) {
       dialog.value = true;
-      dialogTitle.value = 'search.selectChain'
-      dialogText.value = 'search.block'
+      dialogTitle.value = t('search.selectChain')
+      dialogText.value = t('search.block')
     } else {
       router.push(`/${selectedChain.value}/block/${searchText.value}`)
       searchText.value = '';

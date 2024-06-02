@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    _SlothTxDialog: typeof import('./src/components/memecoin/sloth/_SlothTxDialog.vue')['default']
     404: typeof import('./src/components/404.vue')['default']
     Asset: typeof import('./src/components/Asset.vue')['default']
     BaseSheet: typeof import('./src/components/BaseSheet.vue')['default']
@@ -38,6 +39,7 @@ declare module 'vue' {
     QrCodeDialog: typeof import('./src/components/QrCodeDialog.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SlothTxDialog: typeof import('./src/components/memecoin/sloth/slothTxDialog.vue')['default']
     TimeFormatter: typeof import('./src/components/TimeFormatter.vue')['default']
     TransactionHeaderInfoSheet: typeof import('./src/components/tx/TransactionHeaderInfoSheet.vue')['default']
     UnkownMessage: typeof import('./src/components/messages/cosmos/UnkownMessage.vue')['default']
