@@ -7,7 +7,6 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    _SlothTxDialog: typeof import('./src/components/memecoin/sloth/_SlothTxDialog.vue')['default']
     404: typeof import('./src/components/404.vue')['default']
     Asset: typeof import('./src/components/Asset.vue')['default']
     BaseSheet: typeof import('./src/components/BaseSheet.vue')['default']

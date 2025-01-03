@@ -128,7 +128,7 @@ const { availableChains } = storeToRefs(useBlockchainStore())
 
 function suggestKeplrchain(chainConfig: ChainInfo) {
   if(window.keplr) {
-    window.keplr.experimentalSuggestChain(chainConfig, true)
+    window.keplr.experimentalSuggestChain(chainConfig)
   }
 }
 
