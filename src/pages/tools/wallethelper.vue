@@ -96,6 +96,12 @@
         </v-col>
         <v-col cols="12">
           <v-divider />
+          <h1>Ledger Address Viewer</h1>
+          <div @click="connectLedger">Connect Ledger</div>
+          <h2>Cosmos Address (118):</h2>
+          <p id="cosmos-address"></p>
+          <h2>Ethereum Address (60):</h2>
+          <p id="eth-address"></p>
         </v-col>
       </v-row>
     </base-sheet>
@@ -103,6 +109,8 @@
 </template>
 
 <script lang="ts" setup>
+import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
+import CosmosApp from "@ledgerhq/hw-app-cosmos";
 import { type Window as KeplrWindow, type ChainInfo } from "@keplr-wallet/types";
 import type { Chain } from 'viem'
 
@@ -120,7 +128,7 @@ const { availableChains } = storeToRefs(useBlockchainStore())
 
 function suggestKeplrchain(chainConfig: ChainInfo) {
   if(window.keplr) {
-    window.keplr.experimentalSuggestChain(chainConfig)
+    window.keplr.experimentalSuggestChain(chainConfig, true)
   }
 }
 
@@ -136,6 +144,34 @@ function suggestMetaMaskChain(evmChainConfig: Chain) {
         blockExplorerUrls: [evmChainConfig.blockExplorers?.default.url]
       }]
     });
+  }
+}
+
+const sleep = (ms: number): Promise<void> => {
+  return new Promise((resolve) => setTimeout(() => resolve(), ms));
+};
+
+async function connectLedger() {
+  try {
+
+    let transport = await TransportWebUSB.create();
+    const app = new CosmosApp(transport);
+    console.log(app)
+    // Get Cosmos address (118)
+    
+    await sleep(1000)
+    await app.getAddress("44'/118/0/0/0", "mx", true).then(o => console.log(o.address))
+    // console.log(cosmosResult)
+    // console.log(cosmosResult.publicKey)
+    // document.getElementById("cosmos-address").textContent = cosmosResult.address;
+
+    // Get Ethereum address (60)
+    // const ethResult = await app.getAddress("44'/60/0'/0/0", 'cosmos');
+    // console.log(ethResult.address)
+    // document.getElementById("eth-address").textContent = ethResult.address;
+
+  } catch (error) {
+    console.error("Error connecting to Ledger:", error);
   }
 }
 </script>

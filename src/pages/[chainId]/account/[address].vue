@@ -115,7 +115,7 @@
                     </v-row>
                 </base-sheet>
                 <div class="pt-2"></div>
-                <account-transactions :account="address"/>
+                <!--<account-transactions :account="address"/>-->
             </v-responsive>
         </v-container>
     </div>

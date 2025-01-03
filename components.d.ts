@@ -39,7 +39,7 @@ declare module 'vue' {
     QrCodeDialog: typeof import('./src/components/QrCodeDialog.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    SlothTxDialog: typeof import('./src/components/memecoin/sloth/slothTxDialog.vue')['default']
+    SlothTxDialog: typeof import('./src/components/memecoin/sloth/SlothTxDialog.vue')['default']
     TimeFormatter: typeof import('./src/components/TimeFormatter.vue')['default']
     TransactionHeaderInfoSheet: typeof import('./src/components/tx/TransactionHeaderInfoSheet.vue')['default']
     UnkownMessage: typeof import('./src/components/messages/cosmos/UnkownMessage.vue')['default']

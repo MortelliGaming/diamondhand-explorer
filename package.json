@@ -14,6 +14,8 @@
     "@cosmjs/tendermint-rpc": "^0.32.0-rc.1",
     "@ethersproject/transactions": "^5.7.0",
     "@keplr-wallet/provider": "^0.12.80",
+    "@ledgerhq/hw-app-cosmos": "^6.30.4",
+    "@ledgerhq/hw-transport-webusb": "^6.29.4",
     "@mdi/font": "7.0.96",
     "@shazow/whatsabi": "^0.11.0",
     "apexcharts": "^3.49.0",

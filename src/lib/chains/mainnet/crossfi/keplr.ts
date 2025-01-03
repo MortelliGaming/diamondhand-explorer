@@ -2,11 +2,11 @@
 import type { ChainInfo } from '@keplr-wallet/types'
 
 export const keplr: ChainInfo = {
-  "rpc": "https://rpc-mineplex.diamondhand.capital",
-  "rest": "https://api-mineplex.diamondhand.capital",
-  "chainId": "mineplex-mainnet-1",
-  "chainName": "Mineplex Mainnet",
-  "chainSymbolImageUrl": "https://media.licdn.com/dms/image/D4E0BAQEs0PUwKhAw9g/company-logo_200_200/0/1699597847512/crossfichain_logo?e=2147483647&v=beta&t=36793GMlIOqcltdR6gIdZhOpT8OpANC52XwQ4gewqmg",
+  "rpc": "https://rpc.crossfi.nodestake.org",
+  "rest": "https://api.crossfi.nodestake.org",
+  "chainId": "crossfi-mainnet-1",
+  "chainName": "Crossfi Mainnet",
+  "chainSymbolImageUrl": "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/crossfi-mainnet/chain.png",
   "nodeProvider": {
     "name": "CrossFi Foundation",
     "website":"https://crossfi.org/",
@@ -18,7 +18,7 @@ export const keplr: ChainInfo = {
     "coinDecimals": 18
   },
   "bip44": {
-    "coinType": 118
+    "coinType": 60
   },
   "bech32Config": {
     "bech32PrefixAccAddr": "mx",
@@ -30,32 +30,27 @@ export const keplr: ChainInfo = {
   },
   "currencies": [
     {
-      "coinDenom": "MPX",
-      "coinMinimalDenom": "mpx",
-      "coinDecimals": 18
-    },{
       "coinDenom": "XFI",
       "coinMinimalDenom": "xfi",
       "coinDecimals": 18
-    },{
-      "coinDenom": "XFT",
-      "coinMinimalDenom": "xft",
-      "coinDecimals": 18
-    },{
-      "coinDenom": "eMPX",
-      "coinMinimalDenom": "empx",
-      "coinDecimals": 18
-    },{
-      "coinDenom": "exe",
-      "coinMinimalDenom": "EXE",
-      "coinDecimals": 18
-    },{
-      "coinDenom": "xUSD",
-      "coinMinimalDenom": "xusd",
+    },
+    {
+      "coinDenom": "MPX",
+      "coinMinimalDenom": "mpx",
       "coinDecimals": 18
     }
   ],
   "feeCurrencies": [
+    {
+      "coinDenom": "XFI",
+      "coinMinimalDenom": "xfi",
+      "coinDecimals": 18,
+      "gasPriceStep": {
+        "low": 10000000000,
+        "average": 15000000000,
+        "high": 20000000000
+      }
+    },
     {
       "coinDenom": "MPX",
       "coinMinimalDenom": "mpx",
@@ -67,5 +62,6 @@ export const keplr: ChainInfo = {
       }
     }
   ],
-  "features": ["ibc-transfer", "ibc-go", "cosmwasm"]
+  "beta":false,
+  "features": ["eth-address-gen", "eth-key-sign"]
 }
