@@ -2,8 +2,8 @@
 import type { ChainInfo } from '@keplr-wallet/types'
 
 export const keplr: ChainInfo = {
-  "rpc": "https://rpc.crossfi.nodestake.org",
-  "rest": "https://api.crossfi.nodestake.org",
+  "rpc": "https://crossfi-mainnet-rpc.itrocket.net",
+  "rest": "https://crossfi-mainnet-api.itrocket.net",
   "chainId": "crossfi-mainnet-1",
   "chainName": "Crossfi Mainnet",
   "chainSymbolImageUrl": "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/crossfi-mainnet/chain.png",

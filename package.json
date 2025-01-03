@@ -31,7 +31,7 @@
     "qrcode-vue3": "^1.6.8",
     "roboto-fontface": "*",
     "secp256k1": "^5.0.0",
-    "viem": "^2.13.1",
+    "viem": "^2.22.2",
     "vue": "^3.3.0",
     "vue-i18n": "^9.12.1",
     "vue3-apexcharts": "^1.5.2",
@@ -68,7 +68,7 @@
     "vite-plugin-vue-pages": "^1.0.0",
     "vite-plugin-vuetify": "^2.0.0",
     "vue-router": "^4.2.0",
-    "vue-tsc": "^1.8.0",
+    "vue-tsc": "^2.2.0",
     "xstream": "^11.14.0"
   }
 }

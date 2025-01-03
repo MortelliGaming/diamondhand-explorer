@@ -134,14 +134,26 @@ function suggestKeplrchain(chainConfig: ChainInfo) {
 
 function suggestMetaMaskChain(evmChainConfig: Chain) {
   if(window.ethereum) {
+    console.log({
+      method: "wallet_addEthereumChain",
+      params: [{
+        chainId: '0x' + evmChainConfig.id.toString(16),
+        rpcUrls: evmChainConfig.rpcUrls.default.http,
+        chainName: evmChainConfig.name,
+        nativeCurrency: evmChainConfig.nativeCurrency,
+        blockExplorerUrls: [evmChainConfig.blockExplorers?.default.url],
+        iconUrls: ['https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/crossfi-mainnet/chain.png'],
+      }]
+    })
     window.ethereum.request({
       method: "wallet_addEthereumChain",
       params: [{
         chainId: '0x' + evmChainConfig.id.toString(16),
-        rpcUrls: [evmChainConfig.rpcUrls.default.http],
+        rpcUrls: evmChainConfig.rpcUrls.default.http,
         chainName: evmChainConfig.name,
         nativeCurrency: evmChainConfig.nativeCurrency,
-        blockExplorerUrls: [evmChainConfig.blockExplorers?.default.url]
+        blockExplorerUrls: [evmChainConfig.blockExplorers?.default.url],
+        iconUrls: ['https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/crossfi-mainnet/chain.png'],
       }]
     });
   }

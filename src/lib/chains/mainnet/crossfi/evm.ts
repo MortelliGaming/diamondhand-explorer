@@ -5,11 +5,11 @@ export const evm: Chain = defineChain({
   name: 'Crossfi Mainnet',
   nativeCurrency: {
     decimals: 18,
-    name: 'Crossfi Mainnet',
+    name: 'XFI',
     symbol: 'XFI',
   },
   rpcUrls: {
-    default: { http: ['https://rpc.mainnet.ms'] },
+    default: { http: ['https://rpc.mainnet.ms/'] },
   },
   blockExplorers: {
     default: {
@@ -18,6 +18,7 @@ export const evm: Chain = defineChain({
       apiUrl: '',
     },
   },
+  memo: true,
   contracts: {
     /*
     * keep as example
